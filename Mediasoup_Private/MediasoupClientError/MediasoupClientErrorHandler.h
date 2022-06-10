@@ -14,6 +14,7 @@ NSError *_Nonnull const mediasoupError(
 template<typename ReturnType>
 ReturnType mediasoupTryWithResult(
 	ReturnType (^_Nonnull throwingBlock)(void),
+	void (^_Nullable catchBlock)(void),
 	NSError *__autoreleasing _Nullable *_Nullable error) {
 
 	try {
@@ -32,11 +33,18 @@ ReturnType mediasoupTryWithResult(
 		*error = [NSError errorWithDomain:MediasoupClientErrorDomain code:MediasoupClientErrorCodeUnknown userInfo:nil];
 	}
 
+	if (catchBlock != nil) {
+		catchBlock();
+	}
 	return nil;
 }
 
 void mediasoupTry(
 	void (^_Nonnull throwingBlock)(void),
+	NSError *__autoreleasing _Nullable *_Nullable error);
+
+BOOL mediasoupTryWithBool(
+	BOOL (^_Nonnull throwingBlock)(void),
 	NSError *__autoreleasing _Nullable *_Nullable error);
 
 #endif /* MediasoupErrorHandler_h */

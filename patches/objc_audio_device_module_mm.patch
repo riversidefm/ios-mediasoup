@@ -1,0 +1,14 @@
+--- webrtc/src/sdk/objc/native/api/objc_audio_device_module.mm
++++ webrtc/src/sdk/objc/native/api/objc_audio_device_module.mm
+@@ -17,6 +17,7 @@
+ 
+ namespace webrtc {
+ 
++__attribute__((visibility("default")))
+ rtc::scoped_refptr<AudioDeviceModule> CreateAudioDeviceModule(
+    id<RTC_OBJC_TYPE(RTCAudioDevice)> audio_device) {
+  RTC_DLOG(LS_INFO) << __FUNCTION__;
+  return rtc::make_ref_counted<objc_adm::ObjCAudioDeviceModule>(audio_device);
+}
+
+}  // namespace webrtc

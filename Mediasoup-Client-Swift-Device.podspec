@@ -14,8 +14,7 @@ Pod::Spec.new do |spec|
 	spec.module_map = "Mediasoup/Mediasoup.modulemap"
 
 	spec.source = {
-		:path => '/Users/andreykrit/Documents/mediasoup-client-swift-device'
-		#:tag => spec.version.to_s
+        :git => "git@github.com:riversidefm/ios-mediasoup.git"
 	}
 
 	spec.frameworks =

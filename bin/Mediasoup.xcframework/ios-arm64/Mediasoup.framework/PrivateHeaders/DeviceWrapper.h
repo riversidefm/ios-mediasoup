@@ -4,13 +4,15 @@
 #import <Foundation/Foundation.h>
 #import "MediasoupClientMediaKind.h"
 
-
 @class ReceiveTransportWrapper;
 @class SendTransportWrapper;
+@protocol RTCAudioDevice;
+
 typedef NS_ENUM(NSInteger, RTCIceTransportPolicy);
 
-
 @interface DeviceWrapper : NSObject
+
+- (instancetype _Nonnull)initWithAudioDevice:(id<RTCAudioDevice> _Nullable)audioDevice;
 
 - (BOOL)isLoaded;
 

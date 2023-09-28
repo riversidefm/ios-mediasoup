@@ -119,7 +119,7 @@
 		FF89EFC327F5696600EEF5CD /* MediasoupClientErrorHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MediasoupClientErrorHandler.h; sourceTree = "<group>"; };
 		FF89EFD027F5C79000EEF5CD /* Mediasoup_Private.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = Mediasoup_Private.modulemap; sourceTree = "<group>"; };
 		FF89EFD427F6AEBB00EEF5CD /* MediasoupClientErrorConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediasoupClientErrorConverter.swift; sourceTree = "<group>"; };
-		FF89EFD627F6AFBD00EEF5CD /* Mediasoup-Client-Swift.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; path = "Mediasoup-Client-Swift.podspec"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		FF89EFD627F6AFBD00EEF5CD /* Mediasoup-Client-Swift-Device.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; path = "Mediasoup-Client-Swift-Device.podspec"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		FFB7DDB02822891C00FE2CC2 /* ReceiveTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveTransport.swift; sourceTree = "<group>"; };
 		FFB7DDB22822893C00FE2CC2 /* ReceiveTransportDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveTransportDelegate.swift; sourceTree = "<group>"; };
 		FFB7DDB42822897300FE2CC2 /* ReceiveTransportWrapper.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ReceiveTransportWrapper.hpp; sourceTree = "<group>"; };
@@ -176,7 +176,7 @@
 			isa = PBXGroup;
 			children = (
 				FF2E23D6285890310008DC19 /* README.md */,
-				FF89EFD627F6AFBD00EEF5CD /* Mediasoup-Client-Swift.podspec */,
+				FF89EFD627F6AFBD00EEF5CD /* Mediasoup-Client-Swift-Device.podspec */,
 				FF3AEE0227F2CDD1001A81AB /* Mediasoup */,
 				FF89EFCF27F5C51500EEF5CD /* Mediasoup_Private */,
 				FF3AEE0127F2CDD1001A81AB /* Products */,

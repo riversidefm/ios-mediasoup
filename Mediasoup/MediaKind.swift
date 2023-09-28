@@ -5,6 +5,7 @@ import Mediasoup_Private
 public enum MediaKind {
 	case audio
 	case video
+    case unknown
 }
 
 internal extension MediaKind {
@@ -12,6 +13,7 @@ internal extension MediaKind {
 		switch self {
 			case .audio: return .audio
 			case .video: return .video
+            case .unknown: return .audio
 		}
 	}
 

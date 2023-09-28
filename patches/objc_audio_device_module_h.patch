@@ -1,0 +1,7 @@
+--- webrtc/src/sdk/objc/native/api/objc_audio_device_module.h
++++ webrtc/src/sdk/objc/native/api/objc_audio_device_module.h
+@@ -18,3 +18,3 @@ namespace webrtc {
+    
+-rtc::scoped_refptr<AudioDeviceModule> CreateAudioDeviceModule(
++RTC_EXPORT rtc::scoped_refptr<AudioDeviceModule> CreateAudioDeviceModule(
+    id<RTC_OBJC_TYPE(RTCAudioDevice)> audio_device);

@@ -16,7 +16,8 @@
 #import "../Transport/SendTransportListenerAdapter.hpp"
 #import "../Transport/ReceiveTransportWrapper.hpp"
 #import "../Transport/ReceiveTransportListenerAdapter.hpp"
-
+#import "components/audio/RTCAudioDevice.h"
+#import  "sdk/objc/native/api/objc_audio_device_module.h"
 
 @interface DeviceWrapper() {
 	mediasoupclient::Device *_device;
@@ -28,32 +29,53 @@
 
 @implementation DeviceWrapper
 
+- (rtc::scoped_refptr<webrtc::AudioDeviceModule>)audioDeviceModule {
+#if defined(WEBRTC_IOS)
+  return webrtc::CreateAudioDeviceModule();
+#else
+  return nullptr;
+#endif
+}
+
 - (instancetype)init {
-	self = [super init];
-	if (self != nil) {
-		_device = new mediasoupclient::Device();
+    return [self initWithAudioDevice:nil];
+}
 
-		auto audioEncoderFactory = webrtc::CreateBuiltinAudioEncoderFactory();
-		auto audioDecoderFactory = webrtc::CreateBuiltinAudioDecoderFactory();
-		auto videoEncoderFactory = std::make_unique<webrtc::ObjCVideoEncoderFactory>(
-			[[RTCDefaultVideoEncoderFactory alloc] init]
-		);
-		auto videoDecoderFactory = std::make_unique<webrtc::ObjCVideoDecoderFactory>(
-			[[RTCDefaultVideoDecoderFactory alloc] init]
-		);
+- (instancetype)initWithAudioDevice:(nullable id<RTC_OBJC_TYPE(RTCAudioDevice)>)audioDevice {
+    self = [super init];
+    if (self != nil) {
+        _device = new mediasoupclient::Device();
 
-		auto pcFactoryBuilder = [[RTCPeerConnectionFactoryBuilder alloc] init];
-		[pcFactoryBuilder setAudioEncoderFactory:audioEncoderFactory];
-		[pcFactoryBuilder setAudioDecoderFactory:audioDecoderFactory];
-		[pcFactoryBuilder setVideoEncoderFactory:std::move(videoEncoderFactory)];
-		[pcFactoryBuilder setVideoDecoderFactory:std::move(videoDecoderFactory)];
-		[pcFactoryBuilder setAudioDeviceModule:webrtc::CreateAudioDeviceModule()];
+        auto audioEncoderFactory = webrtc::CreateBuiltinAudioEncoderFactory();
+        auto audioDecoderFactory = webrtc::CreateBuiltinAudioDecoderFactory();
+        auto videoEncoderFactory = std::make_unique<webrtc::ObjCVideoEncoderFactory>(
+            [[RTCDefaultVideoEncoderFactory alloc] init]
+        );
+        auto videoDecoderFactory = std::make_unique<webrtc::ObjCVideoDecoderFactory>(
+            [[RTCDefaultVideoDecoderFactory alloc] init]
+        );
 
-		self.pcFactory = [pcFactoryBuilder createPeerConnectionFactory];
-		_pcOptions = new mediasoupclient::PeerConnection::Options();
-		_pcOptions->factory = self.pcFactory.nativeFactory.get();
-	}
-	return self;
+        auto pcFactoryBuilder = [[RTCPeerConnectionFactoryBuilder alloc] init];
+        [pcFactoryBuilder setAudioEncoderFactory:audioEncoderFactory];
+        [pcFactoryBuilder setAudioDecoderFactory:audioDecoderFactory];
+        [pcFactoryBuilder setVideoEncoderFactory:std::move(videoEncoderFactory)];
+        [pcFactoryBuilder setVideoDecoderFactory:std::move(videoDecoderFactory)];
+        
+        rtc::scoped_refptr<webrtc::AudioDeviceModule> audio_device_module;
+        if (audioDevice) {
+            NSLog(@" -----------> Custom audio module applied");
+            audio_device_module = webrtc::CreateAudioDeviceModule(audioDevice);;
+          } else {
+            NSLog(@" -----------> Default audio module applied");
+            audio_device_module = [self audioDeviceModule];
+          }
+        [pcFactoryBuilder setAudioDeviceModule:audio_device_module];
+        
+        self.pcFactory = [pcFactoryBuilder createPeerConnectionFactory];
+        _pcOptions = new mediasoupclient::PeerConnection::Options();
+        _pcOptions->factory = self.pcFactory.nativeFactory.get();
+    }
+    return self;
 }
 
 - (void)dealloc {

@@ -32,9 +32,7 @@ public class Consumer {
 
 	public let kind: MediaKind
 
-	public var appData: String {
-		return consumer.appData
-	}
+	public var appData = ""
 
 	public var rtpParameters: String {
 		return consumer.rtpParameters

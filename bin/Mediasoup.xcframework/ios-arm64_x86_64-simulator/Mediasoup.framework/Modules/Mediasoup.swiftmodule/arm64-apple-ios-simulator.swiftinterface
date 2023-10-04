@@ -256,9 +256,7 @@ public class Device {
     get
   }
   final public let kind: Mediasoup.MediaKind
-  public var appData: Swift.String {
-    get
-  }
+  public var appData: Swift.String
   public var rtpParameters: Swift.String {
     get
   }

@@ -5734,8 +5734,11 @@
             "mangledName": "$s9Mediasoup8ConsumerC7appDataSSvp",
             "moduleName": "Mediasoup",
             "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
               "AccessControl"
             ],
+            "hasStorage": true,
             "accessors": [
               {
                 "kind": "Accessor",
@@ -5753,7 +5756,50 @@
                 "usr": "s:9Mediasoup8ConsumerC7appDataSSvg",
                 "mangledName": "$s9Mediasoup8ConsumerC7appDataSSvg",
                 "moduleName": "Mediasoup",
+                "implicit": true,
                 "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:9Mediasoup8ConsumerC7appDataSSvs",
+                "mangledName": "$s9Mediasoup8ConsumerC7appDataSSvs",
+                "moduleName": "Mediasoup",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:9Mediasoup8ConsumerC7appDataSSvM",
+                "mangledName": "$s9Mediasoup8ConsumerC7appDataSSvM",
+                "moduleName": "Mediasoup",
+                "implicit": true,
+                "accessorKind": "_modify"
               }
             ]
           },
@@ -5940,5 +5986,13 @@
     ],
     "json_format_version": 8
   },
-  "ConstValues": []
+  "ConstValues": [
+    {
+      "filePath": "\/Users\/andreykrit\/Desktop\/Riverside\/ios-mediasoup-riverside\/Mediasoup\/Consumer.swift",
+      "kind": "StringLiteral",
+      "offset": 545,
+      "length": 2,
+      "value": "\"\""
+    }
+  ]
 }

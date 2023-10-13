@@ -4,7 +4,7 @@
 set -e
 
 # Check build time dependencies.
-if ! command -v python &> /dev/null
+if ! command -v python3 &> /dev/null
 then
 	echo 'python could not be found'
 	echo 'try next steps:'

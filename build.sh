@@ -178,6 +178,7 @@ function refetchWebRTC() {
 	"managed": False,
 	"custom_deps": {},
 }]
+target_os = ["macos"]'
 
 	# Fetch WebRTC m94 version.
 	# gclient sync --no-history --revision src@branch-heads/4606 

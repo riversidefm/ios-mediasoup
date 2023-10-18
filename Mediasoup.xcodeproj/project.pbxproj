@@ -443,7 +443,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\n\nFRAMEWORK_NAME=\"Mediasoup\"\nBUILD_DIR=\"${SRCROOT}/build/Mediasoup\"\nOUTPUT_DIR=\"${SRCROOT}/bin\"\n\n# Remove build directory if it exists\nif [ -d \"${BUILD_DIR}\" ]; then\n\trm -rf \"${BUILD_DIR}\"\nfi\n\n# Build the framework for both device and simulator\nxcodebuild -project \"${PROJECT_NAME}.xcodeproj\" \\\n    -scheme \"${FRAMEWORK_NAME}\" \\\n    -configuration Release \\\n    -arch arm64 only_active_arch=no \\\n    -sdk \"iphoneos\" \\\n    -derivedDataPath \"${BUILD_DIR}\"\n\nxcodebuild -project \"${PROJECT_NAME}.xcodeproj\" \\\n    -scheme \"${FRAMEWORK_NAME}\" \\\n    -configuration Release \\\n    -arch x86_64 -arch arm64 only_active_arch=no \\\n    -sdk \"iphonesimulator\" \\\n    -derivedDataPath \"${BUILD_DIR}\"\n\n# Prepare output directory\nmkdir -p ${OUTPUT_DIR}\nif [ -d \"${OUTPUT_DIR}/${FRAMEWORK_NAME}.xcframework\" ]; then\n\trm -rf \"${OUTPUT_DIR}/${FRAMEWORK_NAME}.xcframework\"\nfi\n\nxcodebuild -create-xcframework \\\n\t-framework ${BUILD_DIR}/Build/Products/Release-iphoneos/${FRAMEWORK_NAME}.framework \\\n\t-framework ${BUILD_DIR}/Build/Products/Release-iphonesimulator/${FRAMEWORK_NAME}.framework \\\n\t-output $OUTPUT_DIR/${FRAMEWORK_NAME}.xcframework\n";
+			shellScript = "set -e\n\nFRAMEWORK_NAME=\"Mediasoup\"\nBUILD_DIR=\"${SRCROOT}/build/Mediasoup\"\nOUTPUT_DIR=\"${SRCROOT}/bin\"\n\n# Remove build directory if it exists\nif [ -d \"${BUILD_DIR}\" ]; then\n    rm -rf \"${BUILD_DIR}\"\nfi\n\n# Build the framework for both device and simulator\nxcodebuild -project \"${PROJECT_NAME}.xcodeproj\" \\\n    -scheme \"${FRAMEWORK_NAME}\" \\\n    -configuration Release \\\n    -arch arm64 only_active_arch=no \\\n    -sdk \"macosx\" \\\n    -derivedDataPath \"${BUILD_DIR}\" \\\n    -allowProvisioningUpdates\n\n# Prepare output directory\nmkdir -p ${OUTPUT_DIR}\nif [ -d \"${OUTPUT_DIR}/${FRAMEWORK_NAME}.xcframework\" ]; then\n    rm -rf \"${OUTPUT_DIR}/${FRAMEWORK_NAME}.xcframework\"\nfi\n\nxcodebuild -create-xcframework \\\n    -framework ${BUILD_DIR}/Build/Products/Release/${FRAMEWORK_NAME}.framework \\\n    -output $OUTPUT_DIR/${FRAMEWORK_NAME}.xcframework\n\n\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -494,16 +494,20 @@
 		FF3AEDF827F2C92E001A81AB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = arm64;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_CXX_LIBRARY = "libc++";
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
 		FF3AEDF927F2C92E001A81AB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = arm64;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_CXX_LIBRARY = "libc++";
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};
@@ -594,9 +598,9 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = pro.vlprojects.Mediasoup;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SDKROOT = iphoneos;
+				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SUPPORTED_PLATFORMS = macosx;
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -691,9 +695,9 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = pro.vlprojects.Mediasoup;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SDKROOT = iphoneos;
+				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SUPPORTED_PLATFORMS = macosx;
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

@@ -4,12 +4,12 @@ Pod::Spec.new do |spec|
 	spec.homepage = "https://github.com/VLprojects/mediasoup-client-swift"
 	spec.license = "MIT"
 	spec.author = {
-		"Alexander Gorbunov" => "gorbunov.a@vlprojects.pro"
+		"Andrii Krit" => "andrey.krit@gmail.com"
 	}
 	
 	spec.name = "Mediasoup-Client-Swift-Device"
 	spec.version = "0.4.2"
-	spec.platform = :ios, "14.0"
+	spec.platform = :macOS, "13.0"
 	spec.module_name = "Mediasoup"
 	spec.module_map = "Mediasoup/Mediasoup.modulemap"
 

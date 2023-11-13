@@ -29,14 +29,13 @@
 
 @implementation DeviceWrapper
 
-// TODO: Refactor on custom audio device support integration
-//- (rtc::scoped_refptr<webrtc::AudioDeviceModule>)audioDeviceModule {
-//#if defined(WEBRTC_IOS)
-//  return webrtc::CreateAudioDeviceModule();
-//#else
-//  return nullptr;
-//#endif
-//}
+- (rtc::scoped_refptr<webrtc::AudioDeviceModule>)audioDeviceModule {
+#if TARGET_OS_IOS
+  return webrtc::CreateAudioDeviceModule();
+#else
+  return nullptr;
+#endif
+}
 
 - (instancetype)init {
     return [self initWithAudioDevice:nil];
@@ -61,17 +60,16 @@
         [pcFactoryBuilder setAudioDecoderFactory:audioDecoderFactory];
         [pcFactoryBuilder setVideoEncoderFactory:std::move(videoEncoderFactory)];
         [pcFactoryBuilder setVideoDecoderFactory:std::move(videoDecoderFactory)];
-        
-        // TODO: Refactor on custom audio device support integration
-//        rtc::scoped_refptr<webrtc::AudioDeviceModule> audio_device_module;
-//        if (audioDevice) {
-//            NSLog(@" -----------> Custom audio module applied");
-//            audio_device_module = webrtc::CreateAudioDeviceModule(audioDevice);;
-//          } else {
-//            NSLog(@" -----------> Default audio module applied");
-//            audio_device_module = [self audioDeviceModule];
-//          }
-//        [pcFactoryBuilder setAudioDeviceModule:audio_device_module];
+    
+        rtc::scoped_refptr<webrtc::AudioDeviceModule> audio_device_module;
+        if (audioDevice) {
+            NSLog(@" -----------> Custom audio module applied");
+            audio_device_module = webrtc::CreateAudioDeviceModule(audioDevice);;
+          } else {
+            NSLog(@" -----------> Default audio module applied");
+            audio_device_module = [self audioDeviceModule];
+          }
+        [pcFactoryBuilder setAudioDeviceModule:audio_device_module];
         
         self.pcFactory = [pcFactoryBuilder createPeerConnectionFactory];
         _pcOptions = new mediasoupclient::PeerConnection::Options();

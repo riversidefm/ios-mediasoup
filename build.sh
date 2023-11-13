@@ -311,7 +311,7 @@ echo "gn gen $BUILD_DIR/WebRTC/mac/arm64 --ide=xcode --args=\"${platform_args_ar
 platform_args_arm64='target_environment="device" target_cpu="arm64"'
 gn gen $BUILD_DIR/WebRTC/mac/arm64 --ide=xcode --args="${platform_args_arm64} ${gn_args}"
 
-echo 'Applying x64 xparams'
+echo 'Applying x64 params'
 echo "gn gen $BUILD_DIR/WebRTC/mac/x64 --ide=xcode --args=\"${platform_args_x64} ${gn_args_x64}\""
 platform_args_x64='target_environment="device" target_cpu="x86_64"'
 gn gen $BUILD_DIR/WebRTC/mac/x64 --ide=xcode --args="${platform_args_x64} ${gn_args_x64}"

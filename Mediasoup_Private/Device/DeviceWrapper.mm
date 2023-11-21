@@ -30,7 +30,7 @@
 @implementation DeviceWrapper
 
 - (rtc::scoped_refptr<webrtc::AudioDeviceModule>)audioDeviceModule {
-#if defined(WEBRTC_IOS)
+#if TARGET_OS_IOS
   return webrtc::CreateAudioDeviceModule();
 #else
   return nullptr;

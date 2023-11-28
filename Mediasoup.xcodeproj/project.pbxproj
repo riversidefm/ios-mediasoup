@@ -443,7 +443,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\n\nFRAMEWORK_NAME=\"Mediasoup\"\nBUILD_DIR=\"${SRCROOT}/build/Mediasoup\"\nOUTPUT_DIR=\"${SRCROOT}/bin\"\n\n# Remove build directory if it exists\nif [ -d \"${BUILD_DIR}\" ]; then\n    rm -rf \"${BUILD_DIR}\"\nfi\n\n# Build the framework for both device and simulator\nxcodebuild -project \"${PROJECT_NAME}.xcodeproj\" \\\n    -scheme \"${FRAMEWORK_NAME}\" \\\n    -configuration Release \\\n    -arch arm64 only_active_arch=no \\\n    -sdk \"macosx\" \\\n    -derivedDataPath \"${BUILD_DIR}\" \\\n    -allowProvisioningUpdates\n\n# Prepare output directory\nmkdir -p ${OUTPUT_DIR}\nif [ -d \"${OUTPUT_DIR}/${FRAMEWORK_NAME}.xcframework\" ]; then\n    rm -rf \"${OUTPUT_DIR}/${FRAMEWORK_NAME}.xcframework\"\nfi\n\nxcodebuild -create-xcframework \\\n    -framework ${BUILD_DIR}/Build/Products/Release/${FRAMEWORK_NAME}.framework \\\n    -output $OUTPUT_DIR/${FRAMEWORK_NAME}.xcframework\n\n\n";
+			shellScript = "set -e\n\nFRAMEWORK_NAME=\"Mediasoup\"\nBUILD_DIR=\"${SRCROOT}/build/Mediasoup\"\nOUTPUT_DIR=\"${SRCROOT}/bin\"\n\n# Remove build directory if it exists\nif [ -d \"${BUILD_DIR}\" ]; then\n    rm -rf \"${BUILD_DIR}\"\nfi\n\n# Build the framework for both device and simulator\nxcodebuild -project \"${PROJECT_NAME}.xcodeproj\" \\\n    -scheme \"${FRAMEWORK_NAME}\" \\\n    -configuration Release \\\n    -arch x86_64 -arch arm64 only_active_arch=no \\\n    -sdk \"macosx\" \\\n    -derivedDataPath \"${BUILD_DIR}\" \\\n    -allowProvisioningUpdates\n\n# Prepare output directory\nmkdir -p ${OUTPUT_DIR}\nif [ -d \"${OUTPUT_DIR}/${FRAMEWORK_NAME}.xcframework\" ]; then\n    rm -rf \"${OUTPUT_DIR}/${FRAMEWORK_NAME}.xcframework\"\nfi\n\nxcodebuild -create-xcframework \\\n    -framework ${BUILD_DIR}/Build/Products/Release/${FRAMEWORK_NAME}.framework \\\n    -output $OUTPUT_DIR/${FRAMEWORK_NAME}.xcframework\n\n\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -494,7 +494,7 @@
 		FF3AEDF827F2C92E001A81AB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = arm64;
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_CXX_LIBRARY = "libc++";
 				SDKROOT = macosx;
@@ -504,7 +504,7 @@
 		FF3AEDF927F2C92E001A81AB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = arm64;
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_CXX_LIBRARY = "libc++";
 				SDKROOT = macosx;

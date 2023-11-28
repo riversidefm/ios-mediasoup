@@ -3,7 +3,7 @@
 set -e
 
 # Check build time dependencies.
-if ! command -v python &> /dev/null
+if ! command -v python3 &> /dev/null
 then
     echo 'python could not be found'
     echo 'try next steps:'
@@ -252,9 +252,7 @@ cd $WEBRTC_DIR
 
 gn_arguments=(
     'target_os="mac"'
-    'target_cpu="arm64"'
     'is_component_build=false'
-    'mac_code_signing=false'
     #'is_debug=true'
     'is_debug=false'
     'rtc_libvpx_build_vp9=true'
@@ -276,8 +274,6 @@ gn_arguments=(
 
 gn_arguments_x64=(
     'target_os="mac"'
-    'target_cpu="x64"'
-    'mac_code_signing=false'
     'is_component_build=false'
     #'is_debug=true'
     'is_debug=false'
@@ -313,19 +309,35 @@ gn gen $BUILD_DIR/WebRTC/mac/arm64 --ide=xcode --args="${platform_args_arm64} ${
 
 echo 'Applying x64 params'
 echo "gn gen $BUILD_DIR/WebRTC/mac/x64 --ide=xcode --args=\"${platform_args_x64} ${gn_args_x64}\""
-platform_args_x64='target_environment="device" target_cpu="x86_64"'
+platform_args_x64='target_environment="device" target_cpu="x64"'
 gn gen $BUILD_DIR/WebRTC/mac/x64 --ide=xcode --args="${platform_args_x64} ${gn_args_x64}"
 
 
 cd $BUILD_DIR/WebRTC
 echo 'Ninja build'
+ninja -C mac/x64 mac_framework_objc
 ninja -C mac/arm64 mac_framework_objc
 
+rm -rf mac/WebRTC.framework
+cp -R mac/arm64/WebRTC.framework mac/WebRTC.framework
+#rm mac/WebRTC.framework/WebRTC/Versions/A/WebRTC
+
+echo 'Start lipo'
+lipo -create \
+    mac/arm64/WebRTC.framework/WebRTC \
+    mac/x64/WebRTC.framework/WebRTC \
+    -output mac/WebRTC.framework/Versions/A/WebRTC
+echo 'Finish lipo'
+
+echo 'Create xcframework'
 cd $BUILD_DIR/WebRTC
-echo 'create-xcframework'
+rm -rf $OUTPUT_DIR/WebRTC.xcframework
+
 xcodebuild -create-xcframework \
-    -framework mac/arm64/WebRTC.framework \
+    -framework mac/WebRTC.framework \
     -output $OUTPUT_DIR/WebRTC.xcframework
+
+echo "finish building webrtc"
 
 cd $WORK_DIR
 
@@ -348,8 +360,8 @@ function rebuildLMSC() {
     for str in ${lmsc_cmake_arguments[@]}; do
         lmsc_cmake_args+=" ${str}"
     done
-
-    # Build mediasoup-client-ios
+    
+    # Build mediasoup-client-ios for arm64
     echo "cmake lmsc arm64"
     cmake . -B $BUILD_DIR/libmediasoupclient/mac/arm64 \
         ${lmsc_cmake_args} \
@@ -357,25 +369,35 @@ function rebuildLMSC() {
         -DCMAKE_OSX_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk" \
         -DLIBWEBRTC_BINARY_PATH=$BUILD_DIR/WebRTC/mac/arm64/WebRTC.framework/WebRTC
     make -C $BUILD_DIR/libmediasoupclient/mac/arm64
-    
+
+    # Build mediasoup-client-ios for x86_64
+    echo "cmake lmsc x64"
+    cmake . -B $BUILD_DIR/libmediasoupclient/mac/x64 \
+        ${lmsc_cmake_args} \
+        -DCMAKE_OSX_ARCHITECTURES=x86_64 \
+        -DCMAKE_OSX_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk" \
+        -DLIBWEBRTC_BINARY_PATH=$BUILD_DIR/WebRTC/mac/x64/WebRTC.framework/WebRTC
+    make -C $BUILD_DIR/libmediasoupclient/mac/x64
+
     # Create a FAT libmediasoup / libsdptransform library
     mkdir -p $BUILD_DIR/libmediasoupclient/mac/fat
     echo "lipo libmediasoupclient"
     lipo -create \
         $BUILD_DIR/libmediasoupclient/mac/arm64/libmediasoupclient/libmediasoupclient.a \
+        $BUILD_DIR/libmediasoupclient/mac/x64/libmediasoupclient/libmediasoupclient.a \
         -output $BUILD_DIR/libmediasoupclient/mac/fat/libmediasoupclient.a
   
     echo "lipo libsdptransform"
     lipo -create \
         $BUILD_DIR/libmediasoupclient/mac/arm64/libmediasoupclient/libsdptransform/libsdptransform.a \
+        $BUILD_DIR/libmediasoupclient/mac/x64/libmediasoupclient/libsdptransform/libsdptransform.a \
         -output $BUILD_DIR/libmediasoupclient/mac/fat/libsdptransform.a
 
     echo "create mediasoupclient.xcframework"
     xcodebuild -create-xcframework \
         -library $BUILD_DIR/libmediasoupclient/mac/fat/libmediasoupclient.a \
         -output $OUTPUT_DIR/mediasoupclient.xcframework
-        
-    echo " create sdptransform.xcframework"
+      echo " create sdptransform.xcframework"
     xcodebuild -create-xcframework \
         -library $BUILD_DIR/libmediasoupclient/mac/fat/libsdptransform.a \
         -output $OUTPUT_DIR/sdptransform.xcframework
@@ -399,7 +421,7 @@ then
                 break
                 ;;
             *)
-                echo -ne "\r\033[0K\r"
+                echo -ne "\r\033[0K\r"н
                 tput bel
                 ;;
         esac

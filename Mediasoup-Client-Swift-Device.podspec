@@ -15,7 +15,7 @@ Pod::Spec.new do |spec|
 
 	spec.source = {
         :git => "git@github.com:riversidefm/ios-mediasoup.git",
-        :branch => "macos_arm64"
+        :branch => "macos"
 	}
 
 	spec.frameworks =

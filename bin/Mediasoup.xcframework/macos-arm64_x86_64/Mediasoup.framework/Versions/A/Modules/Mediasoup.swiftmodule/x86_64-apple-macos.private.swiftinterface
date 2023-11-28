@@ -225,7 +225,7 @@ extension Mediasoup.Producer : Mediasoup_Private.ProducerWrapperDelegate {
   @objc dynamic public func onTransportClose(_ producer: Mediasoup_Private.ProducerWrapper)
 }
 public class Device {
-  public init()
+  public init(audioDevice: (any WebRTC.RTCAudioDevice)? = nil)
   public func isLoaded() -> Swift.Bool
   public func load(with routerRTPCapabilities: Swift.String) throws
   public func rtpCapabilities() throws -> Swift.String

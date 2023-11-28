@@ -7,9 +7,9 @@ public class Device {
     
 	private let device: DeviceWrapper
 
-    public init() {
-        self.device = DeviceWrapper()
-	}
+    public init(audioDevice: RTCAudioDevice? = nil) {
+        self.device = DeviceWrapper(audioDevice: audioDevice)
+    }
 
 	public func isLoaded() -> Bool {
 		return device.isLoaded()

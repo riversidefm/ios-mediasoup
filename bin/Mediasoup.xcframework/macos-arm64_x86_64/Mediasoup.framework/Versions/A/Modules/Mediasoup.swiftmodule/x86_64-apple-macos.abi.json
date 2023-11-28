@@ -4944,18 +4944,33 @@
           {
             "kind": "Constructor",
             "name": "init",
-            "printedName": "init()",
+            "printedName": "init(audioDevice:)",
             "children": [
               {
                 "kind": "TypeNominal",
                 "name": "Device",
                 "printedName": "Mediasoup.Device",
                 "usr": "s:9Mediasoup6DeviceC"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "WebRTC.RTCAudioDevice?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "RTCAudioDevice",
+                    "printedName": "WebRTC.RTCAudioDevice",
+                    "usr": "c:objc(pl)RTCAudioDevice"
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
               }
             ],
             "declKind": "Constructor",
-            "usr": "s:9Mediasoup6DeviceCACycfc",
-            "mangledName": "$s9Mediasoup6DeviceCACycfc",
+            "usr": "s:9Mediasoup6DeviceC05audioB0ACSo08RTCAudioB0_pSg_tcfc",
+            "mangledName": "$s9Mediasoup6DeviceC05audioB0ACSo08RTCAudioB0_pSg_tcfc",
             "moduleName": "Mediasoup",
             "declAttributes": [
               "AccessControl"

@@ -1,165 +1,38 @@
-[![CocoaPods](https://img.shields.io/cocoapods/v/Mediasoup-Client-Swift?style=flat)](https://img.shields.io/cocoapods/v/Mediasoup-Client-Swift)
-[![CocoaPods](https://img.shields.io/cocoapods/l/Mediasoup-Client-Swift?style=flat)](https://img.shields.io/cocoapods/l/Mediasoup-Client-Swift)
+For iOS branch - master 
 
-# Mediasoup-Client-Swift
+For macOS branch - macos
 
-Swift wrapper for libmediasoupclient with iOS support
+## If you want to change only Mediasoup, take the next steps:
+1. Clone the repo.
+2. Make changes for example in Consumer.swift
+3. Select the Mediasoup.xcodeproj in Xcode
+4. Check the target it must be Mediasoup Framework
+5. Run the Framework (cmd+b)
 
-## Key features
+* After the script will finish the task. We can find the updated framework in the bin folder - Mediasoup.xcframework.
 
-1. **First-class Swift support**
+6. Push updates
 
-   * No crashes caused by unhandled C++ exceptions. Each throwing C++ function is properly wrapped and throws a catchable `Swift.Error`.  
+* Next steps you can find here https://github.com/riversidefm/livecalls-client-ios-sdk
 
-   * No implicitly-unwrapped optionals in public interface. All unsafe operations are hidden inside wrapper.
+## If you want to change WebRTC, take the next steps:
 
-   * No Objective-C entities in public interface. All you need is wrapped into normal Swift entities and protocols. There is no need to inherit `NSObject` in your delegates, no obscure `NSErrors`, almost no obscure `NSString` and `NSInteger` based "enums".
+All dependencies (WebRTC, libmediasoupclient, libsdptransform) are prebuilt and added to the repo as binary .xcframework's to reduce application build time. Fetching and building them from scratch takes couple of hours. If your security policy doesn't allow to import binary dependencies, or you just wand to go deeper, you can build everything on your machine.
 
-2. **Ease of integration**
+Dependencies are resolved with one command: .\build.sh. WebRTC sources are fetched from official repo and than patched locally to make it usable on iOS platform and also to expose some missing things. If you want to switch to another WebRTC version, configure WebRTC build flags, or make other customizations, dive into build.sh. We use XCFrameworks to cover both devices and simulators, including simulators on Apple Silicon macs, which is not possible with older .framework format.
 
-   If you don't need to customize Mediasoup-Client-Swift itself or its dependencies, just add a line to your Podfile:
+### IMPORTANT:
+* Need to install python on the Mac
+* Need to install ninja on the Mac.
 
-   ```Ruby
-   pod 'Mediasoup-Client-Swift', '0.4.2'
-   ```
+1. Clone the repo
+2. Run sh script. For iOS - build_ios.sh. For macOS - build_macos.sh
 
-3. **Ease of building from scratch**
+If you want to make available extra WebRTC Classes, make next:
+* In the project go to  patches/sdk_BUILD.patch
+* Add class to the deps
+3. Re-run sh script
 
-   All dependencies (WebRTC, libmediasoupclient, libsdptransform) are prebuilt and added to the repo as binary .xcframework's to reduce application build time. Fetching and building them from scratch takes couple of hours. If your security policy doesn't allow to import binary dependencies, or you just wand to go deeper, you can build everything on your machine.
 
-   Dependencies are resolved with one command: `.\build.sh`. WebRTC sources are fetched from official repo and than patched locally to make it usable on iOS platform and also to expose some missing things. If you want to switch to another WebRTC version, configure WebRTC build flags, or make other customizations, dive into `build.sh`. We use XCFrameworks to cover both devices and simulators, including simulators on Apple Silicon macs, which is not possible with older `.framework` format.
-
-4. **Out-of-the box codecs support**
-
-   * Hardware-accelerated H264 on supported iOS devices.
-
-   * VP8 software codec.
-
-   * Other codecs can be added easily (look into `DeviceWrapper` initialization).
-
-5. **TURN servers support**
-
-   We've patched *libmediasoupclient* to support modern format of `RTCIceServer`s description when passed to `UpdateIceServers` method.
-
-6. **No memory leaks**
-
-   Ok, no *known* memory leaks ;)
-
-## Usage
-
-   Given that you have a Mediasoup server and signaling is already set up in your app, here is an example of a minimalistic client implementation:
-
-   ```Swift
-   import UIKit
-   import Mediasoup
-   import AVFoundation
-   import WebRTC
-   
-   final class MediasoupClient {
-       private let signaling: Signaling
-       private let pcFactory = RTCPeerConnectionFactory()
-       private var mediaStream: RTCMediaStream?
-       private var audioTrack: RTCAudioTrack?
-       private var device: Device?
-       private var sendTransport: SendTransport?
-       private var producer: Producer?
-   
-       init(signaling: Signaling) {
-           self.signaling = signaling
-       }
-   
-       func setupDevices() {
-           guard AVCaptureDevice.authorizationStatus(for: .audio) == .authorized else {
-               AVCaptureDevice.requestAccess(for: .audio) { _ in
-               }
-               return
-           }
-   
-           mediaStream = pcFactory.mediaStream(withStreamId: Constants.mediaStreamId)
-           let audioTrack = pcFactory.audioTrack(withTrackId: Constants.audioTrackId)
-           mediaStream?.addAudioTrack(audioTrack)
-           self.audioTrack = audioTrack
-   
-           let device = Device()
-           self.device = device
-           do {
-               try device.load(with: signaling.rtpCapabilities)
-               let sendTransport = try device.createSendTransport(
-                   id: signaling.sendTransportId,
-                   iceParameters: signaling.sendTransportICEParameters,
-                   iceCandidates: signaling.sendTransportICECandidates,
-                   dtlsParameters: signaling.sendTransportDTLSParameters,
-                   sctpParameters: nil,
-                   appData: nil
-               )
-               sendTransport.delegate = self
-               self.sendTransport = sendTransport
-   
-               let producer = try sendTransport.createProducer(
-                   for: audioTrack,
-                   encodings: nil,
-                   codecOptions: nil,
-                   appData: nil
-               )
-               self.producer = producer
-               producer.delegate = self
-               producer.resume()
-           } catch let error as MediasoupError {
-               // Handle errors.
-           } catch {
-               // Handle errors.
-           }
-       }
-   }
-   
-   extension MediasoupClient: SendTransportDelegate {
-       func onProduce(transport: Transport, kind: MediaKind, rtpParameters: String, appData: String, callback: @escaping (String?) -> Void) {
-           // Handle state changes.
-       }
-   
-       func onProduceData(transport: Transport, sctpParameters: String, label: String, protocol dataProtocol: String, appData: String, callback: @escaping (String?) -> Void) {
-           // Handle state changes.
-       }
-   
-       func onConnect(transport: Transport, dtlsParameters: String) {
-           // Handle state changes.
-       }
-   
-       func onConnectionStateChange(transport: Transport, connectionState: TransportConnectionState) {
-           
-           // Handle state changes.
-       }
-   }
-   
-   extension MediasoupClient: ProducerDelegate {
-       func onTransportClose(in producer: Producer) {
-           // Handle state changes.
-       }
-   }
-   ```
-
-## Dependencies
-
-Mediasoup-Client-Swift has almost no logic, it's only a convenient wrapper for other nice libraries. 
-
-* [WebRTC (version m112 with patches applied locally)](https://groups.google.com/g/discuss-webrtc/c/ws0_MYHIBOw)
-
-* [libmediasoupclient (version 3.4.0 patched fork)](https://github.com/VLprojects/libmediasoupclient) 
-
-## Roadmap
-
-- [x] Upgrade WebRTC and libmediasoupclient to latest versions
-
-- [x] Add data channel support (consuming)
-
-- [ ] Support integration via SPM
-
-- [ ] Add documentation for Mediasoup-Client-Swift public interface
-
-- [ ] Investigate and reduce the amount of WebRTC patches
-
-- [ ] Make the dependencies build script more flexible: add parametrization for included codecs and other WebRTC modules, build architectures and so on
-
-- [ ] Add data channel support (producing)
-
-- [ ] Implement example app compatible with https://v3demo.mediasoup.org
+P.S. In the ```SH``` script all functions are described with a comments
+  

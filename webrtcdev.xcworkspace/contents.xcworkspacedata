@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef location = "group:Mediasoup.xcodeproj"></FileRef>
+   <FileRef location = "group:build/libmediasoupclient/mac/arm64/Project.xcodeproj"></FileRef>
+   <FileRef location = "group:Mediasoup/dependencies/webrtc/src/build/mac/arm64/all.xcodeproj"></FileRef>
+</Workspace>

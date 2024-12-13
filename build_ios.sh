@@ -161,6 +161,7 @@ function patchWebRTC() {
 	patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/video_encoder_factory_h.patch
     patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/objc_audio_device_module_h.patch
     patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/objc_audio_device_module_mm.patch
+	patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/absl_threadlocal.patch
 }
 
 function refetchWebRTC() {

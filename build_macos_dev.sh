@@ -1,6 +1,6 @@
 #!/bin/bash
 # Stop script on errors.
-set -e
+set -ex
 
 # Check build time dependencies.
 if ! command -v python3 &> /dev/null
@@ -57,27 +57,6 @@ function clearArtifacts() {
     echo 'BUILD_DIR created'
 }
 
-while true
-do
-    read -n 1 -p "Clear old build artifacts? (Y|n): " INPUT_STRING
-    # echo ""
-    case $INPUT_STRING in
-        n|N)
-            echo ""
-            break
-            ;;
-        y|Y|"")
-            echo ""
-            clearArtifacts
-            break
-            ;;
-        *)
-            echo -ne "\r\033[0K\r"
-            tput bel
-            ;;
-    esac
-done
-
 function refetchLibmediasoupclient() {
     echo 'Cloning libmediasoupclient'
     cd $WORK_DIR
@@ -88,25 +67,6 @@ function refetchLibmediasoupclient() {
 if [ -d $WORK_DIR/libmediasoupclient ]
 then
     echo "libmediasoupclient is already on disk"
-    while true
-    do
-        read -n 1 -p "Refetch libmediasoupclient (y|N): " INPUT_STRING
-        case $INPUT_STRING in
-            n|N|"")
-                echo ""
-                break
-                ;;
-            y|Y)
-                echo ""
-                refetchLibmediasoupclient
-                break
-                ;;
-            *)
-                echo -ne "\r\033[0K\r"
-                tput bel
-                ;;
-        esac
-    done
 else
     refetchLibmediasoupclient
 fi
@@ -121,23 +81,6 @@ function refetchDepotTools() {
 if [ -d $WORK_DIR/depot_tools ]
 then
     echo "depot_tools is already on disk"
-    while true
-    do
-        read -n 1 -p "Refetch depot_tools (y|N): " INPUT_STRING
-        echo ""
-        case $INPUT_STRING in
-            n|N|"")
-                break
-                ;;
-            y|Y)
-                refetchDepotTools
-                break
-                ;;
-            *)
-                tput bel
-                ;;
-        esac
-    done
 else
     refetchDepotTools
 fi
@@ -216,29 +159,6 @@ function resetWebRTC() {
 if [ -d $WORK_DIR/webrtc ]
 then
     echo "WebRTC is already on disk"
-    while true
-    do
-        read -n 1 -p "Refetch WebRTC? (f)ull clone | (r)eset local changes | (N)o: " INPUT_STRING
-        echo ""
-        case $INPUT_STRING in
-            n|N|"")
-                break
-                ;;
-            f|F)
-                refetchWebRTC
-                patchWebRTC
-                break
-                ;;
-            r|R)
-                resetWebRTC
-                patchWebRTC
-                break
-                ;;
-            *)
-                tput bel
-                ;;
-        esac
-    done
 else
     refetchWebRTC
     patchWebRTC
@@ -273,70 +193,23 @@ gn_arguments=(
     'treat_warnings_as_errors=false'
 )
 
-gn_arguments_x64=(
-    'target_os="mac"'
-    'is_component_build=false'
-    #'is_debug=true'
-    'is_debug=false'
-    'rtc_libvpx_build_vp9=true'
-    'use_goma=false'
-    'rtc_enable_symbol_export=true'
-    'rtc_enable_objc_symbol_export=true'
-    'rtc_enable_protobuf=false'
-    'rtc_include_tests=false'
-    'rtc_include_builtin_audio_codecs=true'
-    'rtc_include_builtin_video_codecs=true'
-    'rtc_include_pulse_audio=false'
-    'use_rtti=true'
-    'use_custom_libcxx=false'
-    'use_xcode_clang=true'
-    'enable_dsyms=true'
-    'enable_stripping=true'
-    'treat_warnings_as_errors=false'
-)
-
 for str in ${gn_arguments[@]}; do
     gn_args+=" ${str}"
 done
 
-for str in ${gn_arguments_x64[@]}; do
-    gn_args_x64+=" ${str}"
-done
+# we want to keep the build inside the webrtc directory to have debug symbols while developing
+DEV_BUILD_DIR=$WEBRTC_DIR/build
+
+mkdir -p $DEV_BUILD_DIR
 
 echo 'Applying arm64 params'
-echo "gn gen $BUILD_DIR/WebRTC/mac/arm64 --ide=xcode --args=\"${platform_args_arm64} ${gn_args}\""
+echo "gn gen $DEV_BUILD_DIR/mac/arm64 --ide=xcode --args=\"${platform_args_arm64} ${gn_args}\""
 platform_args_arm64='target_environment="device" target_cpu="arm64"'
-gn gen $BUILD_DIR/WebRTC/mac/arm64 --ide=xcode --args="${platform_args_arm64} ${gn_args}"
+gn gen $DEV_BUILD_DIR/mac/arm64 --ide=xcode --args="${platform_args_arm64} ${gn_args}"
 
-echo 'Applying x64 params'
-echo "gn gen $BUILD_DIR/WebRTC/mac/x64 --ide=xcode --args=\"${platform_args_x64} ${gn_args_x64}\""
-platform_args_x64='target_environment="device" target_cpu="x64"'
-gn gen $BUILD_DIR/WebRTC/mac/x64 --ide=xcode --args="${platform_args_x64} ${gn_args_x64}"
-
-
-cd $BUILD_DIR/WebRTC
+cd $DEV_BUILD_DIR
 echo 'Ninja build'
-ninja -C mac/x64 mac_framework_objc
 ninja -C mac/arm64 mac_framework_objc
-
-rm -rf mac/WebRTC.framework
-cp -R mac/arm64/WebRTC.framework mac/WebRTC.framework
-#rm mac/WebRTC.framework/WebRTC/Versions/A/WebRTC
-
-echo 'Start lipo'
-lipo -create \
-    mac/arm64/WebRTC.framework/WebRTC \
-    mac/x64/WebRTC.framework/WebRTC \
-    -output mac/WebRTC.framework/Versions/A/WebRTC
-echo 'Finish lipo'
-
-echo 'Create xcframework'
-cd $BUILD_DIR/WebRTC
-rm -rf $OUTPUT_DIR/WebRTC.xcframework
-
-xcodebuild -create-xcframework \
-    -framework mac/WebRTC.framework \
-    -output $OUTPUT_DIR/WebRTC.xcframework
 
 echo "finish building webrtc"
 
@@ -344,7 +217,7 @@ cd $WORK_DIR
 
 function rebuildLMSC() {
     echo "Building libmediasoupclient"
-    rm -rf $BUILD_DIR/libmediasoupclient
+
     rm -rf $OUTPUT_DIR/sdptransform.xcframework
     rm -rf $OUTPUT_DIR/mediasoupclient.xcframework
 
@@ -356,7 +229,7 @@ function rebuildLMSC() {
         '-DLIBSDPTRANSFORM_BUILD_TESTS=OFF'
         '-DMEDIASOUPCLIENT_BUILD_TESTS=OFF'
         '-DCMAKE_OSX_DEPLOYMENT_TARGET=13'
-        #'-DCMAKE_BUILD_TYPE=Debug'
+        '-DCMAKE_BUILD_TYPE=Debug'
     )
     for str in ${lmsc_cmake_arguments[@]}; do
         lmsc_cmake_args+=" ${str}"
@@ -364,71 +237,38 @@ function rebuildLMSC() {
     
     # Build mediasoup-client-ios for arm64
     echo "cmake lmsc arm64"
-    cmake . -B $BUILD_DIR/libmediasoupclient/mac/arm64 \
+    cmake . -GXcode -B $BUILD_DIR/libmediasoupclient/mac/arm64 \
         ${lmsc_cmake_args} \
         -DCMAKE_OSX_ARCHITECTURES=arm64 \
         -DCMAKE_OSX_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk" \
         -DLIBWEBRTC_BINARY_PATH=$BUILD_DIR/WebRTC/mac/arm64/WebRTC.framework/WebRTC
-    make -C $BUILD_DIR/libmediasoupclient/mac/arm64
-
-    # Build mediasoup-client-ios for x86_64
-    echo "cmake lmsc x64"
-    cmake . -B $BUILD_DIR/libmediasoupclient/mac/x64 \
-        ${lmsc_cmake_args} \
-        -DCMAKE_OSX_ARCHITECTURES=x86_64 \
-        -DCMAKE_OSX_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk" \
-        -DLIBWEBRTC_BINARY_PATH=$BUILD_DIR/WebRTC/mac/x64/WebRTC.framework/WebRTC
-    make -C $BUILD_DIR/libmediasoupclient/mac/x64
-
-    # Create a FAT libmediasoup / libsdptransform library
-    mkdir -p $BUILD_DIR/libmediasoupclient/mac/fat
-    echo "lipo libmediasoupclient"
-    lipo -create \
-        $BUILD_DIR/libmediasoupclient/mac/arm64/libmediasoupclient/libmediasoupclient.a \
-        $BUILD_DIR/libmediasoupclient/mac/x64/libmediasoupclient/libmediasoupclient.a \
-        -output $BUILD_DIR/libmediasoupclient/mac/fat/libmediasoupclient.a
-  
-    echo "lipo libsdptransform"
-    lipo -create \
-        $BUILD_DIR/libmediasoupclient/mac/arm64/libmediasoupclient/libsdptransform/libsdptransform.a \
-        $BUILD_DIR/libmediasoupclient/mac/x64/libmediasoupclient/libsdptransform/libsdptransform.a \
-        -output $BUILD_DIR/libmediasoupclient/mac/fat/libsdptransform.a
+    cmake --build $BUILD_DIR/libmediasoupclient/mac/arm64
 
     echo "create mediasoupclient.xcframework"
     xcodebuild -create-xcframework \
-        -library $BUILD_DIR/libmediasoupclient/mac/fat/libmediasoupclient.a \
+        -library $BUILD_DIR/libmediasoupclient/mac/arm64/libmediasoupclient/Debug/libmediasoupclient.a \
         -output $OUTPUT_DIR/mediasoupclient.xcframework
       echo " create sdptransform.xcframework"
     xcodebuild -create-xcframework \
-        -library $BUILD_DIR/libmediasoupclient/mac/fat/libsdptransform.a \
+        -library $BUILD_DIR/libmediasoupclient/mac/arm64/libmediasoupclient/libsdptransform/Debug/libsdptransform.a \
         -output $OUTPUT_DIR/sdptransform.xcframework
+
     echo "finish"
 }
 
-if [ -d $BUILD_DIR/libmediasoupclient ]
-then
-    echo "libmediasoupclient is already built"
-    while true
-    do
-        read -n 1 -p "Rebuild libmediasoupclient (y|N): " INPUT_STRING
-        case $INPUT_STRING in
-            n|N|"")
-                echo ""
-                break
-                ;;
-            y|Y)
-                echo ""
-                rebuildLMSC
-                break
-                ;;
-            *)
-                echo -ne "\r\033[0K\r"н
-                tput bel
-                ;;
-        esac
-    done
-else
-    rebuildLMSC
-fi
+rebuildLMSC
 
-open $PROJECT_DIR/Mediasoup.xcodeproj
+cd $PROJECT_DIR
+
+echo "Building Mediasoup.xcodeproj"
+xcodebuild -project Mediasoup.xcodeproj \
+    -scheme Mediasoup \
+    -configuration Debug \
+    -destination "platform=macOS,arch=arm64" \
+    CONFIGURATION_BUILD_DIR=$BUILD_DIR \
+    build
+
+rm -rf $BUILD_DIR/Mediasoup.xcframework
+xcodebuild -create-xcframework \
+	-framework ${BUILD_DIR}/Mediasoup.framework \
+	-output $BUILD_DIR/Mediasoup.xcframework

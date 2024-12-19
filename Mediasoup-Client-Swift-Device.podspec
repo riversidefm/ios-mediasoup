@@ -35,18 +35,15 @@ Pod::Spec.new do |spec|
 				:name => "Build Mediasoup",
 				:script => "cd $PROJECT_DIR/../../ios-mediasoup && PATH=/opt/homebrew/bin/:$PATH ./build_macos_dev.sh",
 				:execution_position => :before_compile,
-				:always_out_of_date => "1",
-				:output_files => ["build/Mediasoup.xcframework", "bin/mediasoupclient.xcframework", "bin/sdptransform.xcframework"]
+				:always_out_of_date => "1"
 			}
 		]
 
 		spec.vendored_frameworks =
 			"Mediasoup/dependencies/webrtc/src/build/mac/arm64/WebRTC.framework",
+			"bin/sdptransform.xcframework",
+			"bin/mediasoupclient.xcframework",
 			"build/Mediasoup.xcframework"
-
-		# spec.vendored_libraries =
-		# 	"build/libmediasoupclient/mac/arm64/libmediasoupclient/Debug/libmediasoupclient.a",
-		# 	"build/libmediasoupclient/mac/arm64/libsdptransform/Debug/libsdptransform.a"
 		
 	else
 		spec.vendored_frameworks =

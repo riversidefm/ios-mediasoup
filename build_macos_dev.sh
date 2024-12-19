@@ -2,6 +2,12 @@
 # Stop script on errors.
 set -ex
 
+if [ ! -z "$XCODE_PRODUCT_BUILD_VERSION" ]; then
+    INSIDE_XCODE=1
+else
+    INSIDE_XCODE=0
+fi
+
 # Check build time dependencies.
 if ! command -v python3 &> /dev/null
 then
@@ -62,6 +68,10 @@ function refetchLibmediasoupclient() {
     cd $WORK_DIR
     rm -rf libmediasoupclient
     git clone -b vl-m112.2 --depth 1 https://github.com/VLprojects/libmediasoupclient.git
+
+    pushd $WORK_DIR/libmediasoupclient 
+    git apply $PATCHES_DIR/hybrid_callback.patch
+    popd
 }
 
 if [ -d $WORK_DIR/libmediasoupclient ]
@@ -171,45 +181,52 @@ git restore rtc_base/byte_order.h
 echo 'Building WebRTC'
 cd $WEBRTC_DIR
 
-gn_arguments=(
-    'target_os="mac"'
-    'is_component_build=false'
-    #'is_debug=true'
-    'is_debug=false'
-    'rtc_libvpx_build_vp9=true'
-    'use_goma=false'
-    'rtc_enable_symbol_export=true'
-    'rtc_enable_objc_symbol_export=true'
-    'rtc_enable_protobuf=false'
-    'rtc_include_tests=false'
-    'rtc_include_builtin_audio_codecs=true'
-    'rtc_include_builtin_video_codecs=true'
-    'rtc_include_pulse_audio=false'
-    'use_rtti=true'
-    'use_custom_libcxx=false'
-    'use_xcode_clang=true'
-    'enable_dsyms=true'
-    'enable_stripping=true'
-    'treat_warnings_as_errors=false'
-)
-
-for str in ${gn_arguments[@]}; do
-    gn_args+=" ${str}"
-done
-
 # we want to keep the build inside the webrtc directory to have debug symbols while developing
 DEV_BUILD_DIR=$WEBRTC_DIR/build
 
 mkdir -p $DEV_BUILD_DIR
 
-echo 'Applying arm64 params'
-echo "gn gen $DEV_BUILD_DIR/mac/arm64 --ide=xcode --args=\"${platform_args_arm64} ${gn_args}\""
-platform_args_arm64='target_environment="device" target_cpu="arm64"'
-gn gen $DEV_BUILD_DIR/mac/arm64 --ide=xcode --args="${platform_args_arm64} ${gn_args}"
+if [ $INSIDE_XCODE -eq 0 ]; then
+    gn_arguments=(
+        'target_os="mac"'
+        'is_component_build=false'
+        #'is_debug=true'
+        'is_debug=false'
+        'rtc_libvpx_build_vp9=true'
+        'use_goma=false'
+        'rtc_enable_symbol_export=true'
+        'rtc_enable_objc_symbol_export=true'
+        'rtc_enable_protobuf=false'
+        'rtc_include_tests=false'
+        'rtc_include_builtin_audio_codecs=true'
+        'rtc_include_builtin_video_codecs=true'
+        'rtc_include_pulse_audio=false'
+        'use_rtti=true'
+        'use_custom_libcxx=false'
+        'use_xcode_clang=true'
+        'enable_dsyms=true'
+        'enable_stripping=true'
+        'treat_warnings_as_errors=false'
+    )
+
+    for str in ${gn_arguments[@]}; do
+        gn_args+=" ${str}"
+    done
+
+    echo 'Applying arm64 params'
+    echo "gn gen $DEV_BUILD_DIR/mac/arm64 --ide=xcode --args=\"${platform_args_arm64} ${gn_args}\""
+    platform_args_arm64='target_environment="device" target_cpu="arm64"'
+    gn gen $DEV_BUILD_DIR/mac/arm64 --ide=xcode --args="${platform_args_arm64} ${gn_args}"
+fi
 
 cd $DEV_BUILD_DIR
 echo 'Ninja build'
 ninja -C mac/arm64 mac_framework_objc
+
+rm -rf $OUTPUT_DIR/WebRTC.xcframework
+xcodebuild -create-xcframework \
+    -framework $PROJECT_DIR/Mediasoup/dependencies/webrtc/src/build/mac/arm64/WebRTC.framework \
+    -output $OUTPUT_DIR/WebRTC.xcframework
 
 echo "finish building webrtc"
 
@@ -237,18 +254,20 @@ function rebuildLMSC() {
     
     # Build mediasoup-client-ios for arm64
     echo "cmake lmsc arm64"
-    cmake . -GXcode -B $BUILD_DIR/libmediasoupclient/mac/arm64 \
-        ${lmsc_cmake_args} \
-        -DCMAKE_OSX_ARCHITECTURES=arm64 \
-        -DCMAKE_OSX_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk" \
-        -DLIBWEBRTC_BINARY_PATH=$BUILD_DIR/WebRTC/mac/arm64/WebRTC.framework/WebRTC
+    if [ $INSIDE_XCODE -eq 0 ]; then
+        cmake . -GXcode -B $BUILD_DIR/libmediasoupclient/mac/arm64 \
+            ${lmsc_cmake_args} \
+            -DCMAKE_OSX_ARCHITECTURES=arm64 \
+            -DCMAKE_OSX_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk" \
+            -DLIBWEBRTC_BINARY_PATH=$PROJECT_DIR/Mediasoup/dependencies/webrtc/src/build/mac/arm64/WebRTC.framework/WebRTC
+    fi
     cmake --build $BUILD_DIR/libmediasoupclient/mac/arm64
 
     echo "create mediasoupclient.xcframework"
     xcodebuild -create-xcframework \
         -library $BUILD_DIR/libmediasoupclient/mac/arm64/libmediasoupclient/Debug/libmediasoupclient.a \
         -output $OUTPUT_DIR/mediasoupclient.xcframework
-      echo " create sdptransform.xcframework"
+    echo " create sdptransform.xcframework"
     xcodebuild -create-xcframework \
         -library $BUILD_DIR/libmediasoupclient/mac/arm64/libmediasoupclient/libsdptransform/Debug/libsdptransform.a \
         -output $OUTPUT_DIR/sdptransform.xcframework

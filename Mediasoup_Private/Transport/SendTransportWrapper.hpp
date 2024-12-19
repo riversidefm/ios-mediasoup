@@ -28,6 +28,8 @@ class SendTransportListenerAdapter;
 #ifdef __cplusplus
 - (instancetype _Nullable)initWithTransport:(mediasoupclient::SendTransport *_Nonnull)transport
 	listenerAdapter:(SendTransportListenerAdapter *_Nonnull)listenerAdapter;
+
+- (mediasoupclient::SendTransport *_Nonnull)getWrappedTransport;
 #endif
 
 - (void)close;

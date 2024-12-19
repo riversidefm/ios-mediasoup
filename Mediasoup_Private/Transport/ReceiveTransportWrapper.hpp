@@ -30,6 +30,8 @@ class ReceiveTransportListenerAdapter;
 - (instancetype _Nullable)initWithTransport:(mediasoupclient::RecvTransport *_Nonnull)transport
 	pcFactory:(RTCPeerConnectionFactory *_Nonnull)pcFactory
 	listenerAdapter:(ReceiveTransportListenerAdapter *_Nonnull)listenerAdapter;
+
+- (mediasoupclient::RecvTransport *_Nonnull)getWrappedTransport;
 #endif
 
 - (void)close;

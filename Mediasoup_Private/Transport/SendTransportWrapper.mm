@@ -34,6 +34,10 @@
 	return self;
 }
 
+- (mediasoupclient::SendTransport *_Nonnull)getWrappedTransport {
+    return _transport;
+}
+
 - (void)dealloc {
 	delete _transport;
 	delete _listenerAdapter;

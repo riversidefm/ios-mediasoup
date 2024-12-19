@@ -6,7 +6,7 @@ import Mediasoup_Private
 public class ReceiveTransport {
 	public weak var delegate: ReceiveTransportDelegate?
 
-	private let transport: ReceiveTransportWrapper
+	public let transport: ReceiveTransportWrapper
 
 	internal init(transport: ReceiveTransportWrapper) {
 		self.transport = transport

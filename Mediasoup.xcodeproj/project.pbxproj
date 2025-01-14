@@ -21,6 +21,9 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		2858DD412D35F8A000C8B1C5 /* sdptransform.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFCD791B27F41A0900D26B4C /* sdptransform.xcframework */; };
+		2858DD432D35F8A000C8B1C5 /* mediasoupclient.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFCD791727F419E800D26B4C /* mediasoupclient.xcframework */; };
+		2858DD452D35F8A000C8B1C5 /* WebRTC.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFCD791C27F41A0900D26B4C /* WebRTC.xcframework */; };
 		FF1E63582A5655830022A44A /* DataConsumerWrapper.hpp in Headers */ = {isa = PBXBuildFile; fileRef = FF1E63522A5655830022A44A /* DataConsumerWrapper.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 		FF1E635A2A5655830022A44A /* DataConsumerWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = FF1E63542A5655830022A44A /* DataConsumerWrapper.mm */; };
 		FF1E635B2A5655830022A44A /* DataConsumerWrapperDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = FF1E63552A5655830022A44A /* DataConsumerWrapperDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -71,12 +74,12 @@
 		FFC5AC752825025100C92A96 /* MediasoupClientTransportConnectionState.mm in Sources */ = {isa = PBXBuildFile; fileRef = FFC5AC732825025100C92A96 /* MediasoupClientTransportConnectionState.mm */; };
 		FFC5AC762825025100C92A96 /* MediasoupClientTransportConnectionState.h in Headers */ = {isa = PBXBuildFile; fileRef = FFC5AC742825025100C92A96 /* MediasoupClientTransportConnectionState.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FFC5AC782825170500C92A96 /* ConsumerWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = FFC5AC772825170500C92A96 /* ConsumerWrapper.mm */; };
-		FFCD791827F419E800D26B4C /* mediasoupclient.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFCD791727F419E800D26B4C /* mediasoupclient.xcframework */; };
-		FFCD791D27F41A0900D26B4C /* sdptransform.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFCD791B27F41A0900D26B4C /* sdptransform.xcframework */; };
-		FFCD791F27F41A0900D26B4C /* WebRTC.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = FFCD791C27F41A0900D26B4C /* WebRTC.xcframework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2858DD352D35DA8600C8B1C5 /* WebRTC.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = WebRTC.xcframework; path = bin/mac/WebRTC.xcframework; sourceTree = "<group>"; };
+		2858DD362D35DA8600C8B1C5 /* mediasoupclient.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = mediasoupclient.xcframework; path = bin/mac/mediasoupclient.xcframework; sourceTree = "<group>"; };
+		2858DD372D35DA8600C8B1C5 /* sdptransform.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = sdptransform.xcframework; path = bin/mac/sdptransform.xcframework; sourceTree = "<group>"; };
 		FF1E63522A5655830022A44A /* DataConsumerWrapper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DataConsumerWrapper.hpp; sourceTree = "<group>"; };
 		FF1E63532A5655830022A44A /* DataConsumerListenerAdapterDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataConsumerListenerAdapterDelegate.h; sourceTree = "<group>"; };
 		FF1E63542A5655830022A44A /* DataConsumerWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DataConsumerWrapper.mm; sourceTree = "<group>"; };
@@ -150,9 +153,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FFCD791D27F41A0900D26B4C /* sdptransform.xcframework in Frameworks */,
-				FFCD791827F419E800D26B4C /* mediasoupclient.xcframework in Frameworks */,
-				FFCD791F27F41A0900D26B4C /* WebRTC.xcframework in Frameworks */,
+				2858DD432D35F8A000C8B1C5 /* mediasoupclient.xcframework in Frameworks */,
+				2858DD412D35F8A000C8B1C5 /* sdptransform.xcframework in Frameworks */,
+				2858DD452D35F8A000C8B1C5 /* WebRTC.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -304,6 +307,9 @@
 		FFCD791627F419E800D26B4C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2858DD362D35DA8600C8B1C5 /* mediasoupclient.xcframework */,
+				2858DD372D35DA8600C8B1C5 /* sdptransform.xcframework */,
+				2858DD352D35DA8600C8B1C5 /* WebRTC.xcframework */,
 				FFCD791B27F41A0900D26B4C /* sdptransform.xcframework */,
 				FFCD791C27F41A0900D26B4C /* WebRTC.xcframework */,
 				FFCD791727F419E800D26B4C /* mediasoupclient.xcframework */,

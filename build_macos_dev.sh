@@ -114,6 +114,7 @@ function patchWebRTC() {
     patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/objc_audio_device_module_h.patch
     patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/objc_audio_device_module_mm.patch
     patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/absl_threadlocal.patch
+    patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/task_factory.patch
 }
 
 function refetchWebRTC() {
@@ -132,7 +133,7 @@ function refetchWebRTC() {
     "managed": False,
     "custom_deps": {},
 }]
-target_os = ["macos"]'
+target_os = ["ios", "macos"]'
 
     # Fetch WebRTC m94 version.
     # gclient sync --no-history --revision src@branch-heads/4606

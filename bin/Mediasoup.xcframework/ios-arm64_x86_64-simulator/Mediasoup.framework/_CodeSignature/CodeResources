@@ -4,61 +4,129 @@
 <dict>
 	<key>files</key>
 	<dict>
+		<key>Headers/ConsumerWrapper.hpp</key>
+		<data>
+		Lo0g3V8gRQK0P1FUuiWBF9UaCU4=
+		</data>
+		<key>Headers/ConsumerWrapperDelegate.h</key>
+		<data>
+		oswr1p92zCslBx1n7ZUif3rnDz8=
+		</data>
+		<key>Headers/DataConsumerWrapper.hpp</key>
+		<data>
+		sEfgLvUPUP0QbaXX8iTMVFws7CU=
+		</data>
+		<key>Headers/DataConsumerWrapperDelegate.h</key>
+		<data>
+		7/Nuvu+PqGfed11eAqb50Tb9qyo=
+		</data>
+		<key>Headers/DeviceWrapper.h</key>
+		<data>
+		7VT1maGo7U/ormPIWVtIO1WK48s=
+		</data>
 		<key>Headers/Mediasoup-Swift.h</key>
 		<data>
-		znPMqvXZ6bC+dkv2Rpc9c63isVk=
+		76ZslsopBsiDD3KU50bMyp51pZ8=
+		</data>
+		<key>Headers/MediasoupClientError.h</key>
+		<data>
+		DG6X7Xye8yNcbm2YWF3shsfif/k=
+		</data>
+		<key>Headers/MediasoupClientErrorHandler.h</key>
+		<data>
+		mxq4FPCD/jkcVFnQrEapuamuIh0=
+		</data>
+		<key>Headers/MediasoupClientMediaKind.h</key>
+		<data>
+		IuhMtAgoaOI9S3ZMx7UjTVC3VAc=
+		</data>
+		<key>Headers/MediasoupClientTransportConnectionState.h</key>
+		<data>
+		4GLd9a/2sZhAzP0XKEViB6/SlBM=
+		</data>
+		<key>Headers/ProducerWrapper.hpp</key>
+		<data>
+		G6ZE3F5Jwn7sncxf2q1N+iy6I4Y=
+		</data>
+		<key>Headers/ProducerWrapperDelegate.h</key>
+		<data>
+		8IvpTd6yRkbm2ExYffudPbAyoEE=
+		</data>
+		<key>Headers/ReceiveTransportListenerAdapter.hpp</key>
+		<data>
+		+1nn4iaKFZLQged4o3bdIywGJcQ=
+		</data>
+		<key>Headers/ReceiveTransportWrapper.hpp</key>
+		<data>
+		d1NgD1k8ZBePfCtU7wh4vp5/TlY=
+		</data>
+		<key>Headers/ReceiveTransportWrapperDelegate.h</key>
+		<data>
+		rBK4w2jcOxEiExJEnsnOUhCNeXU=
+		</data>
+		<key>Headers/SendTransportListenerAdapter.hpp</key>
+		<data>
+		5IY3Zz8C5czfCdkj7iYQzaV9AFo=
+		</data>
+		<key>Headers/SendTransportWrapper.hpp</key>
+		<data>
+		f9Owwobd+qxJ05Q7sBQl+IUzSvg=
+		</data>
+		<key>Headers/SendTransportWrapperDelegate.h</key>
+		<data>
+		izntbZyh/XSKpAaC0O3zu2IseAM=
 		</data>
 		<key>Info.plist</key>
 		<data>
-		xfBKJbXs+td+eRbYAwcWW6tLpsQ=
+		v+zxaVm5SVk4VdS9fWn+Gi8qc4U=
 		</data>
 		<key>Modules/Mediasoup.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo</key>
 		<data>
-		pyir3pUEWX1ilbLJWdpWqnNp9CQ=
+		l7VcUz97Kr7PzmuLMa3xK8jGmqs=
 		</data>
 		<key>Modules/Mediasoup.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo</key>
 		<data>
-		JGVne7zPJ+ymJatlS4027BLA7ew=
+		nRyzBxXzS0TcfQOhytPnn+M/ksM=
 		</data>
 		<key>Modules/Mediasoup.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
 		<data>
-		VS0HboDe7wP+LKh1+Vpj+bKADMA=
+		mZIosfExZ6Iw+Q6TA8/UDhs2/LI=
 		</data>
 		<key>Modules/Mediasoup.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		v/rBJQMErxoGP/B7VPqZjOO+S6I=
+		joHC6JLoh7hz+K69/bIJDDXxJzQ=
 		</data>
 		<key>Modules/Mediasoup.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
 		<data>
-		QUyyWHSe024LIliGES0AJsvkjCg=
+		Z47ab0CbmpcUH3qdX8d8OXeaM0o=
 		</data>
 		<key>Modules/Mediasoup.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		v/rBJQMErxoGP/B7VPqZjOO+S6I=
+		joHC6JLoh7hz+K69/bIJDDXxJzQ=
 		</data>
 		<key>Modules/Mediasoup.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		80yXqg0h9RnaqiAJ0fCniJ0Z+zw=
+		tqK+sITTk5IixZ39NKU2Yfprmbk=
 		</data>
 		<key>Modules/Mediasoup.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
-		VS0HboDe7wP+LKh1+Vpj+bKADMA=
+		mZIosfExZ6Iw+Q6TA8/UDhs2/LI=
 		</data>
 		<key>Modules/Mediasoup.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		JOmjlffCxK9nDat/HUyckqwM1fI=
+		k0ZLHE8VSo6QYi9GPdfh7ICFXfU=
 		</data>
 		<key>Modules/Mediasoup.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<data>
-		N9/278DTWhVgjq/tI+p39sDNo7g=
+		CDUSkA7q4Wkh1WU85vZYLnuoeg4=
 		</data>
 		<key>Modules/Mediasoup.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		JOmjlffCxK9nDat/HUyckqwM1fI=
+		k0ZLHE8VSo6QYi9GPdfh7ICFXfU=
 		</data>
 		<key>Modules/Mediasoup.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		w5v1QBV7oQWF2AvgGywsllk5e08=
+		yAN13Z8SW0QxgOMakLq1JkHT3Ak=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -66,168 +134,219 @@
 		</data>
 		<key>Modules/module.private.modulemap</key>
 		<data>
-		3JqVCw+rSTWfXSlclcJs4y+UC9Y=
-		</data>
-		<key>PrivateHeaders/ConsumerWrapper.hpp</key>
-		<data>
-		Lo0g3V8gRQK0P1FUuiWBF9UaCU4=
-		</data>
-		<key>PrivateHeaders/ConsumerWrapperDelegate.h</key>
-		<data>
-		oswr1p92zCslBx1n7ZUif3rnDz8=
-		</data>
-		<key>PrivateHeaders/DataConsumerWrapper.hpp</key>
-		<data>
-		sEfgLvUPUP0QbaXX8iTMVFws7CU=
-		</data>
-		<key>PrivateHeaders/DataConsumerWrapperDelegate.h</key>
-		<data>
-		7/Nuvu+PqGfed11eAqb50Tb9qyo=
-		</data>
-		<key>PrivateHeaders/DeviceWrapper.h</key>
-		<data>
-		7VT1maGo7U/ormPIWVtIO1WK48s=
-		</data>
-		<key>PrivateHeaders/MediasoupClientError.h</key>
-		<data>
-		DG6X7Xye8yNcbm2YWF3shsfif/k=
-		</data>
-		<key>PrivateHeaders/MediasoupClientErrorHandler.h</key>
-		<data>
-		mxq4FPCD/jkcVFnQrEapuamuIh0=
-		</data>
-		<key>PrivateHeaders/MediasoupClientMediaKind.h</key>
-		<data>
-		IuhMtAgoaOI9S3ZMx7UjTVC3VAc=
-		</data>
-		<key>PrivateHeaders/MediasoupClientTransportConnectionState.h</key>
-		<data>
-		4GLd9a/2sZhAzP0XKEViB6/SlBM=
-		</data>
-		<key>PrivateHeaders/ProducerWrapper.hpp</key>
-		<data>
-		G6ZE3F5Jwn7sncxf2q1N+iy6I4Y=
-		</data>
-		<key>PrivateHeaders/ProducerWrapperDelegate.h</key>
-		<data>
-		8IvpTd6yRkbm2ExYffudPbAyoEE=
-		</data>
-		<key>PrivateHeaders/ReceiveTransportListenerAdapter.hpp</key>
-		<data>
-		+1nn4iaKFZLQged4o3bdIywGJcQ=
-		</data>
-		<key>PrivateHeaders/ReceiveTransportWrapper.hpp</key>
-		<data>
-		5XINLKK/OIwucEvUC5pVvSHhGsw=
-		</data>
-		<key>PrivateHeaders/ReceiveTransportWrapperDelegate.h</key>
-		<data>
-		rBK4w2jcOxEiExJEnsnOUhCNeXU=
-		</data>
-		<key>PrivateHeaders/SendTransportListenerAdapter.hpp</key>
-		<data>
-		5IY3Zz8C5czfCdkj7iYQzaV9AFo=
-		</data>
-		<key>PrivateHeaders/SendTransportWrapper.hpp</key>
-		<data>
-		FudLXkmjmezMJ9+pwphT/7LyPUM=
-		</data>
-		<key>PrivateHeaders/SendTransportWrapperDelegate.h</key>
-		<data>
-		izntbZyh/XSKpAaC0O3zu2IseAM=
+		9KbTGXKL/oup3R/v4V/WW04VRSo=
 		</data>
 	</dict>
 	<key>files2</key>
 	<dict>
+		<key>Headers/ConsumerWrapper.hpp</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			ShmzLmcehfSGBnFW18HlnwJBlH12VNMAPbXSWZoG5Wc=
+			</data>
+		</dict>
+		<key>Headers/ConsumerWrapperDelegate.h</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			xW27w5a3vXvBRuLyJZtrP8iKU8nnoGRYjckAZf0jrB4=
+			</data>
+		</dict>
+		<key>Headers/DataConsumerWrapper.hpp</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			XcQabfIfhFptp6E0sqzfyplA74tmHKUjcQitlKi1eS4=
+			</data>
+		</dict>
+		<key>Headers/DataConsumerWrapperDelegate.h</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			k+XTGD6dHSpyibL2TYQ85xQcy3FRtxZisJWmp36t/Es=
+			</data>
+		</dict>
+		<key>Headers/DeviceWrapper.h</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			VCGwxffAX3suKwRreC/wB7QclLbGFgbXFJQlTSxoCy0=
+			</data>
+		</dict>
 		<key>Headers/Mediasoup-Swift.h</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			hmj7uKN5TpvewQHQF7L/tSGu7IbfRlDJ82sJvJyS8ww=
+			kjCpkolGaekvsvtDMc5hZ+ZjMvt1OKO0tvRoqFfb73o=
+			</data>
+		</dict>
+		<key>Headers/MediasoupClientError.h</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			6NEyZeULv3fRalRWsuByvpzhudvp/UEeDXXrUYFrwTs=
+			</data>
+		</dict>
+		<key>Headers/MediasoupClientErrorHandler.h</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			VyBnbiLg/7vaK2p8NxA+Kz91bI0Kz62/qo0j9HcfzMQ=
+			</data>
+		</dict>
+		<key>Headers/MediasoupClientMediaKind.h</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			AWwA3KWAZeuvBRIHmzbvjeiSesD2q2RNwwaVO/U0fZc=
+			</data>
+		</dict>
+		<key>Headers/MediasoupClientTransportConnectionState.h</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			+3sw3PcQx5jhPo4jrrbf1bYtrE4oQ6S+uPMgui4luMY=
+			</data>
+		</dict>
+		<key>Headers/ProducerWrapper.hpp</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			Y9bAVarusu+ZHMTytTvpsVyJbstaw1piXHVib6DxKQc=
+			</data>
+		</dict>
+		<key>Headers/ProducerWrapperDelegate.h</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			7dtEqpFPEFc922DxMNNzBhCNT6UBSYefGkmbWVIe3bs=
+			</data>
+		</dict>
+		<key>Headers/ReceiveTransportListenerAdapter.hpp</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			O3UWvzRBtUW4V+sETN7Xkc0aZCTX9xeZVa/5Ooi8Wdw=
+			</data>
+		</dict>
+		<key>Headers/ReceiveTransportWrapper.hpp</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			7G81p4MmybDI4/TqhDwOEO8QLl+KunTtKNFcJ0EnfOo=
+			</data>
+		</dict>
+		<key>Headers/ReceiveTransportWrapperDelegate.h</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			DQOhEKHynrhM/3d6ak4u66cBg1rQRafqzb8vvnzc/h8=
+			</data>
+		</dict>
+		<key>Headers/SendTransportListenerAdapter.hpp</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			EUJWZYnp+beHrvKoY1/1j0HHBFdnIoYdZFTwl4C+mkM=
+			</data>
+		</dict>
+		<key>Headers/SendTransportWrapper.hpp</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			3VeYTwKK/c0S5k+o/ieI3EJaWnPPu/WxK5WkNJT+cKg=
+			</data>
+		</dict>
+		<key>Headers/SendTransportWrapperDelegate.h</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			W1U1tNcAX/9K4E/EeWLwN9/zpR3ER0/Eyl1B+/YBYic=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			80fEx2QNC4X0EC65287VbJc6604zeNu1QxZWbdkOSyE=
+			qF9ZlW1D5FhiJnMV1+33XIXw7Uq2jmsacwD+M7i9Plg=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			URb4e8IBLBHGVnEEyqM8X5k7UtkrqCQDDGn/swG1ZWk=
+			YyQLHvrCE5zn+spSU8IftwgXOD0Pmfb8i5lDNzY/xyw=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			L4UTpUcfhGBz2t0g6frjBSStxX1obEt/0ozHM+Og9sw=
+			8EnmAcBPhnmMEsxJhV0/9jBTW3o/CRpptd4QaCH78qQ=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			vt92lWPmZywh+NpTYGT5LbUwQ/WKyKjA0cB9WthLbu0=
+			A1cG8y5/YzDqR9Q0RT2YwuVrOEBd5wDpaPeqzvSLI/M=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			YTba2kVmDXx3JiG5YYjadWlmtNqtuilD6ODMQFwhSrk=
+			itTCbtwvicva2+fMJQgwj1ChCrivht9AdurC7V4TSFU=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			vt92lWPmZywh+NpTYGT5LbUwQ/WKyKjA0cB9WthLbu0=
+			A1cG8y5/YzDqR9Q0RT2YwuVrOEBd5wDpaPeqzvSLI/M=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			7ECa4OrbU5WbiE8SHSb2Oc7YeMGcoVV71OlgjL8ok7Q=
+			x6qr9nZwz6hSnHeqI28DEC0qmeoGReP1XUuaO0MGV/s=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			L4UTpUcfhGBz2t0g6frjBSStxX1obEt/0ozHM+Og9sw=
+			8EnmAcBPhnmMEsxJhV0/9jBTW3o/CRpptd4QaCH78qQ=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			rY/E6HHxGnLL4fSAMHypjtxy4NpXn6ds5TiYh/u+pU0=
+			Lo1Cdqw6VrcE+hajYVfI0TYl+C1rBZ3oP5e+jcFUbuE=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			ycBH7wpT6Oxwe6ai7nUd+0W3VXY3EFT8JUyRiMAdt6U=
+			cqMzoFbA9Wr6ccEpjotc72Xgu/82FZtobYSKZllp6Hs=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			rY/E6HHxGnLL4fSAMHypjtxy4NpXn6ds5TiYh/u+pU0=
+			Lo1Cdqw6VrcE+hajYVfI0TYl+C1rBZ3oP5e+jcFUbuE=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			TgXjGg4QdI7IzWt5DhlcNmvoZd0ASiap+yu6IfacFXs=
+			TdxA9u+PxOHMKdiC12J5gDEss3963gKhaCJBWvkgxrI=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
@@ -241,126 +360,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			ao8zoaUmY1ab+jZfI9ZO4ew8h1YyJ20R84JVOgVJhOs=
-			</data>
-		</dict>
-		<key>PrivateHeaders/ConsumerWrapper.hpp</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			ShmzLmcehfSGBnFW18HlnwJBlH12VNMAPbXSWZoG5Wc=
-			</data>
-		</dict>
-		<key>PrivateHeaders/ConsumerWrapperDelegate.h</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			xW27w5a3vXvBRuLyJZtrP8iKU8nnoGRYjckAZf0jrB4=
-			</data>
-		</dict>
-		<key>PrivateHeaders/DataConsumerWrapper.hpp</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			XcQabfIfhFptp6E0sqzfyplA74tmHKUjcQitlKi1eS4=
-			</data>
-		</dict>
-		<key>PrivateHeaders/DataConsumerWrapperDelegate.h</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			k+XTGD6dHSpyibL2TYQ85xQcy3FRtxZisJWmp36t/Es=
-			</data>
-		</dict>
-		<key>PrivateHeaders/DeviceWrapper.h</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			VCGwxffAX3suKwRreC/wB7QclLbGFgbXFJQlTSxoCy0=
-			</data>
-		</dict>
-		<key>PrivateHeaders/MediasoupClientError.h</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			6NEyZeULv3fRalRWsuByvpzhudvp/UEeDXXrUYFrwTs=
-			</data>
-		</dict>
-		<key>PrivateHeaders/MediasoupClientErrorHandler.h</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			VyBnbiLg/7vaK2p8NxA+Kz91bI0Kz62/qo0j9HcfzMQ=
-			</data>
-		</dict>
-		<key>PrivateHeaders/MediasoupClientMediaKind.h</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			AWwA3KWAZeuvBRIHmzbvjeiSesD2q2RNwwaVO/U0fZc=
-			</data>
-		</dict>
-		<key>PrivateHeaders/MediasoupClientTransportConnectionState.h</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			+3sw3PcQx5jhPo4jrrbf1bYtrE4oQ6S+uPMgui4luMY=
-			</data>
-		</dict>
-		<key>PrivateHeaders/ProducerWrapper.hpp</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			Y9bAVarusu+ZHMTytTvpsVyJbstaw1piXHVib6DxKQc=
-			</data>
-		</dict>
-		<key>PrivateHeaders/ProducerWrapperDelegate.h</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			7dtEqpFPEFc922DxMNNzBhCNT6UBSYefGkmbWVIe3bs=
-			</data>
-		</dict>
-		<key>PrivateHeaders/ReceiveTransportListenerAdapter.hpp</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			O3UWvzRBtUW4V+sETN7Xkc0aZCTX9xeZVa/5Ooi8Wdw=
-			</data>
-		</dict>
-		<key>PrivateHeaders/ReceiveTransportWrapper.hpp</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			nkekFAuQKr7EzjyJI02ZBsmgp6BgFWAIg7p3X0CYeKQ=
-			</data>
-		</dict>
-		<key>PrivateHeaders/ReceiveTransportWrapperDelegate.h</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			DQOhEKHynrhM/3d6ak4u66cBg1rQRafqzb8vvnzc/h8=
-			</data>
-		</dict>
-		<key>PrivateHeaders/SendTransportListenerAdapter.hpp</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			EUJWZYnp+beHrvKoY1/1j0HHBFdnIoYdZFTwl4C+mkM=
-			</data>
-		</dict>
-		<key>PrivateHeaders/SendTransportWrapper.hpp</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			fHeRtrOEZK1KHRMGPx9VFgf7kBpZX9tnatfItubIHbo=
-			</data>
-		</dict>
-		<key>PrivateHeaders/SendTransportWrapperDelegate.h</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			W1U1tNcAX/9K4E/EeWLwN9/zpR3ER0/Eyl1B+/YBYic=
+			eeB2zh57wQMhrUcaYgypx2MhXZT/IdmIV9lSI/3hZUI=
 			</data>
 		</dict>
 	</dict>

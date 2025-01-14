@@ -68,7 +68,7 @@
               {
                 "kind": "TypeNominal",
                 "name": "WeakStorage",
-                "printedName": "Mediasoup.ReceiveTransportDelegate?"
+                "printedName": "(any Mediasoup.ReceiveTransportDelegate)?"
               }
             ],
             "declKind": "Var",
@@ -92,12 +92,12 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Optional",
-                    "printedName": "Mediasoup.ReceiveTransportDelegate?",
+                    "printedName": "(any Mediasoup.ReceiveTransportDelegate)?",
                     "children": [
                       {
                         "kind": "TypeNominal",
                         "name": "ReceiveTransportDelegate",
-                        "printedName": "Mediasoup.ReceiveTransportDelegate",
+                        "printedName": "any Mediasoup.ReceiveTransportDelegate",
                         "usr": "s:9Mediasoup24ReceiveTransportDelegateP"
                       }
                     ],
@@ -124,12 +124,12 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Optional",
-                    "printedName": "Mediasoup.ReceiveTransportDelegate?",
+                    "printedName": "(any Mediasoup.ReceiveTransportDelegate)?",
                     "children": [
                       {
                         "kind": "TypeNominal",
                         "name": "ReceiveTransportDelegate",
-                        "printedName": "Mediasoup.ReceiveTransportDelegate",
+                        "printedName": "any Mediasoup.ReceiveTransportDelegate",
                         "usr": "s:9Mediasoup24ReceiveTransportDelegateP"
                       }
                     ],
@@ -160,6 +160,54 @@
                 "moduleName": "Mediasoup",
                 "implicit": true,
                 "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "transport",
+            "printedName": "transport",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "ReceiveTransportWrapper",
+                "printedName": "Mediasoup_Private.ReceiveTransportWrapper",
+                "usr": "c:objc(cs)ReceiveTransportWrapper"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:9Mediasoup16ReceiveTransportC9transportSo0bC7WrapperCvp",
+            "mangledName": "$s9Mediasoup16ReceiveTransportC9transportSo0bC7WrapperCvp",
+            "moduleName": "Mediasoup",
+            "declAttributes": [
+              "Final",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "ReceiveTransportWrapper",
+                    "printedName": "Mediasoup_Private.ReceiveTransportWrapper",
+                    "usr": "c:objc(cs)ReceiveTransportWrapper"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:9Mediasoup16ReceiveTransportC9transportSo0bC7WrapperCvg",
+                "mangledName": "$s9Mediasoup16ReceiveTransportC9transportSo0bC7WrapperCvg",
+                "moduleName": "Mediasoup",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "get"
               }
             ]
           },
@@ -1261,7 +1309,7 @@
               {
                 "kind": "TypeNominal",
                 "name": "Transport",
-                "printedName": "Mediasoup.Transport",
+                "printedName": "any Mediasoup.Transport",
                 "usr": "s:9Mediasoup9TransportP"
               },
               {
@@ -1294,7 +1342,7 @@
               {
                 "kind": "TypeNominal",
                 "name": "Transport",
-                "printedName": "Mediasoup.Transport",
+                "printedName": "any Mediasoup.Transport",
                 "usr": "s:9Mediasoup9TransportP"
               },
               {
@@ -1758,7 +1806,7 @@
               {
                 "kind": "TypeNominal",
                 "name": "WeakStorage",
-                "printedName": "Mediasoup.SendTransportDelegate?"
+                "printedName": "(any Mediasoup.SendTransportDelegate)?"
               }
             ],
             "declKind": "Var",
@@ -1782,12 +1830,12 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Optional",
-                    "printedName": "Mediasoup.SendTransportDelegate?",
+                    "printedName": "(any Mediasoup.SendTransportDelegate)?",
                     "children": [
                       {
                         "kind": "TypeNominal",
                         "name": "SendTransportDelegate",
-                        "printedName": "Mediasoup.SendTransportDelegate",
+                        "printedName": "any Mediasoup.SendTransportDelegate",
                         "usr": "s:9Mediasoup21SendTransportDelegateP"
                       }
                     ],
@@ -1814,12 +1862,12 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Optional",
-                    "printedName": "Mediasoup.SendTransportDelegate?",
+                    "printedName": "(any Mediasoup.SendTransportDelegate)?",
                     "children": [
                       {
                         "kind": "TypeNominal",
                         "name": "SendTransportDelegate",
-                        "printedName": "Mediasoup.SendTransportDelegate",
+                        "printedName": "any Mediasoup.SendTransportDelegate",
                         "usr": "s:9Mediasoup21SendTransportDelegateP"
                       }
                     ],
@@ -1850,6 +1898,54 @@
                 "moduleName": "Mediasoup",
                 "implicit": true,
                 "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "transport",
+            "printedName": "transport",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "SendTransportWrapper",
+                "printedName": "Mediasoup_Private.SendTransportWrapper",
+                "usr": "c:objc(cs)SendTransportWrapper"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:9Mediasoup13SendTransportC9transportSo0bC7WrapperCvp",
+            "mangledName": "$s9Mediasoup13SendTransportC9transportSo0bC7WrapperCvp",
+            "moduleName": "Mediasoup",
+            "declAttributes": [
+              "Final",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "SendTransportWrapper",
+                    "printedName": "Mediasoup_Private.SendTransportWrapper",
+                    "usr": "c:objc(cs)SendTransportWrapper"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:9Mediasoup13SendTransportC9transportSo0bC7WrapperCvg",
+                "mangledName": "$s9Mediasoup13SendTransportC9transportSo0bC7WrapperCvg",
+                "moduleName": "Mediasoup",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "get"
               }
             ]
           },
@@ -2552,7 +2648,7 @@
               {
                 "kind": "TypeNominal",
                 "name": "Transport",
-                "printedName": "Mediasoup.Transport",
+                "printedName": "any Mediasoup.Transport",
                 "usr": "s:9Mediasoup9TransportP"
               },
               {
@@ -2623,7 +2719,7 @@
               {
                 "kind": "TypeNominal",
                 "name": "Transport",
-                "printedName": "Mediasoup.Transport",
+                "printedName": "any Mediasoup.Transport",
                 "usr": "s:9Mediasoup9TransportP"
               },
               {
@@ -2927,12 +3023,12 @@
               {
                 "kind": "TypeFunc",
                 "name": "Function",
-                "printedName": "(Mediasoup.MediasoupError.Type) -> (Swift.Error) -> Mediasoup.MediasoupError",
+                "printedName": "(Mediasoup.MediasoupError.Type) -> (any Swift.Error) -> Mediasoup.MediasoupError",
                 "children": [
                   {
                     "kind": "TypeFunc",
                     "name": "Function",
-                    "printedName": "(Swift.Error) -> Mediasoup.MediasoupError",
+                    "printedName": "(any Swift.Error) -> Mediasoup.MediasoupError",
                     "children": [
                       {
                         "kind": "TypeNominal",
@@ -2943,7 +3039,7 @@
                       {
                         "kind": "TypeNominal",
                         "name": "Error",
-                        "printedName": "Swift.Error",
+                        "printedName": "any Swift.Error",
                         "usr": "s:s5ErrorP"
                       }
                     ]
@@ -3078,7 +3174,7 @@
               {
                 "kind": "TypeNominal",
                 "name": "WeakStorage",
-                "printedName": "Mediasoup.DataConsumerDelegate?"
+                "printedName": "(any Mediasoup.DataConsumerDelegate)?"
               }
             ],
             "declKind": "Var",
@@ -3102,12 +3198,12 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Optional",
-                    "printedName": "Mediasoup.DataConsumerDelegate?",
+                    "printedName": "(any Mediasoup.DataConsumerDelegate)?",
                     "children": [
                       {
                         "kind": "TypeNominal",
                         "name": "DataConsumerDelegate",
-                        "printedName": "Mediasoup.DataConsumerDelegate",
+                        "printedName": "any Mediasoup.DataConsumerDelegate",
                         "usr": "s:9Mediasoup20DataConsumerDelegateP"
                       }
                     ],
@@ -3134,12 +3230,12 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Optional",
-                    "printedName": "Mediasoup.DataConsumerDelegate?",
+                    "printedName": "(any Mediasoup.DataConsumerDelegate)?",
                     "children": [
                       {
                         "kind": "TypeNominal",
                         "name": "DataConsumerDelegate",
-                        "printedName": "Mediasoup.DataConsumerDelegate",
+                        "printedName": "any Mediasoup.DataConsumerDelegate",
                         "usr": "s:9Mediasoup20DataConsumerDelegateP"
                       }
                     ],
@@ -4236,7 +4332,7 @@
               {
                 "kind": "TypeNominal",
                 "name": "WeakStorage",
-                "printedName": "Mediasoup.ProducerDelegate?"
+                "printedName": "(any Mediasoup.ProducerDelegate)?"
               }
             ],
             "declKind": "Var",
@@ -4260,12 +4356,12 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Optional",
-                    "printedName": "Mediasoup.ProducerDelegate?",
+                    "printedName": "(any Mediasoup.ProducerDelegate)?",
                     "children": [
                       {
                         "kind": "TypeNominal",
                         "name": "ProducerDelegate",
-                        "printedName": "Mediasoup.ProducerDelegate",
+                        "printedName": "any Mediasoup.ProducerDelegate",
                         "usr": "s:9Mediasoup16ProducerDelegateP"
                       }
                     ],
@@ -4292,12 +4388,12 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Optional",
-                    "printedName": "Mediasoup.ProducerDelegate?",
+                    "printedName": "(any Mediasoup.ProducerDelegate)?",
                     "children": [
                       {
                         "kind": "TypeNominal",
                         "name": "ProducerDelegate",
-                        "printedName": "Mediasoup.ProducerDelegate",
+                        "printedName": "any Mediasoup.ProducerDelegate",
                         "usr": "s:9Mediasoup16ProducerDelegateP"
                       }
                     ],
@@ -4955,12 +5051,12 @@
               {
                 "kind": "TypeNominal",
                 "name": "Optional",
-                "printedName": "WebRTC.RTCAudioDevice?",
+                "printedName": "(any WebRTC.RTCAudioDevice)?",
                 "children": [
                   {
                     "kind": "TypeNominal",
                     "name": "RTCAudioDevice",
-                    "printedName": "WebRTC.RTCAudioDevice",
+                    "printedName": "any WebRTC.RTCAudioDevice",
                     "usr": "c:objc(pl)RTCAudioDevice"
                   }
                 ],
@@ -5187,6 +5283,7 @@
             "usr": "s:9Mediasoup6DeviceC19createSendTransport2id13iceParameters0G10Candidates04dtlsH004sctpH00G7Servers0gE6Policy7appDataAA0dE0CSS_S4SSgAoA012ICETransportM0OAOtKF",
             "mangledName": "$s9Mediasoup6DeviceC19createSendTransport2id13iceParameters0G10Candidates04dtlsH004sctpH00G7Servers0gE6Policy7appDataAA0dE0CSS_S4SSgAoA012ICETransportM0OAOtKF",
             "moduleName": "Mediasoup",
+            "isOpen": true,
             "declAttributes": [
               "AccessControl"
             ],
@@ -5285,6 +5382,7 @@
             "usr": "s:9Mediasoup6DeviceC22createReceiveTransport2id13iceParameters0G10Candidates04dtlsH004sctpH00G7Servers0gE6Policy7appDataAA0dE0CSS_S4SSgAoA012ICETransportM0OAOtKF",
             "mangledName": "$s9Mediasoup6DeviceC22createReceiveTransport2id13iceParameters0G10Candidates04dtlsH004sctpH00G7Servers0gE6Policy7appDataAA0dE0CSS_S4SSgAoA012ICETransportM0OAOtKF",
             "moduleName": "Mediasoup",
+            "isOpen": true,
             "declAttributes": [
               "AccessControl"
             ],
@@ -5296,6 +5394,7 @@
         "usr": "s:9Mediasoup6DeviceC",
         "mangledName": "$s9Mediasoup6DeviceC",
         "moduleName": "Mediasoup",
+        "isOpen": true,
         "declAttributes": [
           "AccessControl"
         ]
@@ -5334,7 +5433,7 @@
               {
                 "kind": "TypeNominal",
                 "name": "WeakStorage",
-                "printedName": "Mediasoup.ConsumerDelegate?"
+                "printedName": "(any Mediasoup.ConsumerDelegate)?"
               }
             ],
             "declKind": "Var",
@@ -5358,12 +5457,12 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Optional",
-                    "printedName": "Mediasoup.ConsumerDelegate?",
+                    "printedName": "(any Mediasoup.ConsumerDelegate)?",
                     "children": [
                       {
                         "kind": "TypeNominal",
                         "name": "ConsumerDelegate",
-                        "printedName": "Mediasoup.ConsumerDelegate",
+                        "printedName": "any Mediasoup.ConsumerDelegate",
                         "usr": "s:9Mediasoup16ConsumerDelegateP"
                       }
                     ],
@@ -5390,12 +5489,12 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Optional",
-                    "printedName": "Mediasoup.ConsumerDelegate?",
+                    "printedName": "(any Mediasoup.ConsumerDelegate)?",
                     "children": [
                       {
                         "kind": "TypeNominal",
                         "name": "ConsumerDelegate",
-                        "printedName": "Mediasoup.ConsumerDelegate",
+                        "printedName": "any Mediasoup.ConsumerDelegate",
                         "usr": "s:9Mediasoup16ConsumerDelegateP"
                       }
                     ],
@@ -5988,7 +6087,7 @@
   },
   "ConstValues": [
     {
-      "filePath": "\/Users\/andreykrit\/Desktop\/Riverside\/ios-mediasoup-riverside\/Mediasoup\/Consumer.swift",
+      "filePath": "\/Users\/nitro\/devel\/Riverside-Mobile-Shared\/webrtc-dev\/ios-mediasoup\/Mediasoup\/Consumer.swift",
       "kind": "StringLiteral",
       "offset": 545,
       "length": 2,

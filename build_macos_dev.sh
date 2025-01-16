@@ -288,7 +288,7 @@ xcodebuild -project Mediasoup.xcodeproj \
     CONFIGURATION_BUILD_DIR=$BUILD_DIR \
     build
 
-rm -rf $BUILD_DIR/Mediasoup.xcframework
+rm -rf $OUTPUT_DIR/Mediasoup.xcframework
 xcodebuild -create-xcframework \
 	-framework ${BUILD_DIR}/Mediasoup.framework \
-	-output $BUILD_DIR/Mediasoup.xcframework
+	-output $OUTPUT_DIR/Mediasoup.xcframework

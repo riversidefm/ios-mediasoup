@@ -40,10 +40,8 @@ Pod::Spec.new do |spec|
 		]
 
 		spec.vendored_frameworks =
-			"Mediasoup/dependencies/webrtc/src/build/mac/arm64/WebRTC.framework",
-			"bin/sdptransform.xcframework",
-			"bin/mediasoupclient.xcframework",
-			"build/Mediasoup.xcframework"
+			"bin/WebRTC.xcframework",
+			"bin/Mediasoup.xcframework"
 		
 	else
 		spec.vendored_frameworks =

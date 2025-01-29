@@ -1,0 +1,95 @@
+name: Auto Tag on PR Merge
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  auto-tag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: Get merged PR
+        id: get-pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PR_NUMBER=$(gh pr list --search "${{ github.sha }} is:merged" --json number --jq '.[0].number')
+          if [ ! -z "$PR_NUMBER" ]; then
+            echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+            LABELS=$(gh pr view $PR_NUMBER --json labels --jq '.labels[].name' | tr '\n' ' ')
+            echo "labels=$LABELS" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create tag
+        if: steps.get-pr.outputs.pr_number != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LABELS: ${{ steps.get-pr.outputs.labels }}
+        run: |
+          # Initialize variables
+          MAJOR_BUMP=false
+          MINOR_BUMP=false
+          PATCH_BUMP=false
+          
+          # Check labels for version bump indicators
+          if [[ "$LABELS" == *"major"* ]]; then
+            MAJOR_BUMP=true
+          elif [[ "$LABELS" == *"minor"* ]]; then
+            MINOR_BUMP=true
+          elif [[ "$LABELS" == *"patch"* ]]; then
+            PATCH_BUMP=true
+          else
+            echo "Defaulting to patch bump because no label was found"
+            PATCH_BUMP=true
+          fi
+          
+          # Get latest tag
+          LATEST_TAG=$(git describe --tags --match "mobile-v*" --abbrev=0 2>/dev/null || echo "mobile-v0.0.0")
+          
+          # Extract version numbers
+          if [[ $LATEST_TAG =~ ^mobile-v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            MAJOR="${BASH_REMATCH[1]}"
+            MINOR="${BASH_REMATCH[2]}"
+            PATCH="${BASH_REMATCH[3]}"
+          else
+            MAJOR=0
+            MINOR=0
+            PATCH=0
+          fi
+          
+          # Calculate new version
+          if [ "$MAJOR_BUMP" = true ]; then
+            MAJOR=$((MAJOR + 1))
+            MINOR=0
+            PATCH=0
+          elif [ "$MINOR_BUMP" = true ]; then
+            MINOR=$((MINOR + 1))
+            PATCH=0
+          elif [ "$PATCH_BUMP" = true ]; then
+            PATCH=$((PATCH + 1))
+          else
+            echo "No version bump label found, skipping tag creation"
+            exit 0
+          fi
+          
+          NEW_TAG="mobile-v${MAJOR}.${MINOR}.${PATCH}"
+          
+          echo "Creating new tag: $NEW_TAG"
+          git tag -a "$NEW_TAG" -m "Release $NEW_TAG"
+          git push origin "$NEW_TAG" 

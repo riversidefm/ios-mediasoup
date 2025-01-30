@@ -331,12 +331,19 @@ ninja -C simulator/arm64 sdk
 
 cd $BUILD_DIR/WebRTC
 rm -rf simulator/WebRTC.framework
+rm -rf simulator/WebRTC.dSYM
 cp -R simulator/arm64/WebRTC.framework simulator/WebRTC.framework
+cp -R simulator/arm64/WebRTC.dSYM simulator/WebRTC.dSYM
 rm simulator/WebRTC.framework/WebRTC
 lipo -create \
 	simulator/arm64/WebRTC.framework/WebRTC \
 	simulator/x64/WebRTC.framework/WebRTC \
 	-output simulator/WebRTC.framework/WebRTC
+
+lipo -create \
+    simulator/arm64/WebRTC.dSYM/Contents/Resources/DWARF/WebRTC \
+    simulator/x64/WebRTC.dSYM/Contents/Resources/DWARF/WebRTC \
+    -output simulator/WebRTC.dSYM/Contents/Resources/DWARF/WebRTC
 
 cd $BUILD_DIR/WebRTC
 
@@ -348,7 +355,9 @@ if [ "$NO_INTERACTIVE" = false ]; then
 		-output $OUTPUT_DIR/WebRTC.xcframework
 else
 	mv device/arm64/WebRTC.framework $OUTPUT_DIR/WebRTC.framework
+	mv device/arm64/WebRTC.dSYM $OUTPUT_DIR/WebRTC.dSYM
 	mv simulator/WebRTC.framework $OUTPUT_DIR/simulator/WebRTC.framework
+	mv simulator/WebRTC.dSYM $OUTPUT_DIR/simulator/WebRTC.dSYM
 fi
 
 cd $WORK_DIR
@@ -367,7 +376,7 @@ function rebuildLMSC() {
 		'-DLIBSDPTRANSFORM_BUILD_TESTS=OFF'
 		'-DMEDIASOUPCLIENT_BUILD_TESTS=OFF'
 		'-DCMAKE_OSX_DEPLOYMENT_TARGET=14'
-		# '-DCMAKE_BUILD_TYPE=Debug'
+		'-DCMAKE_BUILD_TYPE=RelWithDebInfo'
 	)
 	for str in ${lmsc_cmake_arguments[@]}; do
 		lmsc_cmake_args+=" ${str}"

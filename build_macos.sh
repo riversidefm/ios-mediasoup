@@ -352,7 +352,9 @@ ninja -C mac/x64 mac_framework_objc
 ninja -C mac/arm64 mac_framework_objc
 
 rm -rf mac/WebRTC.framework
+rm -rf mac/WebRTC.framework.dSYM
 cp -R mac/arm64/WebRTC.framework mac/WebRTC.framework
+cp -R mac/arm64/WebRTC.dSYM mac/WebRTC.dSYM
 #rm mac/WebRTC.framework/WebRTC/Versions/A/WebRTC
 
 echo 'Start lipo'
@@ -360,6 +362,12 @@ lipo -create \
     mac/arm64/WebRTC.framework/WebRTC \
     mac/x64/WebRTC.framework/WebRTC \
     -output mac/WebRTC.framework/Versions/A/WebRTC
+
+lipo -create \
+    mac/arm64/WebRTC.dSYM/Contents/Resources/DWARF/WebRTC \
+    mac/x64/WebRTC.dSYM/Contents/Resources/DWARF/WebRTC \
+    -output mac/WebRTC.dSYM/Contents/Resources/DWARF/WebRTC
+
 echo 'Finish lipo'
 
 echo 'Create xcframework'
@@ -372,6 +380,7 @@ if [ "$NO_INTERACTIVE" = false ]; then
         -output $OUTPUT_DIR/WebRTC.xcframework
 else
     mv mac/WebRTC.framework $OUTPUT_DIR/WebRTC.framework
+    mv mac/WebRTC.dSYM $OUTPUT_DIR/WebRTC.dSYM
 fi
 
 echo "finish building webrtc"
@@ -392,7 +401,7 @@ function rebuildLMSC() {
         '-DLIBSDPTRANSFORM_BUILD_TESTS=OFF'
         '-DMEDIASOUPCLIENT_BUILD_TESTS=OFF'
         '-DCMAKE_OSX_DEPLOYMENT_TARGET=13'
-        #'-DCMAKE_BUILD_TYPE=Debug'
+        '-DCMAKE_BUILD_TYPE=RelWithDebInfo'
     )
     for str in ${lmsc_cmake_arguments[@]}; do
         lmsc_cmake_args+=" ${str}"

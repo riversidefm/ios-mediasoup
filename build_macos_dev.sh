@@ -256,6 +256,8 @@ function rebuildLMSC() {
     # Build mediasoup-client-ios for arm64
     echo "cmake lmsc arm64"
     if [ $INSIDE_XCODE -eq 0 ]; then
+        rm -rf $BUILD_DIR/libmediasoupclient/mac/arm64
+        mkdir -p $BUILD_DIR/libmediasoupclient/mac/arm64
         cmake . -GXcode -B $BUILD_DIR/libmediasoupclient/mac/arm64 \
             ${lmsc_cmake_args} \
             -DCMAKE_OSX_ARCHITECTURES=arm64 \

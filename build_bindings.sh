@@ -43,6 +43,9 @@ fi
 
 xcodebuild -create-xcframework \
 	-framework ${BUILD_DIR}/Build/Products/Release-iphoneos/${FRAMEWORK_NAME}.framework \
+    -debug-symbols ${BUILD_DIR}/Build/Products/Release-iphoneos/${FRAMEWORK_NAME}.framework.dSYM \
 	-framework ${BUILD_DIR}/Build/Products/Release-iphonesimulator/${FRAMEWORK_NAME}.framework \
+    -debug-symbols ${BUILD_DIR}/Build/Products/Release-iphonesimulator/${FRAMEWORK_NAME}.framework.dSYM \
 	-framework ${BUILD_DIR}/Build/Products/Release/${FRAMEWORK_NAME}.framework \
+    -debug-symbols ${BUILD_DIR}/Build/Products/Release/${FRAMEWORK_NAME}.framework.dSYM \
 	-output $OUTPUT_DIR/${FRAMEWORK_NAME}.xcframework

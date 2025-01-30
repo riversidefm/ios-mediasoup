@@ -10,6 +10,7 @@ Pod::Spec.new do |spec|
 	spec.name = "Mediasoup-Client-Swift-Device"
 	spec.version = "0.4.2"
 	spec.platform = :ios, "14.0"
+	spec.osx.deployment_target = '13.0'
 	spec.module_name = "Mediasoup"
 	spec.module_map = "Mediasoup/Mediasoup.modulemap"
 
@@ -24,7 +25,28 @@ Pod::Spec.new do |spec|
 		"CoreMedia",
 		"CoreVideo"
 
-	spec.vendored_frameworks =
-		"bin/Mediasoup.xcframework",
-		"bin/WebRTC.xcframework"
+
+
+
+	# Add a build step that executes build_macos.sh only in development
+	if ENV['DEVELOPMENT'] == 'true'
+		spec.script_phases = [
+			{
+				:name => "Build Mediasoup",
+				:script => "cd $PROJECT_DIR/../../ios-mediasoup && PATH=/opt/homebrew/bin/:$PATH ./build_macos_dev.sh",
+				:execution_position => :before_compile,
+				:always_out_of_date => "1"
+			}
+		]
+
+		spec.vendored_frameworks =
+			"bin/WebRTC.xcframework",
+			"bin/Mediasoup.xcframework"
+		
+	else
+		spec.vendored_frameworks =
+			"bin/Mediasoup.xcframework",
+			"bin/WebRTC.xcframework"
+	end
+
 end

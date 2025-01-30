@@ -45,6 +45,10 @@
 
 #pragma mark - Public methods
 
+- (mediasoupclient::RecvTransport *_Nonnull)getWrappedTransport {
+    return _transport;
+}
+
 - (NSString *_Nonnull)id {
 	return [NSString stringWithUTF8String:_transport->GetId().c_str()];
 }

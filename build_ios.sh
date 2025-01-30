@@ -3,6 +3,19 @@
 # Stop script on errors.
 set -e
 
+NO_INTERACTIVE=false
+
+# Parse command line arguments
+for arg in "$@"
+do
+    case $arg in
+        --no-interactive)
+        NO_INTERACTIVE=true
+        shift
+        ;;
+    esac
+done
+
 # Check build time dependencies.
 if ! command -v python &> /dev/null
 then
@@ -30,7 +43,13 @@ export WORK_DIR=$PROJECT_DIR/Mediasoup/dependencies
 echo "WORK_DIR = $WORK_DIR"
 export BUILD_DIR=$(pwd)/build
 echo "BUILD_DIR = $BUILD_DIR"
-export OUTPUT_DIR=$(pwd)/bin
+
+if [ "$NO_INTERACTIVE" = false ]; then
+    export OUTPUT_DIR=$(pwd)/bin
+else
+    export OUTPUT_DIR=$(pwd)/bin/ios
+fi
+
 echo "OUTPUT_DIR = $OUTPUT_DIR"
 export PATCHES_DIR=$(pwd)/patches
 echo "PATCHES_DIR = $PATCHES_DIR"
@@ -51,33 +70,42 @@ function clearArtifacts() {
 		fi
 	done
 
-	mkdir -p $OUTPUT_DIR
+	if [ "$NO_INTERACTIVE" = false ]; then
+		mkdir -p $OUTPUT_DIR
+	else
+		mkdir -p $OUTPUT_DIR
+		mkdir -p $OUTPUT_DIR/simulator
+	fi
 	echo 'OUTPUT_DIR created'
 
 	mkdir -p $BUILD_DIR
 	echo 'BUILD_DIR created'
 }
 
-while true
-do
-	read -n 1 -p "Clear old build artifacts? (Y|n): " INPUT_STRING
-	# echo ""
-	case $INPUT_STRING in
-		n|N)
-			echo ""
-			break
-			;;
-		y|Y|"")
-			echo ""
-			clearArtifacts
-			break
-			;;
-		*)
-			echo -ne "\r\033[0K\r"
-			tput bel
-			;;
-	esac
-done
+if [ "$NO_INTERACTIVE" = true ]; then
+    clearArtifacts
+else
+	while true
+	do
+		read -n 1 -p "Clear old build artifacts? (Y|n): " INPUT_STRING
+		# echo ""
+		case $INPUT_STRING in
+			n|N)
+				echo ""
+				break
+				;;
+			y|Y|"")
+				echo ""
+				clearArtifacts
+				break
+				;;
+			*)
+				echo -ne "\r\033[0K\r"
+				tput bel
+				;;
+		esac
+	done
+fi
 
 function refetchLibmediasoupclient() {
 	echo 'Cloning libmediasoupclient'
@@ -89,25 +117,27 @@ function refetchLibmediasoupclient() {
 if [ -d $WORK_DIR/libmediasoupclient ]
 then
 	echo "libmediasoupclient is already on disk"
-	while true
-	do
-		read -n 1 -p "Refetch libmediasoupclient (y|N): " INPUT_STRING
-		case $INPUT_STRING in
-			n|N|"")
-				echo ""
-				break
-				;;
-			y|Y)
-				echo ""
-				refetchLibmediasoupclient
-				break
-				;;
-			*)
-				echo -ne "\r\033[0K\r"
-				tput bel
-				;;
-		esac
-	done
+	if [ "$NO_INTERACTIVE" = false ]; then
+		while true
+		do
+			read -n 1 -p "Refetch libmediasoupclient (y|N): " INPUT_STRING
+			case $INPUT_STRING in
+				n|N|"")
+					echo ""
+					break
+					;;
+				y|Y)
+					echo ""
+					refetchLibmediasoupclient
+					break
+					;;
+				*)
+					echo -ne "\r\033[0K\r"
+					tput bel
+					;;
+			esac
+		done
+	fi
 else
 	refetchLibmediasoupclient
 fi
@@ -122,23 +152,25 @@ function refetchDepotTools() {
 if [ -d $WORK_DIR/depot_tools ]
 then
 	echo "depot_tools is already on disk"
-	while true
-	do
-		read -n 1 -p "Refetch depot_tools (y|N): " INPUT_STRING
-		echo ""
-		case $INPUT_STRING in
-			n|N|"")
-				break
-				;;
-			y|Y)
-				refetchDepotTools
-				break
-				;;
-			*)
-				tput bel
-				;;
-		esac
-	done
+	if [ "$NO_INTERACTIVE" = false ]; then
+		while true
+		do
+			read -n 1 -p "Refetch depot_tools (y|N): " INPUT_STRING
+			echo ""
+			case $INPUT_STRING in
+				n|N|"")
+					break
+					;;
+				y|Y)
+					refetchDepotTools
+					break
+					;;
+				*)
+					tput bel
+					;;
+			esac
+		done
+	fi
 else
 	refetchDepotTools
 fi
@@ -161,6 +193,8 @@ function patchWebRTC() {
 	patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/video_encoder_factory_h.patch
     patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/objc_audio_device_module_h.patch
     patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/objc_audio_device_module_mm.patch
+	patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/absl_threadlocal.patch
+	patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/task_factory.patch
 }
 
 function refetchWebRTC() {
@@ -216,29 +250,34 @@ function resetWebRTC() {
 if [ -d $WORK_DIR/webrtc ]
 then
 	echo "WebRTC is already on disk"
-	while true
-	do
-		read -n 1 -p "Refetch WebRTC? (f)ull clone | (r)eset local changes | (N)o: " INPUT_STRING
-		echo ""
-		case $INPUT_STRING in
-			n|N|"")
-				break
-				;;
-			f|F)
-				refetchWebRTC
-				patchWebRTC
-				break
-				;;
-			r|R)
-				resetWebRTC
-				patchWebRTC
-				break
-				;;
-			*)
-				tput bel
-				;;
-		esac
-	done
+	if [ "$NO_INTERACTIVE" = false ]; then
+		while true
+		do
+			read -n 1 -p "Refetch WebRTC? (f)ull clone | (r)eset local changes | (N)o: " INPUT_STRING
+			echo ""
+			case $INPUT_STRING in
+				n|N|"")
+					break
+					;;
+				f|F)
+					refetchWebRTC
+					patchWebRTC
+					break
+					;;
+				r|R)
+					resetWebRTC
+					patchWebRTC
+					break
+					;;
+				*)
+					tput bel
+					;;
+			esac
+		done
+	else
+		resetWebRTC
+		patchWebRTC
+	fi
 else
 	refetchWebRTC
 	patchWebRTC
@@ -292,19 +331,34 @@ ninja -C simulator/arm64 sdk
 
 cd $BUILD_DIR/WebRTC
 rm -rf simulator/WebRTC.framework
+rm -rf simulator/WebRTC.dSYM
 cp -R simulator/arm64/WebRTC.framework simulator/WebRTC.framework
+cp -R simulator/arm64/WebRTC.dSYM simulator/WebRTC.dSYM
 rm simulator/WebRTC.framework/WebRTC
 lipo -create \
 	simulator/arm64/WebRTC.framework/WebRTC \
 	simulator/x64/WebRTC.framework/WebRTC \
 	-output simulator/WebRTC.framework/WebRTC
 
+lipo -create \
+    simulator/arm64/WebRTC.dSYM/Contents/Resources/DWARF/WebRTC \
+    simulator/x64/WebRTC.dSYM/Contents/Resources/DWARF/WebRTC \
+    -output simulator/WebRTC.dSYM/Contents/Resources/DWARF/WebRTC
+
 cd $BUILD_DIR/WebRTC
-rm -rf $OUTPUT_DIR/WebRTC.xcframework
-xcodebuild -create-xcframework \
-	-framework device/arm64/WebRTC.framework \
-	-framework simulator/WebRTC.framework \
-	-output $OUTPUT_DIR/WebRTC.xcframework
+
+if [ "$NO_INTERACTIVE" = false ]; then
+	rm -rf $OUTPUT_DIR/WebRTC.xcframework
+	xcodebuild -create-xcframework \
+		-framework device/arm64/WebRTC.framework \
+		-framework simulator/WebRTC.framework \
+		-output $OUTPUT_DIR/WebRTC.xcframework
+else
+	mv device/arm64/WebRTC.framework $OUTPUT_DIR/WebRTC.framework
+	mv device/arm64/WebRTC.dSYM $OUTPUT_DIR/WebRTC.dSYM
+	mv simulator/WebRTC.framework $OUTPUT_DIR/simulator/WebRTC.framework
+	mv simulator/WebRTC.dSYM $OUTPUT_DIR/simulator/WebRTC.dSYM
+fi
 
 cd $WORK_DIR
 
@@ -322,7 +376,7 @@ function rebuildLMSC() {
 		'-DLIBSDPTRANSFORM_BUILD_TESTS=OFF'
 		'-DMEDIASOUPCLIENT_BUILD_TESTS=OFF'
 		'-DCMAKE_OSX_DEPLOYMENT_TARGET=14'
-		# '-DCMAKE_BUILD_TYPE=Debug'
+		'-DCMAKE_BUILD_TYPE=RelWithDebInfo'
 	)
 	for str in ${lmsc_cmake_arguments[@]}; do
 		lmsc_cmake_args+=" ${str}"
@@ -366,19 +420,28 @@ function rebuildLMSC() {
 		$BUILD_DIR/libmediasoupclient/simulator/x64/libmediasoupclient/libsdptransform/libsdptransform.a \
 		$BUILD_DIR/libmediasoupclient/simulator/arm64/libmediasoupclient/libsdptransform/libsdptransform.a \
 		-output $BUILD_DIR/libmediasoupclient/simulator/fat/libsdptransform.a
-	xcodebuild -create-xcframework \
-		-library $BUILD_DIR/libmediasoupclient/device/arm64/libmediasoupclient/libmediasoupclient.a \
-		-library $BUILD_DIR/libmediasoupclient/simulator/fat/libmediasoupclient.a \
-		-output $OUTPUT_DIR/mediasoupclient.xcframework
-	xcodebuild -create-xcframework \
-		-library $BUILD_DIR/libmediasoupclient/device/arm64/libmediasoupclient/libsdptransform/libsdptransform.a \
-		-library $BUILD_DIR/libmediasoupclient/simulator/fat/libsdptransform.a \
-		-output $OUTPUT_DIR/sdptransform.xcframework
+
+	if [ "$NO_INTERACTIVE" = false ]; then
+		xcodebuild -create-xcframework \
+			-library $BUILD_DIR/libmediasoupclient/device/arm64/libmediasoupclient/libmediasoupclient.a \
+			-library $BUILD_DIR/libmediasoupclient/simulator/fat/libmediasoupclient.a \
+			-output $OUTPUT_DIR/mediasoupclient.xcframework
+		xcodebuild -create-xcframework \
+			-library $BUILD_DIR/libmediasoupclient/device/arm64/libmediasoupclient/libsdptransform/libsdptransform.a \
+			-library $BUILD_DIR/libmediasoupclient/simulator/fat/libsdptransform.a \
+			-output $OUTPUT_DIR/sdptransform.xcframework
+	else
+		mv $BUILD_DIR/libmediasoupclient/device/arm64/libmediasoupclient/libmediasoupclient.a $OUTPUT_DIR/libmediasoupclient.a
+		mv $BUILD_DIR/libmediasoupclient/device/arm64/libmediasoupclient/libsdptransform/libsdptransform.a $OUTPUT_DIR/libsdptransform.a
+		mv $BUILD_DIR/libmediasoupclient/simulator/fat/libmediasoupclient.a $OUTPUT_DIR/simulator/libmediasoupclient.a
+		mv $BUILD_DIR/libmediasoupclient/simulator/fat/libsdptransform.a $OUTPUT_DIR/simulator/libsdptransform.a
+	fi
 }
 
 if [ -d $BUILD_DIR/libmediasoupclient ]
 then
 	echo "libmediasoupclient is already built"
+	if [ "$NO_INTERACTIVE" = false ]; then
 	while true
 	do
 		read -n 1 -p "Rebuild libmediasoupclient (y|N): " INPUT_STRING
@@ -396,10 +459,15 @@ then
 				echo -ne "\r\033[0K\r"
 				tput bel
 				;;
-		esac
-	done
+			esac
+		done
+	else
+		rebuildLMSC
+	fi
 else
 	rebuildLMSC
 fi
 
-open $PROJECT_DIR/Mediasoup.xcodeproj
+if [ "$NO_INTERACTIVE" = false ]; then
+	open $PROJECT_DIR/Mediasoup.xcodeproj
+fi

@@ -50,6 +50,7 @@ XCFRAMEWORK_CMD+=" -output $OUTPUT_DIR/WebRTC.xcframework"
 eval "$XCFRAMEWORK_CMD"
 
 # Create tar file with the internal include files from webrtc, compressed
+rm -rf $OUTPUT_DIR/WebRTC-includes.tar.gz
 find Mediasoup/dependencies/webrtc/src -name "*.h" -o -name "*.hpp" | tar -zcf $OUTPUT_DIR/WebRTC-includes.tar.gz -T -
 
 echo "create mediasoupclient.xcframework"

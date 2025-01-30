@@ -3,7 +3,7 @@ import Mediasoup_Private
 import WebRTC
 
 
-public class Device {
+open class Device {
     
 	private let device: DeviceWrapper
 
@@ -39,7 +39,7 @@ public class Device {
 		}
 	}
 
-	public func createSendTransport(id: String, iceParameters: String, iceCandidates: String,
+	open func createSendTransport(id: String, iceParameters: String, iceCandidates: String,
 		dtlsParameters: String, sctpParameters: String?, iceServers: String? = nil,
 		iceTransportPolicy: ICETransportPolicy = .all, appData: String?) throws -> SendTransport {
 
@@ -53,7 +53,7 @@ public class Device {
 		}
 	}
 
-	public func createReceiveTransport(id: String, iceParameters: String, iceCandidates: String,
+	open func createReceiveTransport(id: String, iceParameters: String, iceCandidates: String,
 		dtlsParameters: String, sctpParameters: String? = nil, iceServers: String? = nil,
 		iceTransportPolicy: ICETransportPolicy = .all, appData: String? = nil) throws -> ReceiveTransport {
 

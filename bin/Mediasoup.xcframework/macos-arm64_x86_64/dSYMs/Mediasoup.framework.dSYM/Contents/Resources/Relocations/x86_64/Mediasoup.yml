@@ -1,6 +1,6 @@
 ---
 triple:          'x86_64-apple-darwin'
-binary-path:     '/Users/nitro/devel/Riverside-Mobile-Shared/webrtc-dev/ios-mediasoup/build/Mediasoup/x86_64/Build/Products/Release/Mediasoup.framework/Versions/A/Mediasoup'
+binary-path:     '/Users/nitro/devel/Riverside-Mobile-Shared/webrtc-dev/ios-mediasoup/build/Mediasoup/Build/Products/Release/Mediasoup.framework/Versions/A/Mediasoup'
 relocations:
   - { offsetInCU: 0x34, offset: 0x898C2, size: 0x8, addend: 0x0, symName: _MediasoupVersionString, symObjAddr: 0x0, symBinAddr: 0xC72C0, symSize: 0x0 }
   - { offsetInCU: 0x69, offset: 0x898F7, size: 0x8, addend: 0x0, symName: _MediasoupVersionNumber, symObjAddr: 0x30, symBinAddr: 0xC72F0, symSize: 0x0 }

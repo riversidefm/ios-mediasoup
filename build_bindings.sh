@@ -28,42 +28,12 @@ xcodebuild -project "${PROJECT_NAME}.xcodeproj" \
     -sdk "iphonesimulator" \
     -derivedDataPath "${BUILD_DIR}"
 
-# Build for arm64
+# Build for arm64 and x86_64
 xcodebuild -project "${PROJECT_NAME}.xcodeproj" \
         -scheme "${FRAMEWORK_NAME}" \
         -configuration Release \
-        -arch arm64 only_active_arch=no \
-        -sdk "macosx" \
-        -derivedDataPath "${BUILD_DIR}/arm64"
-
-# Build for x86_64
-xcodebuild -project "${PROJECT_NAME}.xcodeproj" \
-        -scheme "${FRAMEWORK_NAME}" \
-        -configuration Release \
-        -arch x86_64 only_active_arch=no \
-        -sdk "macosx" \
-        -derivedDataPath "${BUILD_DIR}/x86_64"
-# Create output directory
-mkdir -p "${BUILD_DIR}/Build/Products/Release"
-
-# Copy framework and dSYM from arm64 build as base
-cp -R "${BUILD_DIR}/arm64/Build/Products/Release/${FRAMEWORK_NAME}.framework" "${BUILD_DIR}/Build/Products/Release/"
-cp -R "${BUILD_DIR}/arm64/Build/Products/Release/${FRAMEWORK_NAME}.framework.dSYM" "${BUILD_DIR}/Build/Products/Release/"
-
-# Create universal binary with lipo for framework
-lipo -create \
-    "${BUILD_DIR}/arm64/Build/Products/Release/${FRAMEWORK_NAME}.framework/${FRAMEWORK_NAME}" \
-    "${BUILD_DIR}/x86_64/Build/Products/Release/${FRAMEWORK_NAME}.framework/${FRAMEWORK_NAME}" \
-    -output "${BUILD_DIR}/Build/Products/Release/${FRAMEWORK_NAME}.framework/${FRAMEWORK_NAME}"
-
-# Create universal binary with lipo for dSYM
-lipo -create \
-    "${BUILD_DIR}/arm64/Build/Products/Release/${FRAMEWORK_NAME}.framework.dSYM/Contents/Resources/DWARF/${FRAMEWORK_NAME}" \
-    "${BUILD_DIR}/x86_64/Build/Products/Release/${FRAMEWORK_NAME}.framework.dSYM/Contents/Resources/DWARF/${FRAMEWORK_NAME}" \
-    -output "${BUILD_DIR}/Build/Products/Release/${FRAMEWORK_NAME}.framework.dSYM/Contents/Resources/DWARF/${FRAMEWORK_NAME}"
-
-# Copy the relocations folder from the x86_64 build
-cp -R "${BUILD_DIR}/x86_64/Build/Products/Release/${FRAMEWORK_NAME}.framework.dSYM/Contents/Resources/Relocations/" "${BUILD_DIR}/Build/Products/Release/${FRAMEWORK_NAME}.framework.dSYM/Contents/Resources/Relocations/"
+        -destination 'generic/platform=macOS' \
+        -derivedDataPath "${BUILD_DIR}"
 
 # Prepare output directory
 mkdir -p ${OUTPUT_DIR}

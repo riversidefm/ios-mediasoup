@@ -105,6 +105,10 @@ function refetchLibmediasoupclient() {
     cd $WORK_DIR
     rm -rf libmediasoupclient
     git clone -b vl-m112.2 --depth 1 https://github.com/VLprojects/libmediasoupclient.git
+
+    pushd $WORK_DIR/libmediasoupclient 
+    git apply $PATCHES_DIR/hybrid_callback.patch
+    popd
 }
 
 if [ -d $WORK_DIR/libmediasoupclient ]

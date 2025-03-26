@@ -4,6 +4,7 @@
 set -e
 
 NO_INTERACTIVE=false
+ONLY_FETCH_DEPS=false
 
 # Parse command line arguments
 for arg in "$@"
@@ -11,6 +12,10 @@ do
     case $arg in
         --no-interactive)
         NO_INTERACTIVE=true
+        shift
+        ;;
+        --only-fetch-deps)
+        ONLY_FETCH_DEPS=true
         shift
         ;;
     esac
@@ -82,9 +87,9 @@ function clearArtifacts() {
 	echo 'BUILD_DIR created'
 }
 
-if [ "$NO_INTERACTIVE" = true ]; then
+if [ "$ONLY_FETCH_DEPS" = false ] && [ "$NO_INTERACTIVE" = true ]; then
     clearArtifacts
-else
+elif [ "$ONLY_FETCH_DEPS" = false ]; then
 	while true
 	do
 		read -n 1 -p "Clear old build artifacts? (Y|n): " INPUT_STRING
@@ -112,12 +117,16 @@ function refetchLibmediasoupclient() {
 	cd $WORK_DIR
 	rm -rf libmediasoupclient
 	git clone -b vl-m112.2 --depth 1 https://github.com/VLprojects/libmediasoupclient.git
+
+	pushd $WORK_DIR/libmediasoupclient 
+    git apply $PATCHES_DIR/hybrid_callback.patch
+    popd
 }
 
 if [ -d $WORK_DIR/libmediasoupclient ]
 then
 	echo "libmediasoupclient is already on disk"
-	if [ "$NO_INTERACTIVE" = false ]; then
+	if [ "$NO_INTERACTIVE" = false ] && [ "$ONLY_FETCH_DEPS" = false ]; then
 		while true
 		do
 			read -n 1 -p "Refetch libmediasoupclient (y|N): " INPUT_STRING
@@ -152,7 +161,7 @@ function refetchDepotTools() {
 if [ -d $WORK_DIR/depot_tools ]
 then
 	echo "depot_tools is already on disk"
-	if [ "$NO_INTERACTIVE" = false ]; then
+	if [ "$NO_INTERACTIVE" = false ] && [ "$ONLY_FETCH_DEPS" = false ]; then
 		while true
 		do
 			read -n 1 -p "Refetch depot_tools (y|N): " INPUT_STRING
@@ -172,7 +181,9 @@ then
 		done
 	fi
 else
-	refetchDepotTools
+	if [ "$ONLY_FETCH_DEPS" = false ]; then
+		refetchDepotTools
+	fi
 fi
 
 export PATH=$WORK_DIR/depot_tools:$PATH
@@ -247,40 +258,53 @@ function resetWebRTC() {
 	git reset --hard
 }
 
-if [ -d $WORK_DIR/webrtc ]
-then
-	echo "WebRTC is already on disk"
-	if [ "$NO_INTERACTIVE" = false ]; then
-		while true
-		do
-			read -n 1 -p "Refetch WebRTC? (f)ull clone | (r)eset local changes | (N)o: " INPUT_STRING
-			echo ""
-			case $INPUT_STRING in
-				n|N|"")
-					break
-					;;
-				f|F)
-					refetchWebRTC
-					patchWebRTC
-					break
-					;;
-				r|R)
-					resetWebRTC
-					patchWebRTC
-					break
-					;;
-				*)
-					tput bel
-					;;
-			esac
-		done
+if [ "$ONLY_FETCH_DEPS" = true ]; then
+	echo "Only fetching dependencies, extracting WebRTC headers"
+	echo "Untarring WebRTC-includes.tar.gz..."
+	tar -xzf $PROJECT_DIR/bin/WebRTC-includes.tar.gz -C $PROJECT_DIR
+
+else
+	if [ -d $WORK_DIR/webrtc ]
+	then
+		echo "WebRTC is already on disk"
+		if [ "$NO_INTERACTIVE" = false ]; then
+			while true
+			do
+				read -n 1 -p "Refetch WebRTC? (f)ull clone | (r)eset local changes | (N)o: " INPUT_STRING
+				echo ""
+				case $INPUT_STRING in
+					n|N|"")
+						break
+						;;
+					f|F)
+						refetchWebRTC
+						patchWebRTC
+						break
+						;;
+					r|R)
+						resetWebRTC
+						patchWebRTC
+						break
+						;;
+					*)
+						tput bel
+						;;
+				esac
+			done
+		else
+			resetWebRTC
+			patchWebRTC
+		fi
 	else
-		resetWebRTC
+		refetchWebRTC
 		patchWebRTC
 	fi
-else
-	refetchWebRTC
-	patchWebRTC
+fi
+
+# Exit early if only fetching dependencies
+if [ "$ONLY_FETCH_DEPS" = true ]; then
+    echo "Dependencies fetched. Exiting as requested by --only-fetch-deps flag."
+    exit 0
 fi
 
 # This patch should be applied only after WebRTC is already built.

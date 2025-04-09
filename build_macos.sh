@@ -105,9 +105,10 @@ function refetchLibmediasoupclient() {
     cd $WORK_DIR
     rm -rf libmediasoupclient
     git clone -b vl-m112.2 --depth 1 https://github.com/VLprojects/libmediasoupclient.git
-
+    
     pushd $WORK_DIR/libmediasoupclient 
     git apply $PATCHES_DIR/hybrid_callback.patch
+    git apply $PATCHES_DIR/datachannel_open.patch
     popd
 }
 
@@ -406,6 +407,7 @@ function rebuildLMSC() {
         '-DMEDIASOUPCLIENT_BUILD_TESTS=OFF'
         '-DCMAKE_OSX_DEPLOYMENT_TARGET=13'
         '-DCMAKE_BUILD_TYPE=RelWithDebInfo'
+        '-DCMAKE_POLICY_VERSION_MINIMUM=3.5'
     )
     for str in ${lmsc_cmake_arguments[@]}; do
         lmsc_cmake_args+=" ${str}"

@@ -71,6 +71,7 @@ function refetchLibmediasoupclient() {
 
     pushd $WORK_DIR/libmediasoupclient 
     git apply $PATCHES_DIR/hybrid_callback.patch
+    git apply $PATCHES_DIR/datachannel_open.patch
     popd
 }
 
@@ -115,6 +116,7 @@ function patchWebRTC() {
     patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/objc_audio_device_module_mm.patch
     patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/absl_threadlocal.patch
     patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/task_factory.patch
+    patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/metal_header.patch
 }
 
 function refetchWebRTC() {
@@ -248,6 +250,7 @@ function rebuildLMSC() {
         '-DMEDIASOUPCLIENT_BUILD_TESTS=OFF'
         '-DCMAKE_OSX_DEPLOYMENT_TARGET=13'
         '-DCMAKE_BUILD_TYPE=Debug'
+        '-DCMAKE_POLICY_VERSION_MINIMUM=3.5'
     )
     for str in ${lmsc_cmake_arguments[@]}; do
         lmsc_cmake_args+=" ${str}"

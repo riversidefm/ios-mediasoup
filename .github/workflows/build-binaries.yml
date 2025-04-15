@@ -1,0 +1,43 @@
+name: Build and Push Binaries
+
+on:
+  push:
+    branches-ignore:
+      - master
+      - main
+
+jobs:
+  build:
+    name: Build and Push Binaries
+    runs-on: macos-14
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Select Xcode 15.4
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app
+
+      - name: Build binaries
+        run: |
+          chmod +x build_all.sh
+          ./build_all.sh
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Add and commit binaries
+        run: |
+          git add -u bin/
+          git commit -m "chore: update binaries [skip ci]"
+          git push 

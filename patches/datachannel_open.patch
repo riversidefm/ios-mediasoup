@@ -1,0 +1,27 @@
+diff --git a/src/DataProducer.cpp b/src/DataProducer.cpp
+index c53119d..97063dc 100644
+--- a/src/DataProducer.cpp
++++ b/src/DataProducer.cpp
+@@ -18,8 +18,21 @@ namespace mediasoupclient
+ 	    sctpStreamParameters(sctpStreamParameters), appData(appData)
+ 	{
+ 		MSC_TRACE();
+-
+ 		this->dataChannel->RegisterObserver(this);
++        webrtc::DataChannelInterface::DataState state = this->dataChannel->state();
++        if (state == webrtc::DataChannelInterface::kOpen) {
++            // If the datachannel is already open when we register the observer,
++            // we need to manually trigger OnStateChange to avoid missing the open event.
++            // Note: There's a race condition risk here because:
++            // 1. Both registerObserver() and state() run on the signaling thread
++            // 2. The state could change between these two calls
++            // 3. The observer might have already been called by the time we check
++            //
++            // Ideally, this OnStateChange call should happen on the signaling thread,
++            // but accessing the signaling thread requires PeerConnection access.
++            // We'll handle potential duplicate "open" events (if the race happens) at the application layer.
++            OnStateChange();
++        }
+ 	};
+ 
+ 	const std::string& DataProducer::GetId() const

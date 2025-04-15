@@ -1,0 +1,72 @@
+--- webrtc/src/sdk/objc/components/renderer/metal/RTCMTLI420Renderer.mm
++++ webrtc/src/sdk/objc/components/renderer/metal/RTCMTLI420Renderer.mm
+@@ -10,8 +10,7 @@
+ 
+ #import "RTCMTLI420Renderer.h"
+ 
+-#import <Metal/Metal.h>
+-#import <MetalKit/MetalKit.h>
++#import <MetalKit/MTKView.h>
+ 
+ #import "base/RTCI420Buffer.h"
+ #import "base/RTCLogging.h"
+--- webrtc/src/sdk/objc/components/renderer/metal/RTCMTLNSVideoView.m
++++ webrtc/src/sdk/objc/components/renderer/metal/RTCMTLNSVideoView.m
+@@ -10,8 +10,7 @@
+ 
+ #import "RTCMTLNSVideoView.h"
+ 
+-#import <Metal/Metal.h>
+-#import <MetalKit/MetalKit.h>
++#import <MetalKit/MTKView.h>
+ 
+ #import "base/RTCVideoFrame.h"
+ 
+--- webrtc/src/sdk/objc/components/renderer/metal/RTCMTLNV12Renderer.mm
++++ webrtc/src/sdk/objc/components/renderer/metal/RTCMTLNV12Renderer.mm
+@@ -10,8 +10,7 @@
+ 
+ #import "RTCMTLNV12Renderer.h"
+ 
+-#import <Metal/Metal.h>
+-#import <MetalKit/MetalKit.h>
++#import <MetalKit/MTKView.h>
+ 
+ #import "RTCMTLRenderer+Private.h"
+ #import "base/RTCLogging.h"
+--- webrtc/src/sdk/objc/components/renderer/metal/RTCMTLRGBRenderer.mm
++++ webrtc/src/sdk/objc/components/renderer/metal/RTCMTLRGBRenderer.mm
+@@ -10,8 +10,7 @@
+ 
+ #import "RTCMTLRGBRenderer.h"
+ 
+-#import <Metal/Metal.h>
+-#import <MetalKit/MetalKit.h>
++#import <MetalKit/MTKView.h>
+ 
+ #import "RTCMTLRenderer+Private.h"
+ #import "base/RTCLogging.h"
+--- webrtc/src/sdk/objc/components/renderer/metal/RTCMTLRenderer.mm
++++ webrtc/src/sdk/objc/components/renderer/metal/RTCMTLRenderer.mm
+@@ -10,8 +10,7 @@
+ 
+ #import "RTCMTLRenderer+Private.h"
+ 
+-#import <Metal/Metal.h>
+-#import <MetalKit/MetalKit.h>
++#import <MetalKit/MTKView.h>
+ 
+ #import "base/RTCLogging.h"
+ #import "base/RTCVideoFrame.h"
+--- webrtc/src/sdk/objc/components/renderer/metal/RTCMTLVideoView.m
++++ webrtc/src/sdk/objc/components/renderer/metal/RTCMTLVideoView.m
+@@ -10,8 +10,7 @@
+ 
+ #import "RTCMTLVideoView.h"
+ 
+-#import <Metal/Metal.h>
+-#import <MetalKit/MetalKit.h>
++#import <MetalKit/MTKView.h>
+ 
+ #import "base/RTCLogging.h"
+ #import "base/RTCVideoFrame.h"

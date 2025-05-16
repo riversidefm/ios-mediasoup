@@ -1,3 +1,16 @@
+diff --git webrtc/src/sdk/objc/components/audio/RTCAudioDevice.h webrtc/src/sdk/objc/components/audio/RTCAudioDevice.h
+index f445825..059482d 100644
+--- webrtc/src/sdk/objc/components/audio/RTCAudioDevice.h
++++ webrtc/src/sdk/objc/components/audio/RTCAudioDevice.h
+@@ -35,7 +35,7 @@ typedef OSStatus (^RTC_OBJC_TYPE(RTCAudioDeviceDeliverRecordedDataBlock))(
+     const AudioTimeStamp *_Nonnull timestamp,
+     NSInteger inputBusNumber,
+     UInt32 frameCount,
+-    const AudioBufferList *_Nullable inputData,
++    AudioBufferList *_Nullable inputData,
+     void *_Nullable renderContext,
+     NS_NOESCAPE RTC_OBJC_TYPE(RTCAudioDeviceRenderRecordedDataBlock) _Nullable renderBlock);
+ 
 diff --git webrtc/src/audio/audio_transport_impl.cc webrtc/src/audio/audio_transport_impl.cc
 index 42a81d5..f33d88a 100644
 --- webrtc/src/audio/audio_transport_impl.cc
@@ -356,7 +369,7 @@ index 156d632..1d131df 100644
 +                  if(*actionFlags == kAudioOfflineUnitRenderAction_Render  && audio_frames->size() == 1) {
 +                      webrtc::AudioFrame* audio_frame = audio_frames->front();
 +                      AudioBuffer* audio_buffer = &inputData->mBuffers[0];
-+                      int32_t processed_audio_data_size = audio_frame->samples_per_channel() * audio_frame->num_channels() * 2; // 2 bytes per frame
++                      uint32_t processed_audio_data_size = audio_frame->samples_per_channel() * audio_frame->num_channels() * 2; // 2 bytes per frame
 +                      /*
 +                       Ignore AEC buffers If the sample rate and/or number frames doesn't match between input and webrtc processed audio.
 +                       */

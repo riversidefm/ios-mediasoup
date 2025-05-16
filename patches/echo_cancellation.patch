@@ -1,7 +1,7 @@
-diff --git a/audio/audio_transport_impl.cc b/audio/audio_transport_impl.cc
+diff --git webrtc/src/audio/audio_transport_impl.cc webrtc/src/audio/audio_transport_impl.cc
 index 42a81d5..f33d88a 100644
---- a/audio/audio_transport_impl.cc
-+++ b/audio/audio_transport_impl.cc
+--- webrtc/src/audio/audio_transport_impl.cc
++++ webrtc/src/audio/audio_transport_impl.cc
 @@ -105,7 +105,7 @@ AudioTransportImpl::AudioTransportImpl(
  
  AudioTransportImpl::~AudioTransportImpl() {}
@@ -38,10 +38,10 @@ index 42a81d5..f33d88a 100644
  }
  
  void AudioTransportImpl::SendProcessedData(
-diff --git a/audio/audio_transport_impl.h b/audio/audio_transport_impl.h
+diff --git webrtc/src/audio/audio_transport_impl.h webrtc/src/audio/audio_transport_impl.h
 index 24b09d2..7bb0582 100644
---- a/audio/audio_transport_impl.h
-+++ b/audio/audio_transport_impl.h
+--- webrtc/src/audio/audio_transport_impl.h
++++ webrtc/src/audio/audio_transport_impl.h
 @@ -41,7 +41,7 @@ class AudioTransportImpl : public AudioTransport {
    ~AudioTransportImpl() override;
  
@@ -69,10 +69,10 @@ index 24b09d2..7bb0582 100644
    // Render side.
  
    rtc::scoped_refptr<AudioMixer> mixer_;
-diff --git a/modules/audio_device/audio_device_buffer.cc b/modules/audio_device/audio_device_buffer.cc
+diff --git webrtc/src/modules/audio_device/audio_device_buffer.cc webrtc/src/modules/audio_device/audio_device_buffer.cc
 index b1be445..368389e 100644
---- a/modules/audio_device/audio_device_buffer.cc
-+++ b/modules/audio_device/audio_device_buffer.cc
+--- webrtc/src/modules/audio_device/audio_device_buffer.cc
++++ webrtc/src/modules/audio_device/audio_device_buffer.cc
 @@ -274,7 +274,7 @@ int32_t AudioDeviceBuffer::SetRecordedBuffer(
    return 0;
  }
@@ -100,10 +100,10 @@ index b1be445..368389e 100644
  }
  
  int32_t AudioDeviceBuffer::RequestPlayoutData(size_t samples_per_channel) {
-diff --git a/modules/audio_device/audio_device_buffer.h b/modules/audio_device/audio_device_buffer.h
+diff --git webrtc/src/modules/audio_device/audio_device_buffer.h webrtc/src/modules/audio_device/audio_device_buffer.h
 index eb681a7..39b4cc5 100644
---- a/modules/audio_device/audio_device_buffer.h
-+++ b/modules/audio_device/audio_device_buffer.h
+--- webrtc/src/modules/audio_device/audio_device_buffer.h
++++ webrtc/src/modules/audio_device/audio_device_buffer.h
 @@ -25,6 +25,7 @@
  #include "rtc_base/thread_annotations.h"
  #include "rtc_base/timestamp_aligner.h"
@@ -121,10 +121,10 @@ index eb681a7..39b4cc5 100644
    uint32_t NewMicLevel() const;
  
    virtual int32_t RequestPlayoutData(size_t samples_per_channel);
-diff --git a/modules/audio_device/audio_device_data_observer.cc b/modules/audio_device/audio_device_data_observer.cc
+diff --git webrtc/src/modules/audio_device/audio_device_data_observer.cc webrtc/src/modules/audio_device/audio_device_data_observer.cc
 index 0524830..7c9703c 100644
---- a/modules/audio_device/audio_device_data_observer.cc
-+++ b/modules/audio_device/audio_device_data_observer.cc
+--- webrtc/src/modules/audio_device/audio_device_data_observer.cc
++++ webrtc/src/modules/audio_device/audio_device_data_observer.cc
 @@ -45,7 +45,7 @@ class ADMWrapper : public AudioDeviceModule, public AudioTransport {
    // Make sure we have a valid ADM before returning it to user.
    bool IsValid() { return is_valid_; }
@@ -161,10 +161,10 @@ index 0524830..7c9703c 100644
    }
  
    int32_t NeedMorePlayData(const size_t nSamples,
-diff --git a/modules/audio_device/fine_audio_buffer.cc b/modules/audio_device/fine_audio_buffer.cc
+diff --git webrtc/src/modules/audio_device/fine_audio_buffer.cc webrtc/src/modules/audio_device/fine_audio_buffer.cc
 index 86240da..e343981 100644
---- a/modules/audio_device/fine_audio_buffer.cc
-+++ b/modules/audio_device/fine_audio_buffer.cc
+--- webrtc/src/modules/audio_device/fine_audio_buffer.cc
++++ webrtc/src/modules/audio_device/fine_audio_buffer.cc
 @@ -105,7 +105,7 @@ void FineAudioBuffer::GetPlayoutData(rtc::ArrayView<int16_t> audio_buffer,
    playout_delay_ms_ = playout_delay_ms;
  }
@@ -196,10 +196,10 @@ index 86240da..e343981 100644
  }
  
  }  // namespace webrtc
-diff --git a/modules/audio_device/fine_audio_buffer.h b/modules/audio_device/fine_audio_buffer.h
+diff --git webrtc/src/modules/audio_device/fine_audio_buffer.h webrtc/src/modules/audio_device/fine_audio_buffer.h
 index a6c3042..390367f 100644
---- a/modules/audio_device/fine_audio_buffer.h
-+++ b/modules/audio_device/fine_audio_buffer.h
+--- webrtc/src/modules/audio_device/fine_audio_buffer.h
++++ webrtc/src/modules/audio_device/fine_audio_buffer.h
 @@ -17,6 +17,7 @@
  namespace webrtc {
  
@@ -217,10 +217,10 @@ index a6c3042..390367f 100644
                             int record_delay_ms);
  
   private:
-diff --git a/modules/audio_device/include/audio_device_defines.h b/modules/audio_device/include/audio_device_defines.h
+diff --git webrtc/src/modules/audio_device/include/audio_device_defines.h webrtc/src/modules/audio_device/include/audio_device_defines.h
 index d677d41..692a04a 100644
---- a/modules/audio_device/include/audio_device_defines.h
-+++ b/modules/audio_device/include/audio_device_defines.h
+--- webrtc/src/modules/audio_device/include/audio_device_defines.h
++++ webrtc/src/modules/audio_device/include/audio_device_defines.h
 @@ -30,11 +30,12 @@ static const int kAdmMaxPlayoutBufferSizeMs = 250;
  // ----------------------------------------------------------------------------
  //  AudioTransport
@@ -244,10 +244,10 @@ index d677d41..692a04a 100644
        const void* audioSamples,
        size_t nSamples,
        size_t nBytesPerSample,
-diff --git a/sdk/objc/native/src/objc_audio_device.h b/sdk/objc/native/src/objc_audio_device.h
+diff --git webrtc/src/sdk/objc/native/src/objc_audio_device.h webrtc/src/sdk/objc/native/src/objc_audio_device.h
 index fcfe7a6..83b8b89 100644
---- a/sdk/objc/native/src/objc_audio_device.h
-+++ b/sdk/objc/native/src/objc_audio_device.h
+--- webrtc/src/sdk/objc/native/src/objc_audio_device.h
++++ webrtc/src/sdk/objc/native/src/objc_audio_device.h
 @@ -135,7 +135,7 @@ class ObjCAudioDeviceModule : public AudioDeviceModule {
  #endif  // WEBRTC_IOS
  
@@ -257,10 +257,10 @@ index fcfe7a6..83b8b89 100644
                                   const AudioTimeStamp* time_stamp,
                                   NSInteger bus_number,
                                   UInt32 num_frames,
-diff --git a/sdk/objc/native/src/objc_audio_device.mm b/sdk/objc/native/src/objc_audio_device.mm
+diff --git webrtc/src/sdk/objc/native/src/objc_audio_device.mm webrtc/src/sdk/objc/native/src/objc_audio_device.mm
 index d629fae..55cc768 100644
---- a/sdk/objc/native/src/objc_audio_device.mm
-+++ b/sdk/objc/native/src/objc_audio_device.mm
+--- webrtc/src/sdk/objc/native/src/objc_audio_device.mm
++++ webrtc/src/sdk/objc/native/src/objc_audio_device.mm
 @@ -397,7 +397,7 @@
    return true;
  }
@@ -319,10 +319,10 @@ index d629fae..55cc768 100644
  }
  
  OSStatus ObjCAudioDeviceModule::OnGetPlayoutData(AudioUnitRenderActionFlags* flags,
-diff --git a/sdk/objc/native/src/objc_audio_device_delegate.mm b/sdk/objc/native/src/objc_audio_device_delegate.mm
+diff --git webrtc/src/sdk/objc/native/src/objc_audio_device_delegate.mm webrtc/src/sdk/objc/native/src/objc_audio_device_delegate.mm
 index 156d632..1d131df 100644
---- a/sdk/objc/native/src/objc_audio_device_delegate.mm
-+++ b/sdk/objc/native/src/objc_audio_device_delegate.mm
+--- webrtc/src/sdk/objc/native/src/objc_audio_device_delegate.mm
++++ webrtc/src/sdk/objc/native/src/objc_audio_device_delegate.mm
 @@ -19,6 +19,7 @@
  #include "rtc_base/checks.h"
  #include "rtc_base/logging.h"

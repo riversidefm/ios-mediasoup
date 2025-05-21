@@ -52,12 +52,12 @@ index 42a81d5..f33d88a 100644
  
  void AudioTransportImpl::SendProcessedData(
 diff --git webrtc/src/audio/audio_transport_impl.h webrtc/src/audio/audio_transport_impl.h
-index 24b09d2..7bb0582 100644
+index 24b09d2140..ecbe961f9d 100644
 --- webrtc/src/audio/audio_transport_impl.h
 +++ webrtc/src/audio/audio_transport_impl.h
 @@ -41,7 +41,7 @@ class AudioTransportImpl : public AudioTransport {
    ~AudioTransportImpl() override;
- 
+
    // TODO(bugs.webrtc.org/13620) Deprecate this function
 -  int32_t RecordedDataIsAvailable(const void* audioSamples,
 +  AudioFrame* RecordedDataIsAvailable(const void* audioSamples,
@@ -67,21 +67,12 @@ index 24b09d2..7bb0582 100644
 @@ -52,7 +52,7 @@ class AudioTransportImpl : public AudioTransport {
                                    bool keyPressed,
                                    uint32_t& newMicLevel) override;
- 
+
 -  int32_t RecordedDataIsAvailable(
 +    AudioFrame* RecordedDataIsAvailable(
        const void* audioSamples,
        size_t nSamples,
        size_t nBytesPerSample,
-@@ -105,6 +105,8 @@ class AudioTransportImpl : public AudioTransport {
-   bool swap_stereo_channels_ RTC_GUARDED_BY(capture_lock_) = false;
-   PushResampler<int16_t> capture_resampler_;
- 
-+  AudioSender *local_audio_sender_;
-+
-   // Render side.
- 
-   rtc::scoped_refptr<AudioMixer> mixer_;
 diff --git webrtc/src/modules/audio_device/audio_device_buffer.cc webrtc/src/modules/audio_device/audio_device_buffer.cc
 index b1be445..368389e 100644
 --- webrtc/src/modules/audio_device/audio_device_buffer.cc
@@ -135,13 +126,13 @@ index eb681a7..39b4cc5 100644
  
    virtual int32_t RequestPlayoutData(size_t samples_per_channel);
 diff --git webrtc/src/modules/audio_device/audio_device_data_observer.cc webrtc/src/modules/audio_device/audio_device_data_observer.cc
-index 0524830..7c9703c 100644
+index 0524830327..15604e6b7d 100644
 --- webrtc/src/modules/audio_device/audio_device_data_observer.cc
 +++ webrtc/src/modules/audio_device/audio_device_data_observer.cc
 @@ -45,7 +45,7 @@ class ADMWrapper : public AudioDeviceModule, public AudioTransport {
    // Make sure we have a valid ADM before returning it to user.
    bool IsValid() { return is_valid_; }
- 
+
 -  int32_t RecordedDataIsAvailable(const void* audioSamples,
 +  AudioFrame* RecordedDataIsAvailable(const void* audioSamples,
                                    size_t nSamples,
@@ -149,7 +140,7 @@ index 0524830..7c9703c 100644
                                    size_t nChannels,
 @@ -62,7 +62,7 @@ class ADMWrapper : public AudioDeviceModule, public AudioTransport {
    }
- 
+
    // AudioTransport methods overrides.
 -  int32_t RecordedDataIsAvailable(
 +  AudioFrame* RecordedDataIsAvailable(
@@ -165,15 +156,6 @@ index 0524830..7c9703c 100644
      // Capture PCM data of locally captured audio.
      if (observer_) {
        observer_->OnCaptureData(audioSamples, nSamples, nBytesPerSample,
-@@ -89,7 +89,7 @@ class ADMWrapper : public AudioDeviceModule, public AudioTransport {
-           capture_timestamp_ns);
-     }
- 
--    return res;
-+    return nullptr;
-   }
- 
-   int32_t NeedMorePlayData(const size_t nSamples,
 diff --git webrtc/src/modules/audio_device/fine_audio_buffer.cc webrtc/src/modules/audio_device/fine_audio_buffer.cc
 index 86240da..e343981 100644
 --- webrtc/src/modules/audio_device/fine_audio_buffer.cc

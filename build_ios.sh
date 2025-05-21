@@ -156,7 +156,9 @@ function refetchDepotTools() {
 	echo 'Cloning depot_tools'
 	cd $WORK_DIR
 	rm -rf depot_tools
-	git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
+	git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+	cd depot_tools
+	git checkout 9b4d1e485d37a44e3ebe73a06d21fc79c527ec96
 }
 
 if [ -d $WORK_DIR/depot_tools ]

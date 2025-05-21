@@ -1,0 +1,372 @@
+diff --git webrtc/src/sdk/objc/components/audio/RTCAudioDevice.h webrtc/src/sdk/objc/components/audio/RTCAudioDevice.h
+index f445825..059482d 100644
+--- webrtc/src/sdk/objc/components/audio/RTCAudioDevice.h
++++ webrtc/src/sdk/objc/components/audio/RTCAudioDevice.h
+@@ -35,7 +35,7 @@ typedef OSStatus (^RTC_OBJC_TYPE(RTCAudioDeviceDeliverRecordedDataBlock))(
+     const AudioTimeStamp *_Nonnull timestamp,
+     NSInteger inputBusNumber,
+     UInt32 frameCount,
+-    const AudioBufferList *_Nullable inputData,
++    AudioBufferList *_Nullable inputData,
+     void *_Nullable renderContext,
+     NS_NOESCAPE RTC_OBJC_TYPE(RTCAudioDeviceRenderRecordedDataBlock) _Nullable renderBlock);
+ 
+diff --git webrtc/src/audio/audio_transport_impl.cc webrtc/src/audio/audio_transport_impl.cc
+index 42a81d5..f33d88a 100644
+--- webrtc/src/audio/audio_transport_impl.cc
++++ webrtc/src/audio/audio_transport_impl.cc
+@@ -105,7 +105,7 @@ AudioTransportImpl::AudioTransportImpl(
+ 
+ AudioTransportImpl::~AudioTransportImpl() {}
+ 
+-int32_t AudioTransportImpl::RecordedDataIsAvailable(
++AudioFrame* AudioTransportImpl::RecordedDataIsAvailable(
+     const void* audio_data,
+     size_t number_of_frames,
+     size_t bytes_per_sample,
+@@ -124,7 +124,7 @@ int32_t AudioTransportImpl::RecordedDataIsAvailable(
+ 
+ // Not used in Chromium. Process captured audio and distribute to all sending
+ // streams, and try to do this at the lowest possible sample rate.
+-int32_t AudioTransportImpl::RecordedDataIsAvailable(
++AudioFrame* AudioTransportImpl::RecordedDataIsAvailable(
+     const void* audio_data,
+     size_t number_of_frames,
+     size_t bytes_per_sample,
+@@ -172,13 +172,16 @@ int32_t AudioTransportImpl::RecordedDataIsAvailable(
+                                                    1000000);
+   }
+ 
++  AudioFrame *audio_frame_copy = new AudioFrame();
++  audio_frame_copy->CopyFrom(*audio_frame);
++
+   RTC_DCHECK_GT(audio_frame->samples_per_channel_, 0);
+   if (async_audio_processing_)
+     async_audio_processing_->Process(std::move(audio_frame));
+   else
+     SendProcessedData(std::move(audio_frame));
+ 
+-  return 0;
++  return audio_frame_copy;
+ }
+ 
+ void AudioTransportImpl::SendProcessedData(
+diff --git webrtc/src/audio/audio_transport_impl.h webrtc/src/audio/audio_transport_impl.h
+index 24b09d2140..ecbe961f9d 100644
+--- webrtc/src/audio/audio_transport_impl.h
++++ webrtc/src/audio/audio_transport_impl.h
+@@ -41,7 +41,7 @@ class AudioTransportImpl : public AudioTransport {
+   ~AudioTransportImpl() override;
+
+   // TODO(bugs.webrtc.org/13620) Deprecate this function
+-  int32_t RecordedDataIsAvailable(const void* audioSamples,
++  AudioFrame* RecordedDataIsAvailable(const void* audioSamples,
+                                   size_t nSamples,
+                                   size_t nBytesPerSample,
+                                   size_t nChannels,
+@@ -52,7 +52,7 @@ class AudioTransportImpl : public AudioTransport {
+                                   bool keyPressed,
+                                   uint32_t& newMicLevel) override;
+
+-  int32_t RecordedDataIsAvailable(
++    AudioFrame* RecordedDataIsAvailable(
+       const void* audioSamples,
+       size_t nSamples,
+       size_t nBytesPerSample,
+diff --git webrtc/src/modules/audio_device/audio_device_buffer.cc webrtc/src/modules/audio_device/audio_device_buffer.cc
+index b1be445..368389e 100644
+--- webrtc/src/modules/audio_device/audio_device_buffer.cc
++++ webrtc/src/modules/audio_device/audio_device_buffer.cc
+@@ -274,7 +274,7 @@ int32_t AudioDeviceBuffer::SetRecordedBuffer(
+   return 0;
+ }
+ 
+-int32_t AudioDeviceBuffer::DeliverRecordedData() {
++AudioFrame* AudioDeviceBuffer::DeliverRecordedData() {
+   if (!audio_transport_cb_) {
+     RTC_LOG(LS_WARNING) << "Invalid audio transport";
+     return 0;
+@@ -283,14 +283,14 @@ int32_t AudioDeviceBuffer::DeliverRecordedData() {
+   const size_t bytes_per_frame = rec_channels_ * sizeof(int16_t);
+   uint32_t new_mic_level_dummy = 0;
+   uint32_t total_delay_ms = play_delay_ms_ + rec_delay_ms_;
+-  int32_t res = audio_transport_cb_->RecordedDataIsAvailable(
++  AudioFrame *audio_frame = audio_transport_cb_->RecordedDataIsAvailable(
+       rec_buffer_.data(), frames, bytes_per_frame, rec_channels_,
+       rec_sample_rate_, total_delay_ms, 0, 0, typing_status_,
+       new_mic_level_dummy, capture_timestamp_ns_);
+-  if (res == -1) {
++  if (audio_frame == nullptr) {
+     RTC_LOG(LS_ERROR) << "RecordedDataIsAvailable() failed";
+   }
+-  return 0;
++  return audio_frame;//;
+ }
+ 
+ int32_t AudioDeviceBuffer::RequestPlayoutData(size_t samples_per_channel) {
+diff --git webrtc/src/modules/audio_device/audio_device_buffer.h webrtc/src/modules/audio_device/audio_device_buffer.h
+index eb681a7..39b4cc5 100644
+--- webrtc/src/modules/audio_device/audio_device_buffer.h
++++ webrtc/src/modules/audio_device/audio_device_buffer.h
+@@ -25,6 +25,7 @@
+ #include "rtc_base/thread_annotations.h"
+ #include "rtc_base/timestamp_aligner.h"
+ 
++class AudioFrame;
+ namespace webrtc {
+ 
+ // Delta times between two successive playout callbacks are limited to this
+@@ -107,7 +108,7 @@ class AudioDeviceBuffer {
+       size_t samples_per_channel,
+       absl::optional<int64_t> capture_timestamp_ns);
+   virtual void SetVQEData(int play_delay_ms, int rec_delay_ms);
+-  virtual int32_t DeliverRecordedData();
++  virtual AudioFrame* DeliverRecordedData();
+   uint32_t NewMicLevel() const;
+ 
+   virtual int32_t RequestPlayoutData(size_t samples_per_channel);
+diff --git webrtc/src/modules/audio_device/audio_device_data_observer.cc webrtc/src/modules/audio_device/audio_device_data_observer.cc
+index 0524830327..15604e6b7d 100644
+--- webrtc/src/modules/audio_device/audio_device_data_observer.cc
++++ webrtc/src/modules/audio_device/audio_device_data_observer.cc
+@@ -45,7 +45,7 @@ class ADMWrapper : public AudioDeviceModule, public AudioTransport {
+   // Make sure we have a valid ADM before returning it to user.
+   bool IsValid() { return is_valid_; }
+
+-  int32_t RecordedDataIsAvailable(const void* audioSamples,
++  AudioFrame* RecordedDataIsAvailable(const void* audioSamples,
+                                   size_t nSamples,
+                                   size_t nBytesPerSample,
+                                   size_t nChannels,
+@@ -62,7 +62,7 @@ class ADMWrapper : public AudioDeviceModule, public AudioTransport {
+   }
+
+   // AudioTransport methods overrides.
+-  int32_t RecordedDataIsAvailable(
++  AudioFrame* RecordedDataIsAvailable(
+       const void* audioSamples,
+       size_t nSamples,
+       size_t nBytesPerSample,
+@@ -74,7 +74,7 @@ class ADMWrapper : public AudioDeviceModule, public AudioTransport {
+       bool keyPressed,
+       uint32_t& newMicLevel,
+       absl::optional<int64_t> capture_timestamp_ns) override {
+-    int32_t res = 0;
++    AudioFrame *res = nullptr;
+     // Capture PCM data of locally captured audio.
+     if (observer_) {
+       observer_->OnCaptureData(audioSamples, nSamples, nBytesPerSample,
+diff --git webrtc/src/modules/audio_device/fine_audio_buffer.cc webrtc/src/modules/audio_device/fine_audio_buffer.cc
+index 86240da..e343981 100644
+--- webrtc/src/modules/audio_device/fine_audio_buffer.cc
++++ webrtc/src/modules/audio_device/fine_audio_buffer.cc
+@@ -105,7 +105,7 @@ void FineAudioBuffer::GetPlayoutData(rtc::ArrayView<int16_t> audio_buffer,
+   playout_delay_ms_ = playout_delay_ms;
+ }
+ 
+-void FineAudioBuffer::DeliverRecordedData(
++std::vector<AudioFrame*>* FineAudioBuffer::DeliverRecordedData(
+     rtc::ArrayView<const int16_t> audio_buffer,
+     int record_delay_ms) {
+   RTC_DCHECK(IsReadyForRecord());
+@@ -116,15 +116,20 @@ void FineAudioBuffer::DeliverRecordedData(
+   // the new size of the internal `record_buffer_`.
+   const size_t num_elements_10ms =
+       record_channels_ * record_samples_per_channel_10ms_;
++  std::vector<AudioFrame*> *audio_frames = new std::vector<AudioFrame*>();
+   while (record_buffer_.size() >= num_elements_10ms) {
+     audio_device_buffer_->SetRecordedBuffer(record_buffer_.data(),
+                                             record_samples_per_channel_10ms_);
+     audio_device_buffer_->SetVQEData(playout_delay_ms_, record_delay_ms);
+-    audio_device_buffer_->DeliverRecordedData();
++    AudioFrame *audio_frame = audio_device_buffer_->DeliverRecordedData();
++    if (audio_frame) {
++        audio_frames->push_back(audio_frame);
++    }
+     memmove(record_buffer_.data(), record_buffer_.data() + num_elements_10ms,
+             (record_buffer_.size() - num_elements_10ms) * sizeof(int16_t));
+     record_buffer_.SetSize(record_buffer_.size() - num_elements_10ms);
+   }
++  return audio_frames;
+ }
+ 
+ }  // namespace webrtc
+diff --git webrtc/src/modules/audio_device/fine_audio_buffer.h webrtc/src/modules/audio_device/fine_audio_buffer.h
+index a6c3042..390367f 100644
+--- webrtc/src/modules/audio_device/fine_audio_buffer.h
++++ webrtc/src/modules/audio_device/fine_audio_buffer.h
+@@ -17,6 +17,7 @@
+ namespace webrtc {
+ 
+ class AudioDeviceBuffer;
++class AudioFrame;
+ 
+ // FineAudioBuffer takes an AudioDeviceBuffer (ADB) which deals with 16-bit PCM
+ // audio samples corresponding to 10ms of data. It then allows for this data
+@@ -60,7 +61,7 @@ class FineAudioBuffer {
+   // Example: buffer size is 5ms => call #1 stores 5ms of data, call #2 stores
+   // 5ms of data and sends a total of 10ms to WebRTC and clears the internal
+   // cache. Call #3 restarts the scheme above.
+-  void DeliverRecordedData(rtc::ArrayView<const int16_t> audio_buffer,
++  std::vector<AudioFrame*>* DeliverRecordedData(rtc::ArrayView<const int16_t> audio_buffer,
+                            int record_delay_ms);
+ 
+  private:
+diff --git webrtc/src/modules/audio_device/include/audio_device_defines.h webrtc/src/modules/audio_device/include/audio_device_defines.h
+index d677d41..692a04a 100644
+--- webrtc/src/modules/audio_device/include/audio_device_defines.h
++++ webrtc/src/modules/audio_device/include/audio_device_defines.h
+@@ -30,11 +30,12 @@ static const int kAdmMaxPlayoutBufferSizeMs = 250;
+ // ----------------------------------------------------------------------------
+ //  AudioTransport
+ // ----------------------------------------------------------------------------
++class AudioFrame;
+ 
+ class AudioTransport {
+  public:
+   // TODO(bugs.webrtc.org/13620) Deprecate this function
+-  virtual int32_t RecordedDataIsAvailable(const void* audioSamples,
++  virtual AudioFrame* RecordedDataIsAvailable(const void* audioSamples,
+                                           size_t nSamples,
+                                           size_t nBytesPerSample,
+                                           size_t nChannels,
+@@ -45,7 +46,7 @@ class AudioTransport {
+                                           bool keyPressed,
+                                           uint32_t& newMicLevel) = 0;  // NOLINT
+ 
+-  virtual int32_t RecordedDataIsAvailable(
++  virtual AudioFrame* RecordedDataIsAvailable(
+       const void* audioSamples,
+       size_t nSamples,
+       size_t nBytesPerSample,
+diff --git webrtc/src/sdk/objc/native/src/objc_audio_device.h webrtc/src/sdk/objc/native/src/objc_audio_device.h
+index fcfe7a6..83b8b89 100644
+--- webrtc/src/sdk/objc/native/src/objc_audio_device.h
++++ webrtc/src/sdk/objc/native/src/objc_audio_device.h
+@@ -135,7 +135,7 @@ class ObjCAudioDeviceModule : public AudioDeviceModule {
+ #endif  // WEBRTC_IOS
+ 
+  public:
+-  OSStatus OnDeliverRecordedData(AudioUnitRenderActionFlags* flags,
++  std::vector<AudioFrame*>*  OnDeliverRecordedData(AudioUnitRenderActionFlags* flags,
+                                  const AudioTimeStamp* time_stamp,
+                                  NSInteger bus_number,
+                                  UInt32 num_frames,
+diff --git webrtc/src/sdk/objc/native/src/objc_audio_device.mm webrtc/src/sdk/objc/native/src/objc_audio_device.mm
+index d629fae..55cc768 100644
+--- webrtc/src/sdk/objc/native/src/objc_audio_device.mm
++++ webrtc/src/sdk/objc/native/src/objc_audio_device.mm
+@@ -397,7 +397,7 @@
+   return true;
+ }
+ 
+-OSStatus ObjCAudioDeviceModule::OnDeliverRecordedData(
++std::vector<AudioFrame*>* ObjCAudioDeviceModule::OnDeliverRecordedData(
+     AudioUnitRenderActionFlags* flags,
+     const AudioTimeStamp* time_stamp,
+     NSInteger bus_number,
+@@ -406,9 +406,9 @@
+     void* render_context,
+     RTC_OBJC_TYPE(RTCAudioDeviceRenderRecordedDataBlock) render_block) {
+   RTC_DCHECK_RUN_ON(&io_record_thread_checker_);
+-  OSStatus result = noErr;
++  std::vector<AudioFrame*>* audio_frames = nullptr;
+   // Simply return if recording is not enabled.
+-  if (!recording_.load()) return result;
++  if (!recording_.load()) return audio_frames;
+ 
+   if (io_data != nullptr) {
+     // AudioBuffer already fullfilled with audio data
+@@ -416,10 +416,10 @@
+     const AudioBuffer* audio_buffer = &io_data->mBuffers[0];
+     RTC_DCHECK(audio_buffer->mNumberChannels == 1 || audio_buffer->mNumberChannels == 2);
+ 
+-    record_fine_audio_buffer_->DeliverRecordedData(
++    audio_frames = record_fine_audio_buffer_->DeliverRecordedData(
+         rtc::ArrayView<const int16_t>(static_cast<int16_t*>(audio_buffer->mData), num_frames),
+         cached_recording_delay_ms_.load());
+-    return noErr;
++    return audio_frames;
+   }
+   RTC_DCHECK(render_block != nullptr) << "Either io_data or render_block must be provided";
+ 
+@@ -444,19 +444,19 @@
+   audio_buffer->mData = reinterpret_cast<int8_t*>(record_audio_buffer_.data());
+ 
+   // Obtain the recorded audio samples by initiating a rendering cycle into own buffer.
+-  result =
++  OSStatus result =
+       render_block(flags, time_stamp, bus_number, num_frames, &audio_buffer_list, render_context);
+   if (result != noErr) {
+     RTC_LOG_F(LS_ERROR) << "Failed to render audio: " << result;
+-    return result;
++    return audio_frames;
+   }
+ 
+   // Get a pointer to the recorded audio and send it to the WebRTC ADB.
+   // Use the FineAudioBuffer instance to convert between native buffer size
+   // and the 10ms buffer size used by WebRTC.
+-  record_fine_audio_buffer_->DeliverRecordedData(record_audio_buffer_,
++  audio_frames = record_fine_audio_buffer_->DeliverRecordedData(record_audio_buffer_,
+                                                  cached_recording_delay_ms_.load());
+-  return noErr;
++  return audio_frames;
+ }
+ 
+ OSStatus ObjCAudioDeviceModule::OnGetPlayoutData(AudioUnitRenderActionFlags* flags,
+diff --git webrtc/src/sdk/objc/native/src/objc_audio_device_delegate.mm webrtc/src/sdk/objc/native/src/objc_audio_device_delegate.mm
+index 156d632..1d131df 100644
+--- webrtc/src/sdk/objc/native/src/objc_audio_device_delegate.mm
++++ webrtc/src/sdk/objc/native/src/objc_audio_device_delegate.mm
+@@ -19,6 +19,7 @@
+ #include "rtc_base/checks.h"
+ #include "rtc_base/logging.h"
+ #include "rtc_base/thread.h"
++#include "api/audio/audio_frame.h"
+ 
+ namespace {
+ 
+@@ -106,19 +107,41 @@ - (instancetype)initWithAudioDeviceModule:
+                   const AudioTimeStamp* _Nonnull timestamp,
+                   NSInteger inputBusNumber,
+                   UInt32 frameCount,
+-                  const AudioBufferList* _Nullable inputData,
++                  AudioBufferList* _Nullable inputData,
+                   void* renderContext,
+                   RTC_OBJC_TYPE(RTCAudioDeviceRenderRecordedDataBlock) _Nullable renderBlock) {
+           webrtc::objc_adm::ObjCAudioDeviceModule* audio_device =
+               record_delegate->audio_device_module();
+           if (audio_device) {
+-            return audio_device->OnDeliverRecordedData(actionFlags,
++              std::vector<webrtc::AudioFrame*>* audio_frames = audio_device->OnDeliverRecordedData(actionFlags,
+                                                        timestamp,
+                                                        inputBusNumber,
+                                                        frameCount,
+                                                        inputData,
+                                                        renderContext,
+                                                        renderBlock);
++
++              if(audio_frames) {
++                  // For now ignore more than 1 frame
++                  if(*actionFlags == kAudioOfflineUnitRenderAction_Render  && audio_frames->size() == 1) {
++                      webrtc::AudioFrame* audio_frame = audio_frames->front();
++                      AudioBuffer* audio_buffer = &inputData->mBuffers[0];
++                      uint32_t processed_audio_data_size = audio_frame->samples_per_channel() * audio_frame->num_channels() * 2; // 2 bytes per frame
++                      /*
++                       Ignore AEC buffers If the sample rate and/or number frames doesn't match between input and webrtc processed audio.
++                       */
++                      if(processed_audio_data_size == audio_buffer->mDataByteSize) {
++                          audio_buffer->mNumberChannels = audio_frame->num_channels();
++                          audio_buffer->mDataByteSize = audio_frame->samples_per_channel() * audio_frame->num_channels() * 2;
++                          memcpy(audio_buffer->mData, audio_frame->data(), sizeof(int16_t) * audio_buffer->mDataByteSize);
++                      }
++                  }
++                  for (webrtc::AudioFrame* frame : *audio_frames) {
++                      delete frame;
++                  }
++                  delete audio_frames;
++              }
++              return 0;
+           } else {
+             RTC_LOG(LS_VERBOSE) << "No alive audio device";
+             return noErr;

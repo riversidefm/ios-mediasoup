@@ -82,11 +82,11 @@
 		</data>
 		<key>Modules/Mediasoup.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo</key>
 		<data>
-		VdzKItBJj22Zfe+Un64ACBwrpks=
+		b8kGdKRz6jI/EUfPhzWS5MrgybM=
 		</data>
 		<key>Modules/Mediasoup.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo</key>
 		<data>
-		YF0GzjeSKY1SpikLYmNI2qIcSlA=
+		V927fLDkRUmCc2wqW9lzlpAcCbY=
 		</data>
 		<key>Modules/Mediasoup.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
 		<data>
@@ -269,14 +269,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			6QPzzUKIdxHXSB4CahXyp0X6xzo6rWDai+mw1QUlp4I=
+			aKECWeLAYQ36E3BgZIAcqWu5AzTih7jOaB5DsubFBo0=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			RFTJm+GxYOfiqAi1NRlLceAjBNTwOjpUjlkGzMRdXAA=
+			SInB4pM54gdZvN9f2m0lB6hGGkI5OWkbrNvdr4eZwfg=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/arm64-apple-ios-simulator.abi.json</key>

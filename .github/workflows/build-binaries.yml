@@ -33,11 +33,14 @@ jobs:
 
       - name: Configure Git
         run: |
-          git config --global user.name 'github-actions[bot]'
+          git config --global user.name "GitHub Actions Bot"
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
       - name: Add and commit binaries
+        if: github.event.head_commit.author.name != 'GitHub Actions Bot'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git add -u bin/
-          git commit -m "chore: update binaries [skip ci]"
+          git commit -m "Update binaries (CI job)"
           git push 

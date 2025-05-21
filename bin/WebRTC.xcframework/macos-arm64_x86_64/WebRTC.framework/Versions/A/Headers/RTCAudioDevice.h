@@ -35,7 +35,7 @@ typedef OSStatus (^RTC_OBJC_TYPE(RTCAudioDeviceDeliverRecordedDataBlock))(
     const AudioTimeStamp *_Nonnull timestamp,
     NSInteger inputBusNumber,
     UInt32 frameCount,
-    const AudioBufferList *_Nullable inputData,
+    AudioBufferList *_Nullable inputData,
     void *_Nullable renderContext,
     NS_NOESCAPE RTC_OBJC_TYPE(RTCAudioDeviceRenderRecordedDataBlock) _Nullable renderBlock);
 

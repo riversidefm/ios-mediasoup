@@ -6,7 +6,7 @@
 	<dict>
 		<key>Resources/Info.plist</key>
 		<data>
-		qnbDu/tYe9p5hnCSVlL/BOMIJWA=
+		pf4ZhIf2HdN0z/I0lw1VIW+R83A=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -50,7 +50,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			kjCpkolGaekvsvtDMc5hZ+ZjMvt1OKO0tvRoqFfb73o=
+			3BEuLbKUUH+o3X06MT1gp8jtB0GcwSuNM3Cgtz8BCnM=
 			</data>
 		</dict>
 		<key>Headers/MediasoupClientError.h</key>
@@ -141,84 +141,84 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			K0Jn1KOJWYwNIusj/H5yP+2IVb534RvtqwzPcUl2NhE=
+			wM5TLMzaODHyTWXqNe4ruvoZ1uM0QhXy4x5Ym2TA0DA=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/Project/x86_64-apple-macos.swiftsourceinfo</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			egTtO/oN+CY3YSSYvoQQlxOMPHG15OjDwyoV9qgUKuI=
+			yuYBG10+ypMP3UOAijf/mhG79hDl1vQA+9v3CA7bqmE=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/arm64-apple-macos.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Thtn3MvPljSr9PlKRNLl/QlULLElUP9ktG/eL/pgpuo=
+			DTe4i0kukiz5IPKuF8kXdPne30KmkmeR54ZUdsA0wFU=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/arm64-apple-macos.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			rO4giRV0GCpagOO/1+2prQeo21ncLYZXjBPJYdTWI0g=
+			0L8+OTo2aYImaDhCq+pr3r8FRiYFl5ZwOgJWJ4lT/m8=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/arm64-apple-macos.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			3kS+d7KHXkywzEztWdyPGDb3dytCFH4Oal032TodSpM=
+			6n52b068UEkzSJfPy6lIx6ogE17NddKbfljP+f9bs/o=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/arm64-apple-macos.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			rO4giRV0GCpagOO/1+2prQeo21ncLYZXjBPJYdTWI0g=
+			0L8+OTo2aYImaDhCq+pr3r8FRiYFl5ZwOgJWJ4lT/m8=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/arm64-apple-macos.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			ZiqGn8n1oYbhDsVe8sVZawgr0NgEAthmkfnwmVk7JWQ=
+			w4MUrG5vHmyXKBNyde+/m3o+ssZ0GQFeVxOS2mm7MVQ=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/x86_64-apple-macos.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Thtn3MvPljSr9PlKRNLl/QlULLElUP9ktG/eL/pgpuo=
+			DTe4i0kukiz5IPKuF8kXdPne30KmkmeR54ZUdsA0wFU=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/x86_64-apple-macos.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			MBCmR+6t1+FA9hkIA0g6xLP/BkfIpFgMubhzjdxyqWo=
+			1O0gpDQb3mAWlWb6ZgvyAEBuyu/FuXaUv/4MePEINXE=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/x86_64-apple-macos.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			fL50Z769x8gK22NMq69gI2+wlNbYyvphLwNaO5NlEvE=
+			KEFRGGXf5EIzJU+TCEObSALgFRq3kE0EpBRgLZ454Fo=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/x86_64-apple-macos.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			MBCmR+6t1+FA9hkIA0g6xLP/BkfIpFgMubhzjdxyqWo=
+			1O0gpDQb3mAWlWb6ZgvyAEBuyu/FuXaUv/4MePEINXE=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/x86_64-apple-macos.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			VAdJR0RilyZNqk0RE5mmdXnvuqNnYiFdCVrUu5udekI=
+			YHV2Lpkt8KMndAgU67ERAohSeRT1sUg5Tq2H1ZDUg+I=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
@@ -239,7 +239,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			xtb01turIDCC4ShzbFQoLNWV/rPyi87OVlGfDg16UuU=
+			PghpxuVIU4v1MdsjxlmNcHdgLL9fRsKixVX7XhdD1L8=
 			</data>
 		</dict>
 	</dict>

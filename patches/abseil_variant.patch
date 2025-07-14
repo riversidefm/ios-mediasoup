@@ -1,0 +1,10 @@
+--- webrtc/src/third_party/abseil-cpp/absl/types/bad_variant_access.cc
++++ webrtc/src/third_party/abseil-cpp/absl/types/bad_variant_access.cc
+@@ -37,6 +37,7 @@ const char* bad_variant_access::what() const noexcept {
+
+ namespace variant_internal {
+
++__attribute__((visibility("default")))
+ void ThrowBadVariantAccess() {
+ #ifdef ABSL_HAVE_EXCEPTIONS
+   throw bad_variant_access();

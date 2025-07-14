@@ -105,6 +105,7 @@ function patchWebRTC() {
     patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/sdp_video_format_utils.patch
     patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/sdk_BUILD.patch
     patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/abseil_optional.patch
+    patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/abseil_variant.patch
     patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/RTCPeerConnectionFactoryBuilder.patch
     patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/audio_device_module_h.patch
     patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/audio_device_module_mm.patch

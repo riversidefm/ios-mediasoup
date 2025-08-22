@@ -51,10 +51,18 @@ index a53398f..6493c9e 100644
  		  offerMediaObject,
  		  mediaSectionIdx.reuseMid,
 diff --git a/src/Transport.cpp b/src/Transport.cpp
-index cc1cbef..1d5833c 100644
+index cc1cbef..dac4931 100644
 --- a/src/Transport.cpp
 +++ b/src/Transport.cpp
-@@ -369,6 +369,10 @@ namespace mediasoupclient
+@@ -207,6 +207,7 @@ namespace mediasoupclient
+ 
+ 				  encoding.active                   = entry.active;
+ 				  encoding.max_bitrate_bps          = entry.max_bitrate_bps;
++                  encoding.min_bitrate_bps          = entry.min_bitrate_bps;
+ 				  encoding.max_framerate            = entry.max_framerate;
+ 				  encoding.scale_resolution_down_by = entry.scale_resolution_down_by;
+ 				  encoding.network_priority         = entry.network_priority;
+@@ -369,6 +370,10 @@ namespace mediasoupclient
  		return this->sendHandler->GetSenderStats(producer->GetLocalId());
  	}
  

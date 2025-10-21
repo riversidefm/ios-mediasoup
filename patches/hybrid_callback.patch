@@ -1,8 +1,16 @@
 diff --git a/include/Handler.hpp b/include/Handler.hpp
-index 656fe53..b7889e5 100644
+index 656fe53..2597801 100644
 --- a/include/Handler.hpp
 +++ b/include/Handler.hpp
-@@ -100,6 +100,10 @@ namespace mediasoupclient
+@@ -51,6 +51,7 @@ namespace mediasoupclient
+ 	public:
+ 		void Close();
+ 		nlohmann::json GetTransportStats();
++		void GetAsyncTransportStats(rtc::scoped_refptr<webrtc::RTCStatsCollectorCallback> callback);
+ 		void UpdateIceServers(const nlohmann::json& iceServerUris);
+ 		virtual void RestartIce(const nlohmann::json& iceParameters) = 0;
+ 
+@@ -100,6 +101,10 @@ namespace mediasoupclient
  		  const nlohmann::json& sendingRtpParametersByKind,
  		  const nlohmann::json& sendingRemoteRtpParametersByKind = nlohmann::json());
  
@@ -13,7 +21,7 @@ index 656fe53..b7889e5 100644
  	public:
  		SendResult Send(
  		  webrtc::MediaStreamTrackInterface* track,
-@@ -119,6 +123,7 @@ namespace mediasoupclient
+@@ -119,6 +124,7 @@ namespace mediasoupclient
  		// Generic sending RTP parameters for audio and video suitable for the SDP
  		// remote answer.
  		nlohmann::json sendingRemoteRtpParametersByKind;
@@ -21,11 +29,31 @@ index 656fe53..b7889e5 100644
  	};
  
  	class RecvHandler : public Handler
+diff --git a/include/PeerConnection.hpp b/include/PeerConnection.hpp
+index fb09375..e787d0c 100644
+--- a/include/PeerConnection.hpp
++++ b/include/PeerConnection.hpp
+@@ -163,6 +163,7 @@ namespace mediasoupclient
+ 		std::vector<rtc::scoped_refptr<webrtc::RtpSenderInterface>> GetSenders();
+ 		bool RemoveTrack(rtc::scoped_refptr<webrtc::RtpSenderInterface> sender);
+ 		nlohmann::json GetStats();
++		void GetAsyncStats(rtc::scoped_refptr<webrtc::RTCStatsCollectorCallback> callback);
+ 		nlohmann::json GetStats(rtc::scoped_refptr<webrtc::RtpSenderInterface> selector);
+ 		nlohmann::json GetStats(rtc::scoped_refptr<webrtc::RtpReceiverInterface> selector);
+ 		rtc::scoped_refptr<webrtc::DataChannelInterface> CreateDataChannel(
 diff --git a/include/Transport.hpp b/include/Transport.hpp
-index 90f3468..c803932 100644
+index 90f3468..f01cbe5 100644
 --- a/include/Transport.hpp
 +++ b/include/Transport.hpp
-@@ -111,6 +111,9 @@ namespace mediasoupclient
+@@ -50,6 +50,7 @@ namespace mediasoupclient
+ 		nlohmann::json& GetAppData();
+ 		virtual void Close();
+ 		nlohmann::json GetStats() const;
++		void GetAsyncStats(rtc::scoped_refptr<webrtc::RTCStatsCollectorCallback> callback) const;
+ 		void RestartIce(const nlohmann::json& iceParameters);
+ 		void UpdateIceServers(const nlohmann::json& iceServers);
+ 
+@@ -111,6 +112,9 @@ namespace mediasoupclient
  			  const std::string& protocol,
  			  const nlohmann::json& appData) = 0;
  		};
@@ -36,10 +64,33 @@ index 90f3468..c803932 100644
  	private:
  		SendTransport(
 diff --git a/src/Handler.cpp b/src/Handler.cpp
-index a53398f..6493c9e 100644
+index a53398f..3cfe91d 100644
 --- a/src/Handler.cpp
 +++ b/src/Handler.cpp
-@@ -342,6 +342,10 @@ namespace mediasoupclient
+@@ -96,7 +96,7 @@ namespace mediasoupclient
+ 		MSC_TRACE();
+ 
+ 		return this->pc->GetStats();
+-	}
++	};
+ 
+ 	void Handler::UpdateIceServers(const json& iceServersDescription)
+ 	{
+@@ -150,6 +150,13 @@ namespace mediasoupclient
+ 		this->transportReady = true;
+ 	};
+ 
++	void Handler::GetAsyncTransportStats(rtc::scoped_refptr<webrtc::RTCStatsCollectorCallback> callback)
++	{
++		MSC_TRACE();
++
++		this->pc->GetAsyncStats(callback);
++	};
++
+ 	/* SendHandler instance methods. */
+ 
+ 	SendHandler::SendHandler(
+@@ -342,6 +349,10 @@ namespace mediasoupclient
  			}
  		}
  
@@ -50,11 +101,47 @@ index a53398f..6493c9e 100644
  		this->remoteSdp->Send(
  		  offerMediaObject,
  		  mediaSectionIdx.reuseMid,
+diff --git a/src/PeerConnection.cpp b/src/PeerConnection.cpp
+index 3f7cb28..e36253f 100644
+--- a/src/PeerConnection.cpp
++++ b/src/PeerConnection.cpp
+@@ -341,6 +341,14 @@ namespace mediasoupclient
+ 		return future.get();
+ 	}
+ 
++	// Non-blocking version
++	void PeerConnection::GetAsyncStats(rtc::scoped_refptr<webrtc::RTCStatsCollectorCallback> callback)
++	{
++		MSC_TRACE();
++
++		this->pc->GetStats(callback.get());
++	}
++
+ 	json PeerConnection::GetStats(rtc::scoped_refptr<webrtc::RtpSenderInterface> selector)
+ 	{
+ 		MSC_TRACE();
 diff --git a/src/Transport.cpp b/src/Transport.cpp
-index cc1cbef..dac4931 100644
+index cc1cbef..69fbf59 100644
 --- a/src/Transport.cpp
 +++ b/src/Transport.cpp
-@@ -207,6 +207,7 @@ namespace mediasoupclient
+@@ -69,6 +69,16 @@ namespace mediasoupclient
+ 			return this->handler->GetTransportStats();
+ 	}
+ 
++	void Transport::GetAsyncStats(rtc::scoped_refptr<webrtc::RTCStatsCollectorCallback> callback) const
++	{
++		MSC_TRACE();
++
++		if (this->closed)
++			MSC_THROW_INVALID_STATE_ERROR("Transport closed");
++
++		this->handler->GetAsyncTransportStats(callback);
++	}
++
+ 	void Transport::RestartIce(const json& iceParameters)
+ 	{
+ 		MSC_TRACE();
+@@ -207,6 +217,7 @@ namespace mediasoupclient
  
  				  encoding.active                   = entry.active;
  				  encoding.max_bitrate_bps          = entry.max_bitrate_bps;
@@ -62,7 +149,7 @@ index cc1cbef..dac4931 100644
  				  encoding.max_framerate            = entry.max_framerate;
  				  encoding.scale_resolution_down_by = entry.scale_resolution_down_by;
  				  encoding.network_priority         = entry.network_priority;
-@@ -369,6 +370,10 @@ namespace mediasoupclient
+@@ -369,6 +380,10 @@ namespace mediasoupclient
  		return this->sendHandler->GetSenderStats(producer->GetLocalId());
  	}
  

@@ -6,7 +6,7 @@
 	<dict>
 		<key>Resources/Info.plist</key>
 		<data>
-		pf4ZhIf2HdN0z/I0lw1VIW+R83A=
+		EYH/2CU2c0r3trzwBsp+3Q7+jWw=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -141,14 +141,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			SytyeR4n2tjRFdSTMf13BCG+NnhLboBcmh8jFC7MpV4=
+			iuhyoXLNiuq4W1tHFxFMJywbY0G3zcKIJ3d1DRHsIdg=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/Project/x86_64-apple-macos.swiftsourceinfo</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			b9rWeX/kra0iRzitOMFOHDTUW5I/i7H/eJ20LlXEchw=
+			bTuDO1EA+yTPz/YlnWLrdzOmiLH6OpHoqs3/7ss4Ug8=
 			</data>
 		</dict>
 		<key>Modules/Mediasoup.swiftmodule/arm64-apple-macos.abi.json</key>
@@ -239,7 +239,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			PghpxuVIU4v1MdsjxlmNcHdgLL9fRsKixVX7XhdD1L8=
+			FjbbH7b5f6Kv5IV4TIHE9CwlV1il0Ik33ZMan6cxm44=
 			</data>
 		</dict>
 	</dict>

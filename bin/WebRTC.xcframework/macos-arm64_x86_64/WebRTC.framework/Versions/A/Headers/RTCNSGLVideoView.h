@@ -12,9 +12,6 @@
 
 #if !TARGET_OS_IPHONE
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-
 #import <AppKit/NSOpenGLView.h>
 
 #import <WebRTC/RTCVideoRenderer.h>
@@ -41,7 +38,5 @@ RTC_OBJC_EXPORT
 @end
 
 NS_ASSUME_NONNULL_END
-
-#pragma clang diagnostic pop
 
 #endif

@@ -1,0 +1,19 @@
+--- webrtc/src/sdk/objc/components/renderer/opengl/RTCNSGLVideoView.h
++++ webrtc/src/sdk/objc/components/renderer/opengl/RTCNSGLVideoView.h
+@@ -11,6 +11,9 @@
+
+ #if !TARGET_OS_IPHONE
+
++#pragma clang diagnostic push
++#pragma clang diagnostic ignored "-Wdeprecated-declarations"
++
+ #import <AppKit/NSOpenGLView.h>
+
+ #import <WebRTC/RTCVideoRenderer.h>
+@@ -39,4 +42,6 @@
+
+ NS_ASSUME_NONNULL_END
+
++#pragma clang diagnostic pop
++
+ #endif

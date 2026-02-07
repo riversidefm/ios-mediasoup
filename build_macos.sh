@@ -532,7 +532,7 @@ then
                     break
                     ;;
                 *)
-                    echo -ne "\r\033[0K\r"н
+                    echo -ne "\r\033[0K\r"
                     tput bel
                     ;;
             esac

@@ -245,6 +245,7 @@ function patchWebRTC() {
     patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/task_factory.patch
     patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/metal_header.patch
     patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/echo_cancellation.patch
+    patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/nsgl_deprecation.patch
 }
 
 function refetchWebRTC() {

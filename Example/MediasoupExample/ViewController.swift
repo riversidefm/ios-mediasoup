@@ -120,8 +120,13 @@ extension ViewController: SendTransportDelegate {
 		return nil
 	}
 
-	func onProduceData(transport: Transport, sctpParameters: String, label: String,
-		protocol dataProtocol: String, appData: String) async -> String? {
+	func onProduceData(
+		transport: Transport,
+		sctpParameters: String,
+		label: String,
+		protocol dataProtocol: String,
+		appData: String
+	) async -> String? {
 		print("on produce data \(label)")
 		return nil
 	}

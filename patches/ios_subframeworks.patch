@@ -1,0 +1,18 @@
+--- webrtc/src/build/config/ios/BUILD.gn
++++ webrtc/src/build/config/ios/BUILD.gn
+@@ -103,6 +103,13 @@ config("runtime_library") {
+   common_flags = [
+     "-isysroot",
+     _sdk_root,
+   ]
++
++  if (target_environment != "catalyst") {
++    common_flags += [
++      "-iframework",
++      "$_sdk_root/System/Library/SubFrameworks",
++    ]
++  }
+   swiftflags = [
+     "-sdk",
+     _sdk_root,
+   ]

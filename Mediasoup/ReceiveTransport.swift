@@ -10,7 +10,6 @@ public class ReceiveTransport {
 
 	internal init(transport: ReceiveTransportWrapper) {
 		self.transport = transport
-
 		transport.delegate = self
 	}
 
@@ -72,8 +71,15 @@ extension ReceiveTransport: Transport {
 		return transport.appData
 	}
 
+	@available(*, deprecated, message: "Use getStats() throws instead")
 	public var stats: String {
-		return transport.stats
+		return (try? getStats()) ?? "[]"
+	}
+
+	public func getStats() throws -> String {
+		try convertMediasoupErrors {
+			try transport.getStats()
+		}
 	}
 
 	public func close() {

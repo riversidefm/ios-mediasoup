@@ -40,8 +40,9 @@ public class Producer {
 		return producer.rtpParameters
 	}
 
+	@available(*, deprecated, message: "Use getStats() throws instead")
 	public var stats: String {
-		return producer.stats
+		return (try? getStats()) ?? "[]"
 	}
 
 	private let producer: ProducerWrapper
@@ -68,15 +69,21 @@ public class Producer {
 		guard let typedLayer = UInt8(exactly: layer) else {
 			throw MediasoupError.invalidParameters("Layer index can not be negative")
 		}
-		try producer.setMaxSpatialLayer(typedLayer)
+		try convertMediasoupErrors {
+			try producer.setMaxSpatialLayer(typedLayer)
+		}
 	}
 
 	public func replaceTrack(_ track: RTCMediaStreamTrack) throws {
-		try producer.replaceTrack(track)
+		try convertMediasoupErrors {
+			try producer.replaceTrack(track)
+		}
 	}
 
 	public func getStats() throws -> String {
-		return try producer.getStats()
+		try convertMediasoupErrors {
+			try producer.getStats()
+		}
 	}
 }
 

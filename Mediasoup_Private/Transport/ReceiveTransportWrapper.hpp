@@ -34,6 +34,8 @@ class ReceiveTransportListenerAdapter;
 - (mediasoupclient::RecvTransport *_Nonnull)getWrappedTransport;
 #endif
 
+- (NSString *_Nullable)getStatsWithError:(out NSError *__autoreleasing _Nullable *_Nullable)error;
+
 - (void)close;
 
 - (void)restartICE:(NSString *_Nonnull)iceParameters

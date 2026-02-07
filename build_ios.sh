@@ -22,16 +22,26 @@ do
 done
 
 # Check build time dependencies.
-if ! command -v python &> /dev/null
-then
-	echo 'python could not be found'
-	echo 'try next steps:'
-	echo '  * run "brew install pyenv"'
-	echo '  * run "pyenv install --list" and choose a recent 3.x version say 3.11.2'
-	echo '  * run "pyenv install 3.11.2"'
-	echo '  * run "pyenv global 3.11.2"'
-	echo $'  * run "echo \'eval "$(pyenv init --path)"\' >> ~/.zshrc"'
-	exit
+if ! command -v python &> /dev/null; then
+	if command -v python3 &> /dev/null; then
+		PYTHON_SHIM_DIR="$(pwd)/build/python-shim"
+		mkdir -p "$PYTHON_SHIM_DIR"
+		cat > "$PYTHON_SHIM_DIR/python" <<'EOF'
+#!/bin/bash
+exec python3 "$@"
+EOF
+		chmod +x "$PYTHON_SHIM_DIR/python"
+		export PATH="$PYTHON_SHIM_DIR:$PATH"
+	else
+		echo 'python could not be found'
+		echo 'try next steps:'
+		echo '  * run "brew install pyenv"'
+		echo '  * run "pyenv install --list" and choose a recent 3.x version say 3.11.2'
+		echo '  * run "pyenv install 3.11.2"'
+		echo '  * run "pyenv global 3.11.2"'
+		echo $'  * run "echo \'eval "$(pyenv init --path)"\' >> ~/.zshrc"'
+		exit 1
+	fi
 fi
 if ! command -v cmake &> /dev/null
 then
@@ -39,6 +49,45 @@ then
 	echo 'try next steps:'
 	echo '  * run "brew install cmake"'
 	exit
+fi
+
+# Ensure DEVELOPER_DIR points to an installed Xcode so xcrun resolves SDKs.
+function selectDeveloperDir() {
+	if [ -n "$DEVELOPER_DIR" ] && [ -d "$DEVELOPER_DIR" ]; then
+		return 0
+	fi
+	if command -v xcode-select &> /dev/null; then
+		local selected
+		selected="$(xcode-select -p 2>/dev/null || true)"
+		if [ -n "$selected" ] && [ -d "$selected" ]; then
+			export DEVELOPER_DIR="$selected"
+			return 0
+		fi
+	fi
+	local stable_candidates=""
+	local all_candidates=""
+	local path=""
+	while IFS= read -r path; do
+		all_candidates+="${path}"$'\n'
+		if [[ "$path" != *"release-candidate"* && "$path" != *"beta"* ]]; then
+			stable_candidates+="${path}"$'\n'
+		fi
+	done < <(ls -d /Applications/Xcode-*.app/Contents/Developer 2>/dev/null || true)
+
+	local candidate=""
+	if [ -n "$stable_candidates" ]; then
+		candidate="$(printf "%s" "$stable_candidates" | sort -V | tail -n1)"
+	elif [ -n "$all_candidates" ]; then
+		candidate="$(printf "%s" "$all_candidates" | sort -V | tail -n1)"
+	fi
+	if [ -n "$candidate" ]; then
+		export DEVELOPER_DIR="$candidate"
+	fi
+}
+
+selectDeveloperDir
+if [ -n "$DEVELOPER_DIR" ]; then
+	echo "DEVELOPER_DIR = $DEVELOPER_DIR"
 fi
 
 # Define working directories.
@@ -211,6 +260,12 @@ function patchWebRTC() {
 	patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/absl_threadlocal.patch
 	patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/task_factory.patch
 	patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/metal_header.patch
+	local ios_build_gn="$WORK_DIR/webrtc/src/build/config/ios/BUILD.gn"
+	if [ -f "$ios_build_gn" ] && grep -q "System/Library/SubFrameworks" "$ios_build_gn"; then
+		echo "iOS SubFrameworks flag already present; skipping ios_subframeworks patch"
+	else
+		patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/ios_subframeworks.patch
+	fi
 }
 
 function refetchWebRTC() {
@@ -346,11 +401,32 @@ gn_arguments=(
 for str in ${gn_arguments[@]}; do
 	gn_args+=" ${str}"
 done
-platform_args='target_environment="device" target_cpu="arm64"'
+
+IOS_SDK_PATH="${DEVELOPER_DIR}/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk"
+SIM_SDK_PATH="${DEVELOPER_DIR}/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk"
+if [ ! -d "$IOS_SDK_PATH" ] || [ ! -d "$SIM_SDK_PATH" ]; then
+	echo "SDK paths not found under DEVELOPER_DIR. Falling back to xcrun."
+	IOS_SDK_PATH="$(xcrun --sdk iphoneos --show-sdk-path)"
+	SIM_SDK_PATH="$(xcrun --sdk iphonesimulator --show-sdk-path)"
+fi
+if [ ! -d "$IOS_SDK_PATH" ]; then
+	echo "iphoneos SDK not found at: $IOS_SDK_PATH"
+	exit 1
+fi
+if [ ! -d "$SIM_SDK_PATH" ]; then
+	echo "iphonesimulator SDK not found at: $SIM_SDK_PATH"
+	exit 1
+fi
+echo "IOS_SDK_PATH = $IOS_SDK_PATH"
+echo "SIM_SDK_PATH = $SIM_SDK_PATH"
+
+platform_args="target_environment=\"device\" target_cpu=\"arm64\""
 gn gen $BUILD_DIR/WebRTC/device/arm64 --ide=xcode --args="${platform_args}${gn_args}"
-platform_args='target_environment="simulator" target_cpu="x64"'
+
+platform_args="target_environment=\"simulator\" target_cpu=\"x64\""
 gn gen $BUILD_DIR/WebRTC/simulator/x64 --ide=xcode --args="${platform_args}${gn_args}"
-platform_args='target_environment="simulator" target_cpu="arm64"'
+
+platform_args="target_environment=\"simulator\" target_cpu=\"arm64\""
 gn gen $BUILD_DIR/WebRTC/simulator/arm64 --ide=xcode --args="${platform_args}${gn_args}"
 
 cd $BUILD_DIR/WebRTC
@@ -401,43 +477,48 @@ function rebuildLMSC() {
 		"-DLIBWEBRTC_INCLUDE_PATH=$WEBRTC_DIR"
 		'-DMEDIASOUPCLIENT_LOG_TRACE=OFF'
 		'-DMEDIASOUPCLIENT_LOG_DEV=OFF'
-		'-DCMAKE_CXX_FLAGS="-fvisibility=hidden"'
+		'-DCMAKE_CXX_FLAGS=-fvisibility=hidden -DWEBRTC_POSIX -DWEBRTC_MAC -DWEBRTC_IOS'
+		'-DCMAKE_C_FLAGS=-DWEBRTC_POSIX -DWEBRTC_MAC -DWEBRTC_IOS'
 		'-DLIBSDPTRANSFORM_BUILD_TESTS=OFF'
 		'-DMEDIASOUPCLIENT_BUILD_TESTS=OFF'
 		'-DCMAKE_OSX_DEPLOYMENT_TARGET=14'
 		'-DCMAKE_BUILD_TYPE=RelWithDebInfo'
 		'-DCMAKE_POLICY_VERSION_MINIMUM=3.5'
 	)
-	for str in ${lmsc_cmake_arguments[@]}; do
-		lmsc_cmake_args+=" ${str}"
-	done
+	lmsc_cmake_args=("${lmsc_cmake_arguments[@]}")
 
 	# Build mediasoup-client-ios
-	cmake . -B $BUILD_DIR/libmediasoupclient/device/arm64 \
-		${lmsc_cmake_args} \
+	SDKROOT="$IOS_SDK_PATH" cmake . -B $BUILD_DIR/libmediasoupclient/device/arm64 \
+		"${lmsc_cmake_args[@]}" \
 		-DLIBWEBRTC_BINARY_PATH=$BUILD_DIR/WebRTC/device/arm64/WebRTC.framework/WebRTC \
 		-DIOS_SDK=iphone \
 		-DIOS_ARCHS="arm64" \
 		-DPLATFORM=OS64 \
-		-DCMAKE_OSX_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk"
+		-DCMAKE_SYSTEM_NAME=iOS \
+		-DCMAKE_OSX_ARCHITECTURES="arm64" \
+		-DCMAKE_OSX_SYSROOT="${IOS_SDK_PATH}"
 	make -C $BUILD_DIR/libmediasoupclient/device/arm64
 
-	cmake . -B $BUILD_DIR/libmediasoupclient/simulator/x64 \
-		${lmsc_cmake_args} \
+	SDKROOT="$SIM_SDK_PATH" cmake . -B $BUILD_DIR/libmediasoupclient/simulator/x64 \
+		"${lmsc_cmake_args[@]}" \
 		-DLIBWEBRTC_BINARY_PATH=$BUILD_DIR/WebRTC/simulator/x64/WebRTC.framework/WebRTC \
 		-DIOS_SDK=iphonesimulator \
 		-DIOS_ARCHS="x86_64" \
 		-DPLATFORM=SIMULATOR64 \
-		-DCMAKE_OSX_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk"
+		-DCMAKE_SYSTEM_NAME=iOS \
+		-DCMAKE_OSX_ARCHITECTURES="x86_64" \
+		-DCMAKE_OSX_SYSROOT="${SIM_SDK_PATH}"
 	make -C $BUILD_DIR/libmediasoupclient/simulator/x64
 
-	cmake . -B $BUILD_DIR/libmediasoupclient/simulator/arm64 \
-		${lmsc_cmake_args} \
+	SDKROOT="$SIM_SDK_PATH" cmake . -B $BUILD_DIR/libmediasoupclient/simulator/arm64 \
+		"${lmsc_cmake_args[@]}" \
 		-DLIBWEBRTC_BINARY_PATH=$BUILD_DIR/WebRTC/simulator/arm64/WebRTC.framework/WebRTC \
 		-DIOS_SDK=iphonesimulator \
 		-DIOS_ARCHS="arm64"\
 		-DPLATFORM=SIMULATORARM64 \
-		-DCMAKE_OSX_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk"
+		-DCMAKE_SYSTEM_NAME=iOS \
+		-DCMAKE_OSX_ARCHITECTURES="arm64" \
+		-DCMAKE_OSX_SYSROOT="${SIM_SDK_PATH}"
 	make -C $BUILD_DIR/libmediasoupclient/simulator/arm64
 
 	# Create a FAT libmediasoup / libsdptransform library

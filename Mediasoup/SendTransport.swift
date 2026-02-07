@@ -54,8 +54,15 @@ extension SendTransport: Transport {
 		return transport.appData
 	}
 
+	@available(*, deprecated, message: "Use getStats() throws instead")
 	public var stats: String {
-		return transport.stats
+		return (try? getStats()) ?? "[]"
+	}
+
+	public func getStats() throws -> String {
+		try convertMediasoupErrors {
+			try transport.getStats()
+		}
 	}
 
 	public func close() {
@@ -101,26 +108,52 @@ extension SendTransport: SendTransportWrapperDelegate {
 		appData: String, callback: @escaping (String?) -> Void) {
 
 		guard transport == self.transport else {
+			callback(nil)
 			return
 		}
 
 		guard let mediaKind = MediaKind(stringValue: kind) else {
-			print("Failed to parse media kins value: \(kind)")
+			print("Failed to parse media kind value: \(kind)")
+			callback(nil)
 			return
 		}
 
-		delegate?.onProduce(transport: self, kind: mediaKind, rtpParameters: rtpParameters,
-			appData: appData, callback: callback)
+		Task { [weak self] in
+			guard let self else {
+				callback(nil)
+				return
+			}
+			let result = await delegate?.onProduce(
+				transport: self,
+				kind: mediaKind,
+				rtpParameters: rtpParameters,
+				appData: appData
+			)
+			callback(result)
+		}
 	}
 
 	public func onProduceData(_ transport: SendTransportWrapper, sctpParameters: String,
 		label: String, protocol dataProtocol: String, appData: String, callback: @escaping (String?) -> Void) {
 
 		guard transport == self.transport else {
+			callback(nil)
 			return
 		}
 
-		delegate?.onProduceData(transport: self, sctpParameters: sctpParameters, label: label,
-			protocol: dataProtocol, appData: appData, callback: callback)
+		Task { [weak self] in
+			guard let self else {
+				callback(nil)
+				return
+			}
+			let result = await delegate?.onProduceData(
+				transport: self,
+				sctpParameters: sctpParameters,
+				label: label,
+				protocol: dataProtocol,
+				appData: appData
+			)
+			callback(result)
+		}
 	}
 }

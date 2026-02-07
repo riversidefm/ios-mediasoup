@@ -1,7 +1,7 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 6.0 effective-5.10 (swiftlang-6.0.0.9.10 clang-1600.0.26.2)
-// swift-module-flags: -target arm64-apple-macos13.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-bare-slash-regex -module-name Mediasoup
-// swift-module-flags-ignorable: -no-verify-emitted-module-interface
+// swift-compiler-version: Apple Swift version 6.2.3 effective-5.10 (swiftlang-6.2.3.3.21 clang-1700.6.3.2)
+// swift-module-flags: -target arm64-apple-macos13.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -module-name Mediasoup
+// swift-module-flags-ignorable: -no-verify-emitted-module-interface -formal-cxx-interoperability-mode=off -interface-compiler-version 6.2.3
 import Foundation
 @_exported import Mediasoup
 import Mediasoup_Private
@@ -16,8 +16,12 @@ public protocol ReceiveTransportDelegate : Mediasoup.TransportDelegate {
   weak public var delegate: (any Mediasoup.ReceiveTransportDelegate)?
   final public let transport: Mediasoup_Private.ReceiveTransportWrapper
   @objc deinit
+  #if compiler(>=5.3) && $NonescapableTypes
   public func consume(consumerId: Swift.String, producerId: Swift.String, kind: Mediasoup.MediaKind, rtpParameters: Swift.String, appData: Swift.String?) throws -> Mediasoup.Consumer
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   public func consumeData(consumerId: Swift.String, producerId: Swift.String, streamId: Swift.UInt16, label: Swift.String, protocol protocolName: Swift.String?, appData: Swift.String?) throws -> Mediasoup.DataConsumer
+  #endif
 }
 extension Mediasoup.ReceiveTransport : Mediasoup.Transport {
   public var id: Swift.String {
@@ -32,9 +36,11 @@ extension Mediasoup.ReceiveTransport : Mediasoup.Transport {
   public var appData: Swift.String {
     get
   }
+  @available(*, deprecated, message: "Use getStats() throws instead")
   public var stats: Swift.String {
     get
   }
+  public func getStats() throws -> Swift.String
   public func close()
   public func restartICE(with iceParameters: Swift.String) throws
   public func updateICEServers(_ iceServers: Swift.String) throws
@@ -58,7 +64,9 @@ public protocol Transport : AnyObject {
   var closed: Swift.Bool { get }
   var connectionState: Mediasoup.TransportConnectionState { get }
   var appData: Swift.String { get }
+  @available(*, deprecated, message: "Use getStats() throws instead")
   var stats: Swift.String { get }
+  func getStats() throws -> Swift.String
   func close()
   func restartICE(with iceParameters: Swift.String) throws
   func updateICEServers(_ iceServers: Swift.String) throws
@@ -85,7 +93,9 @@ public enum TransportConnectionState {
   weak public var delegate: (any Mediasoup.SendTransportDelegate)?
   final public let transport: Mediasoup_Private.SendTransportWrapper
   @objc deinit
+  #if compiler(>=5.3) && $NonescapableTypes
   public func createProducer(for track: WebRTC.RTCMediaStreamTrack, encodings: [WebRTC.RTCRtpEncodingParameters]?, codecOptions: Swift.String?, codec: Swift.String?, appData: Swift.String?) throws -> Mediasoup.Producer
+  #endif
 }
 extension Mediasoup.SendTransport : Mediasoup.Transport {
   public var id: Swift.String {
@@ -100,9 +110,11 @@ extension Mediasoup.SendTransport : Mediasoup.Transport {
   public var appData: Swift.String {
     get
   }
+  @available(*, deprecated, message: "Use getStats() throws instead")
   public var stats: Swift.String {
     get
   }
+  public func getStats() throws -> Swift.String
   public func close()
   public func restartICE(with iceParameters: Swift.String) throws
   public func updateICEServers(_ iceServers: Swift.String) throws
@@ -110,15 +122,23 @@ extension Mediasoup.SendTransport : Mediasoup.Transport {
 extension Mediasoup.SendTransport : Mediasoup_Private.SendTransportWrapperDelegate {
   @objc dynamic public func onConnect(_ transport: Mediasoup_Private.SendTransportWrapper, dtlsParameters: Swift.String)
   @objc dynamic public func onConnectionStateChange(_ transport: Mediasoup_Private.SendTransportWrapper, connectionState: Mediasoup_Private.MediasoupClientTransportConnectionState)
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc dynamic public func onProduce(_ transport: Mediasoup_Private.SendTransportWrapper, kind: Swift.String, rtpParameters: Swift.String, appData: Swift.String, callback: @escaping (Swift.String?) -> Swift.Void)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   @objc dynamic public func onProduceData(_ transport: Mediasoup_Private.SendTransportWrapper, sctpParameters: Swift.String, label: Swift.String, protocol dataProtocol: Swift.String, appData: Swift.String, callback: @escaping (Swift.String?) -> Swift.Void)
+  #endif
 }
 public protocol ConsumerDelegate : AnyObject {
   func onTransportClose(in consumer: Mediasoup.Consumer)
 }
 public protocol SendTransportDelegate : Mediasoup.TransportDelegate {
-  func onProduce(transport: any Mediasoup.Transport, kind: Mediasoup.MediaKind, rtpParameters: Swift.String, appData: Swift.String, callback: @escaping (Swift.String?) -> Swift.Void)
-  func onProduceData(transport: any Mediasoup.Transport, sctpParameters: Swift.String, label: Swift.String, protocol dataProtocol: Swift.String, appData: Swift.String, callback: @escaping (Swift.String?) -> Swift.Void)
+  #if compiler(>=5.3) && $NonescapableTypes
+  func onProduce(transport: any Mediasoup.Transport, kind: Mediasoup.MediaKind, rtpParameters: Swift.String, appData: Swift.String) async -> Swift.String?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  func onProduceData(transport: any Mediasoup.Transport, sctpParameters: Swift.String, label: Swift.String, protocol dataProtocol: Swift.String, appData: Swift.String) async -> Swift.String?
+  #endif
 }
 public enum MediasoupError : Swift.Error {
   case unsupported(Swift.String)
@@ -213,6 +233,7 @@ public enum ICETransportPolicy {
   public var rtpParameters: Swift.String {
     get
   }
+  @available(*, deprecated, message: "Use getStats() throws instead")
   public var stats: Swift.String {
     get
   }
@@ -228,14 +249,20 @@ extension Mediasoup.Producer : Mediasoup_Private.ProducerWrapperDelegate {
   @objc dynamic public func onTransportClose(_ producer: Mediasoup_Private.ProducerWrapper)
 }
 open class Device {
+  #if compiler(>=5.3) && $NonescapableTypes
   public init(audioDevice: (any WebRTC.RTCAudioDevice)? = nil)
+  #endif
   public func isLoaded() -> Swift.Bool
   public func load(with routerRTPCapabilities: Swift.String) throws
   public func rtpCapabilities() throws -> Swift.String
   public func sctpCapabilities() throws -> Swift.String
   public func canProduce(_ mediaKind: Mediasoup.MediaKind) throws -> Swift.Bool
+  #if compiler(>=5.3) && $NonescapableTypes
   open func createSendTransport(id: Swift.String, iceParameters: Swift.String, iceCandidates: Swift.String, dtlsParameters: Swift.String, sctpParameters: Swift.String?, iceServers: Swift.String? = nil, iceTransportPolicy: Mediasoup.ICETransportPolicy = .all, appData: Swift.String?) throws -> Mediasoup.SendTransport
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
   open func createReceiveTransport(id: Swift.String, iceParameters: Swift.String, iceCandidates: Swift.String, dtlsParameters: Swift.String, sctpParameters: Swift.String? = nil, iceServers: Swift.String? = nil, iceTransportPolicy: Mediasoup.ICETransportPolicy = .all, appData: Swift.String? = nil) throws -> Mediasoup.ReceiveTransport
+  #endif
   @objc deinit
 }
 @_hasMissingDesignatedInitializers public class Consumer {
@@ -263,12 +290,14 @@ open class Device {
   public var rtpParameters: Swift.String {
     get
   }
+  @available(*, deprecated, message: "Use getStats() throws instead")
   public var stats: Swift.String {
     get
   }
   public func pause()
   public func resume()
   public func close()
+  public func getStats() throws -> Swift.String
   @objc deinit
 }
 extension Mediasoup.Consumer : Mediasoup_Private.ConsumerWrapperDelegate {

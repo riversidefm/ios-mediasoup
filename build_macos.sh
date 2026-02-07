@@ -35,6 +35,45 @@ then
     exit
 fi
 
+# Ensure DEVELOPER_DIR points to an installed Xcode so xcrun resolves SDKs.
+function selectDeveloperDir() {
+    if [ -n "$DEVELOPER_DIR" ] && [ -d "$DEVELOPER_DIR" ]; then
+        return 0
+    fi
+    if command -v xcode-select &> /dev/null; then
+        local selected
+        selected="$(xcode-select -p 2>/dev/null || true)"
+        if [ -n "$selected" ] && [ -d "$selected" ]; then
+            export DEVELOPER_DIR="$selected"
+            return 0
+        fi
+    fi
+    local stable_candidates=""
+    local all_candidates=""
+    local path=""
+    while IFS= read -r path; do
+        all_candidates+="${path}"$'\n'
+        if [[ "$path" != *"release-candidate"* && "$path" != *"beta"* ]]; then
+            stable_candidates+="${path}"$'\n'
+        fi
+    done < <(ls -d /Applications/Xcode-*.app/Contents/Developer 2>/dev/null || true)
+
+    local candidate=""
+    if [ -n "$stable_candidates" ]; then
+        candidate="$(printf "%s" "$stable_candidates" | sort -V | tail -n1)"
+    elif [ -n "$all_candidates" ]; then
+        candidate="$(printf "%s" "$all_candidates" | sort -V | tail -n1)"
+    fi
+    if [ -n "$candidate" ]; then
+        export DEVELOPER_DIR="$candidate"
+    fi
+}
+
+selectDeveloperDir
+if [ -n "$DEVELOPER_DIR" ]; then
+    echo "DEVELOPER_DIR = $DEVELOPER_DIR"
+fi
+
 # Define working directories.
 export PROJECT_DIR=$(pwd)
 echo "PROJECT_DIR = $PROJECT_DIR"
@@ -54,6 +93,16 @@ export PATCHES_DIR=$(pwd)/patches
 echo "PATCHES_DIR = $PATCHES_DIR"
 export WEBRTC_DIR=$PROJECT_DIR/Mediasoup/dependencies/webrtc/src
 echo "WEBRTC_DIR = $WEBRTC_DIR"
+
+MAC_SDK_PATH="${DEVELOPER_DIR}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
+if [ ! -d "$MAC_SDK_PATH" ]; then
+    echo "SDK path not found under DEVELOPER_DIR. Falling back to xcrun."
+    MAC_SDK_PATH="$(xcrun --sdk macosx --show-sdk-path)"
+fi
+if [ ! -d "$MAC_SDK_PATH" ]; then
+    echo "macosx SDK not found at: $MAC_SDK_PATH"
+    exit 1
+fi
 
 function clearArtifacts() {
     declare -a COMPONENTS=(
@@ -196,6 +245,7 @@ function patchWebRTC() {
     patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/task_factory.patch
     patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/metal_header.patch
     patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/echo_cancellation.patch
+    patch -b -p0 -d $WORK_DIR < $PATCHES_DIR/nsgl_deprecation.patch
 }
 
 function refetchWebRTC() {
@@ -405,32 +455,31 @@ function rebuildLMSC() {
         "-DLIBWEBRTC_INCLUDE_PATH=$WEBRTC_DIR"
         '-DMEDIASOUPCLIENT_LOG_TRACE=OFF'
         '-DMEDIASOUPCLIENT_LOG_DEV=OFF'
-        '-DCMAKE_CXX_FLAGS="-fvisibility=hidden"'
+        '-DCMAKE_CXX_FLAGS=-fvisibility=hidden -DWEBRTC_POSIX -DWEBRTC_MAC'
+        '-DCMAKE_C_FLAGS=-DWEBRTC_POSIX -DWEBRTC_MAC'
         '-DLIBSDPTRANSFORM_BUILD_TESTS=OFF'
         '-DMEDIASOUPCLIENT_BUILD_TESTS=OFF'
         '-DCMAKE_OSX_DEPLOYMENT_TARGET=13'
         '-DCMAKE_BUILD_TYPE=RelWithDebInfo'
         '-DCMAKE_POLICY_VERSION_MINIMUM=3.5'
     )
-    for str in ${lmsc_cmake_arguments[@]}; do
-        lmsc_cmake_args+=" ${str}"
-    done
+    lmsc_cmake_args=("${lmsc_cmake_arguments[@]}")
     
     # Build mediasoup-client-ios for arm64
     echo "cmake lmsc arm64"
     cmake . -B $BUILD_DIR/libmediasoupclient/mac/arm64 \
-        ${lmsc_cmake_args} \
+        "${lmsc_cmake_args[@]}" \
         -DCMAKE_OSX_ARCHITECTURES=arm64 \
-        -DCMAKE_OSX_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk" \
+        -DCMAKE_OSX_SYSROOT="${MAC_SDK_PATH}" \
         -DLIBWEBRTC_BINARY_PATH=$BUILD_DIR/WebRTC/mac/arm64/WebRTC.framework/WebRTC
     make -C $BUILD_DIR/libmediasoupclient/mac/arm64
 
     # Build mediasoup-client-ios for x86_64
     echo "cmake lmsc x64"
     cmake . -B $BUILD_DIR/libmediasoupclient/mac/x64 \
-        ${lmsc_cmake_args} \
+        "${lmsc_cmake_args[@]}" \
         -DCMAKE_OSX_ARCHITECTURES=x86_64 \
-        -DCMAKE_OSX_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk" \
+        -DCMAKE_OSX_SYSROOT="${MAC_SDK_PATH}" \
         -DLIBWEBRTC_BINARY_PATH=$BUILD_DIR/WebRTC/mac/x64/WebRTC.framework/WebRTC
     make -C $BUILD_DIR/libmediasoupclient/mac/x64
 
@@ -483,7 +532,7 @@ then
                     break
                     ;;
                 *)
-                    echo -ne "\r\033[0K\r"н
+                    echo -ne "\r\033[0K\r"
                     tput bel
                     ;;
             esac

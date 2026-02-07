@@ -6,16 +6,14 @@ public protocol SendTransportDelegate: TransportDelegate {
 		transport: Transport,
 		kind: MediaKind,
 		rtpParameters: String,
-		appData: String,
-		callback: @escaping (String?) -> Void
-	)
+		appData: String
+	) async -> String?
 
 	func onProduceData(
 		transport: Transport,
 		sctpParameters: String,
 		label: String,
 		protocol dataProtocol: String,
-		appData: String,
-		callback: @escaping (String?) -> Void
-	)
+		appData: String
+	) async -> String?
 }

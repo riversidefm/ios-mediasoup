@@ -115,16 +115,20 @@ final class ViewController: UIViewController {
 
 
 extension ViewController: SendTransportDelegate {
-	func onProduce(transport: Transport, kind: MediaKind, rtpParameters: String, appData: String,
-		callback: @escaping (String?) -> Void) {
-
+	func onProduce(transport: Transport, kind: MediaKind, rtpParameters: String, appData: String) async -> String? {
 		print("on produce \(kind)")
+		return nil
 	}
 
-	func onProduceData(transport: Transport, sctpParameters: String, label: String,
-		protocol dataProtocol: String, appData: String, callback: @escaping (String?) -> Void) {
-
+	func onProduceData(
+		transport: Transport,
+		sctpParameters: String,
+		label: String,
+		protocol dataProtocol: String,
+		appData: String
+	) async -> String? {
 		print("on produce data \(label)")
+		return nil
 	}
 
 	func onConnect(transport: Transport, dtlsParameters: String) {

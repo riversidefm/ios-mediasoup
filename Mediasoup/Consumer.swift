@@ -38,8 +38,9 @@ public class Consumer {
 		return consumer.rtpParameters
 	}
 
+	@available(*, deprecated, message: "Use getStats() throws instead")
 	public var stats: String {
-		return consumer.stats
+		return (try? getStats()) ?? "[]"
 	}
 
 	private let consumer: ConsumerWrapper
@@ -62,8 +63,10 @@ public class Consumer {
 		consumer.close()
 	}
 
-	func getStats() throws -> String {
-		return try consumer.getStats()
+	public func getStats() throws -> String {
+		try convertMediasoupErrors {
+			try consumer.getStats()
+		}
 	}
 }
 

@@ -74,7 +74,9 @@
 }
 
 - (NSString *_Nonnull)stats {
-	return [NSString stringWithUTF8String:_producer->GetStats().dump().c_str()];
+	NSError *error = nil;
+	NSString *result = [self getStatsWithError:&error];
+	return result ?: @"[]";
 }
 
 - (void)pause {
@@ -111,7 +113,11 @@
 }
 
 - (NSString *_Nullable)getStatsWithError:(out NSError *__autoreleasing _Nullable *_Nullable)error {
-	return nil;
+	__block NSString *statsString = nil;
+	mediasoupTry(^{
+		statsString = [NSString stringWithUTF8String:self->_producer->GetStats().dump().c_str()];
+	}, error);
+	return statsString;
 }
 
 #pragma mark - ProducerListenerAdapterDelegate methods

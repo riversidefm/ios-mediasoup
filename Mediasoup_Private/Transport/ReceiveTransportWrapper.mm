@@ -66,7 +66,17 @@
 }
 
 - (NSString *_Nonnull)stats {
-	return [NSString stringWithUTF8String:_transport->GetStats().dump().c_str()];
+	NSError *error = nil;
+	NSString *result = [self getStatsWithError:&error];
+	return result ?: @"[]";
+}
+
+- (NSString *_Nullable)getStatsWithError:(out NSError *__autoreleasing _Nullable *_Nullable)error {
+	__block NSString *statsString = nil;
+	mediasoupTry(^{
+		statsString = [NSString stringWithUTF8String:self->_transport->GetStats().dump().c_str()];
+	}, error);
+	return statsString;
 }
 
 - (void)close {

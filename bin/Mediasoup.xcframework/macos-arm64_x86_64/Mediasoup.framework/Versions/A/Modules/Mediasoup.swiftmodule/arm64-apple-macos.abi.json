@@ -543,8 +543,10 @@
             "usr": "s:9Mediasoup16ReceiveTransportC5statsSSvp",
             "mangledName": "$s9Mediasoup16ReceiveTransportC5statsSSvp",
             "moduleName": "Mediasoup",
+            "deprecated": true,
             "declAttributes": [
-              "AccessControl"
+              "AccessControl",
+              "Available"
             ],
             "isFromExtension": true,
             "accessors": [
@@ -568,6 +570,29 @@
                 "accessorKind": "get"
               }
             ]
+          },
+          {
+            "kind": "Function",
+            "name": "getStats",
+            "printedName": "getStats()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:9Mediasoup16ReceiveTransportC8getStatsSSyKF",
+            "mangledName": "$s9Mediasoup16ReceiveTransportC8getStatsSSyKF",
+            "moduleName": "Mediasoup",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
           },
           {
             "kind": "Function",
@@ -1212,7 +1237,11 @@
             "usr": "s:9Mediasoup9TransportP5statsSSvp",
             "mangledName": "$s9Mediasoup9TransportP5statsSSvp",
             "moduleName": "Mediasoup",
+            "deprecated": true,
             "protocolReq": true,
+            "declAttributes": [
+              "Available"
+            ],
             "accessors": [
               {
                 "kind": "Accessor",
@@ -1237,6 +1266,29 @@
                 "accessorKind": "get"
               }
             ]
+          },
+          {
+            "kind": "Function",
+            "name": "getStats",
+            "printedName": "getStats()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:9Mediasoup9TransportP8getStatsSSyKF",
+            "mangledName": "$s9Mediasoup9TransportP8getStatsSSyKF",
+            "moduleName": "Mediasoup",
+            "genericSig": "<τ_0_0 where τ_0_0 : Mediasoup.Transport>",
+            "sugared_genericSig": "<Self where Self : Mediasoup.Transport>",
+            "protocolReq": true,
+            "throwing": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
           },
           {
             "kind": "Function",
@@ -2313,8 +2365,10 @@
             "usr": "s:9Mediasoup13SendTransportC5statsSSvp",
             "mangledName": "$s9Mediasoup13SendTransportC5statsSSvp",
             "moduleName": "Mediasoup",
+            "deprecated": true,
             "declAttributes": [
-              "AccessControl"
+              "AccessControl",
+              "Available"
             ],
             "isFromExtension": true,
             "accessors": [
@@ -2338,6 +2392,29 @@
                 "accessorKind": "get"
               }
             ]
+          },
+          {
+            "kind": "Function",
+            "name": "getStats",
+            "printedName": "getStats()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:9Mediasoup13SendTransportC8getStatsSSyKF",
+            "mangledName": "$s9Mediasoup13SendTransportC8getStatsSSyKF",
+            "moduleName": "Mediasoup",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "throwing": true,
+            "funcSelfKind": "NonMutating"
           },
           {
             "kind": "Function",
@@ -2756,12 +2833,21 @@
           {
             "kind": "Function",
             "name": "onProduce",
-            "printedName": "onProduce(transport:kind:rtpParameters:appData:callback:)",
+            "printedName": "onProduce(transport:kind:rtpParameters:appData:)",
             "children": [
               {
                 "kind": "TypeNominal",
-                "name": "Void",
-                "printedName": "()"
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
               },
               {
                 "kind": "TypeNominal",
@@ -2786,37 +2872,11 @@
                 "name": "String",
                 "printedName": "Swift.String",
                 "usr": "s:SS"
-              },
-              {
-                "kind": "TypeFunc",
-                "name": "Function",
-                "printedName": "(Swift.String?) -> ()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Optional",
-                    "printedName": "Swift.String?",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "String",
-                        "printedName": "Swift.String",
-                        "usr": "s:SS"
-                      }
-                    ],
-                    "usr": "s:Sq"
-                  }
-                ]
               }
             ],
             "declKind": "Func",
-            "usr": "s:9Mediasoup21SendTransportDelegateP9onProduce9transport4kind13rtpParameters7appData8callbackyAA0C0_p_AA9MediaKindOS2SySSSgctF",
-            "mangledName": "$s9Mediasoup21SendTransportDelegateP9onProduce9transport4kind13rtpParameters7appData8callbackyAA0C0_p_AA9MediaKindOS2SySSSgctF",
+            "usr": "s:9Mediasoup21SendTransportDelegateP9onProduce9transport4kind13rtpParameters7appDataSSSgAA0C0_p_AA9MediaKindOS2StYaF",
+            "mangledName": "$s9Mediasoup21SendTransportDelegateP9onProduce9transport4kind13rtpParameters7appDataSSSgAA0C0_p_AA9MediaKindOS2StYaF",
             "moduleName": "Mediasoup",
             "genericSig": "<τ_0_0 where τ_0_0 : Mediasoup.SendTransportDelegate>",
             "sugared_genericSig": "<Self where Self : Mediasoup.SendTransportDelegate>",
@@ -2827,12 +2887,21 @@
           {
             "kind": "Function",
             "name": "onProduceData",
-            "printedName": "onProduceData(transport:sctpParameters:label:protocol:appData:callback:)",
+            "printedName": "onProduceData(transport:sctpParameters:label:protocol:appData:)",
             "children": [
               {
                 "kind": "TypeNominal",
-                "name": "Void",
-                "printedName": "()"
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
               },
               {
                 "kind": "TypeNominal",
@@ -2863,37 +2932,11 @@
                 "name": "String",
                 "printedName": "Swift.String",
                 "usr": "s:SS"
-              },
-              {
-                "kind": "TypeFunc",
-                "name": "Function",
-                "printedName": "(Swift.String?) -> ()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Optional",
-                    "printedName": "Swift.String?",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "String",
-                        "printedName": "Swift.String",
-                        "usr": "s:SS"
-                      }
-                    ],
-                    "usr": "s:Sq"
-                  }
-                ]
               }
             ],
             "declKind": "Func",
-            "usr": "s:9Mediasoup21SendTransportDelegateP13onProduceData9transport14sctpParameters5label8protocol03appG08callbackyAA0C0_p_S4SySSSgctF",
-            "mangledName": "$s9Mediasoup21SendTransportDelegateP13onProduceData9transport14sctpParameters5label8protocol03appG08callbackyAA0C0_p_S4SySSSgctF",
+            "usr": "s:9Mediasoup21SendTransportDelegateP13onProduceData9transport14sctpParameters5label8protocol03appG0SSSgAA0C0_p_S4StYaF",
+            "mangledName": "$s9Mediasoup21SendTransportDelegateP13onProduceData9transport14sctpParameters5label8protocol03appG0SSSgAA0C0_p_S4StYaF",
             "moduleName": "Mediasoup",
             "genericSig": "<τ_0_0 where τ_0_0 : Mediasoup.SendTransportDelegate>",
             "sugared_genericSig": "<Self where Self : Mediasoup.SendTransportDelegate>",
@@ -3233,6 +3276,13 @@
             "printedName": "Sendable",
             "usr": "s:s8SendableP",
             "mangledName": "$ss8SendableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "SendableMetatype",
+            "printedName": "SendableMetatype",
+            "usr": "s:s16SendableMetatypeP",
+            "mangledName": "$ss16SendableMetatypeP"
           }
         ]
       },
@@ -5019,8 +5069,10 @@
             "usr": "s:9Mediasoup8ProducerC5statsSSvp",
             "mangledName": "$s9Mediasoup8ProducerC5statsSSvp",
             "moduleName": "Mediasoup",
+            "deprecated": true,
             "declAttributes": [
-              "AccessControl"
+              "AccessControl",
+              "Available"
             ],
             "accessors": [
               {
@@ -6198,8 +6250,10 @@
             "usr": "s:9Mediasoup8ConsumerC5statsSSvp",
             "mangledName": "$s9Mediasoup8ConsumerC5statsSSvp",
             "moduleName": "Mediasoup",
+            "deprecated": true,
             "declAttributes": [
-              "AccessControl"
+              "AccessControl",
+              "Available"
             ],
             "accessors": [
               {
@@ -6280,6 +6334,28 @@
             "declAttributes": [
               "AccessControl"
             ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "getStats",
+            "printedName": "getStats()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:9Mediasoup8ConsumerC8getStatsSSyKF",
+            "mangledName": "$s9Mediasoup8ConsumerC8getStatsSSyKF",
+            "moduleName": "Mediasoup",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "throwing": true,
             "funcSelfKind": "NonMutating"
           },
           {

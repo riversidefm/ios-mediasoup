@@ -63,7 +63,7 @@ jobs:
           LATEST_TAG=$(git describe --tags --match "mobile-v*" --abbrev=0 2>/dev/null || echo "mobile-v0.0.0")
           
           # Extract version numbers
-          if [[ $LATEST_TAG =~ ^mobile-v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+          if [[ $LATEST_TAG =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
             MAJOR="${BASH_REMATCH[1]}"
             MINOR="${BASH_REMATCH[2]}"
             PATCH="${BASH_REMATCH[3]}"
@@ -88,7 +88,7 @@ jobs:
             exit 0
           fi
           
-          NEW_TAG="mobile-v${MAJOR}.${MINOR}.${PATCH}"
+          NEW_TAG="${MAJOR}.${MINOR}.${PATCH}"
           
           echo "Creating new tag: $NEW_TAG"
           git tag -a "$NEW_TAG" -m "Release $NEW_TAG"

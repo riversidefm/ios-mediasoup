@@ -75,7 +75,13 @@
 }
 
 - (NSString *_Nonnull)stats {
-	return [NSString stringWithUTF8String:_consumer->GetStats().dump().c_str()];
+    // Use mediasoupTry to safely handle C++ exceptions
+    NSError *error = nil;
+    NSString *result = [self getStatsWithError:&error];
+    if (error) {
+        return @"{}";
+    }
+    return result ?: @"{}";
 }
 
 - (void)pause {
@@ -91,7 +97,11 @@
 }
 
 - (NSString *_Nullable)getStatsWithError:(out NSError *__autoreleasing _Nullable *_Nullable)error {
-	return nil;
+    __block NSString *statsString = nil;
+    mediasoupTry(^{
+        statsString = [NSString stringWithUTF8String:self->_consumer->GetStats().dump().c_str()];
+    }, error);
+    return statsString;
 }
 
 #pragma mark - ProducerListenerAdapterDelegate methods

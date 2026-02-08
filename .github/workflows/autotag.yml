@@ -88,7 +88,7 @@ jobs:
             exit 0
           fi
           
-          NEW_TAG="mobile-v${MAJOR}.${MINOR}.${PATCH}"
+          NEW_TAG="${MAJOR}.${MINOR}.${PATCH}"
           
           echo "Creating new tag: $NEW_TAG"
           git tag -a "$NEW_TAG" -m "Release $NEW_TAG"

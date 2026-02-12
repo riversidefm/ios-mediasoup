@@ -78,10 +78,23 @@
     return self;
 }
 
+- (void)invalidate {
+    RTCPeerConnectionFactory *factoryToRelease = _pcFactory;
+    _pcFactory = nil;
+
+    if (!factoryToRelease) return;
+
+    // Prevent the PeerConnectionFactory from being destroyed on
+    // WebRTC internal threads, as that would result in a crash.
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        (void)factoryToRelease;
+    });
+}
+
 - (void)dealloc {
-	self.pcFactory = nil;
 	delete _pcOptions;
 	delete _device;
+    [self invalidate];
 }
 
 - (BOOL)isLoaded {

@@ -84,7 +84,6 @@
 
 - (void)close {
 	_transport->Close();
-    [self invalidate];
 }
 
 - (void)restartICE:(NSString *_Nonnull)iceParameters

@@ -41,6 +41,19 @@
 - (void)dealloc {
 	delete _transport;
 	delete _listenerAdapter;
+    [self invalidate];
+}
+
+- (void)invalidate {
+    RTCPeerConnectionFactory *factoryToRelease = _pcFactory;
+    _pcFactory = nil;
+        
+    if (!factoryToRelease) return;
+    // Prevent the PeerConnectionFactory from being destroyed on
+    // WebRTC internal threads, as that would result in a crash.
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        (void)factoryToRelease;
+    });
 }
 
 #pragma mark - Public methods

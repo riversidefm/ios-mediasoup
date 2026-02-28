@@ -34,6 +34,17 @@ public class Consumer {
 
 	public var appData: String = ""
 
+    /// Updated externally. Timestamp set when first-frame tracking begins for this consumer.
+    /// Nil when tracking has not started or was abandoned after a timeout.
+    public var firstFrameStartTime: Date?
+    
+    /// Updated externally. Timestamp set when the first video frame / audio packet is confirmed received.
+    /// Nil until then. Latency = firstFrameReceivedTime.timeIntervalSince(firstFrameStartTime).
+    public var firstFrameReceivedTime: Date?
+
+    // Updated externally from getStats
+    public var soundLevel: Float = 0
+
 	public var rtpParameters: String {
 		return consumer.rtpParameters
 	}

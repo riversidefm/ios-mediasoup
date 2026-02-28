@@ -41,8 +41,8 @@ public class Consumer {
     /// Updated externally. Timestamp set when the first video frame / audio packet is confirmed received.
     /// Nil until then. Latency = firstFrameReceivedTime.timeIntervalSince(firstFrameStartTime).
     public var firstFrameReceivedTime: Date?
-
-    // Updated externally from getStats
+    
+    /// Updated externally from getStats.
     public var soundLevel: Float = 0
 
 	public var rtpParameters: String {

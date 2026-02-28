@@ -260,6 +260,9 @@ open class Device {
   }
   final public let kind: Mediasoup.MediaKind
   public var appData: Swift.String
+  public var firstFrameStartTime: Foundation.Date?
+  public var firstFrameReceivedTime: Foundation.Date?
+  public var soundLevel: Swift.Float
   public var rtpParameters: Swift.String {
     get
   }

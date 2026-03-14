@@ -82,9 +82,9 @@
     auto* pcOptions = _pcOptions;
     auto* device = _device;
     RTCPeerConnectionFactory *factoryToRelease = _pcFactory;
-    _pcOptions = nullptr
-    _device = nullptr
-    _pcFactory = nil
+    _pcOptions = nullptr;
+    _device = nullptr;
+    _pcFactory = nil;
     
     dispatch_async(MediasoupTeardownQueue(), ^{
         delete pcOptions;

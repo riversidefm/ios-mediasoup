@@ -2,7 +2,6 @@
 #import <Transport.hpp>
 #import <WebRTC/RTCMediaStreamTrack.h>
 #import <WebRTC/RTCRtpEncodingParameters.h>
-#import <peerconnection/RTCMediaStreamTrack+Private.h>
 #import <peerconnection/RTCConfiguration+Private.h>
 #import "SendTransportWrapper.hpp"
 #import "SendTransportListenerAdapter.hpp"
@@ -161,11 +160,11 @@
 			appDataJson = nlohmann::json::parse(std::string(appData.UTF8String));
 		}
 
-		rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> nativeTrack = mediaTrack.nativeTrack;
+        auto mediaStreamTrack = (webrtc::MediaStreamTrackInterface *)[mediaTrack hash];
 
 		auto producer = self->_transport->Produce(
 			listenerAdapter,
-			nativeTrack.get(),
+            mediaStreamTrack,
 			&encodingsVector,
 			&codecOptionsJson,
 			codecJsonPtr,

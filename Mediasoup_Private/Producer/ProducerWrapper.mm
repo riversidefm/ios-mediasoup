@@ -1,7 +1,6 @@
 #import <Foundation/Foundation.h>
 #import <Producer.hpp>
 #import <WebRTC/RTCMediaStreamTrack.h>
-#import <peerconnection/RTCMediaStreamTrack+Private.h>
 #import "ProducerWrapper.hpp"
 #import "ProducerListenerAdapter.hpp"
 #import "ProducerListenerAdapterDelegate.h"
@@ -121,8 +120,8 @@
 	__attribute__((swift_error(nonnull_error))) {
 
 	mediasoupTry(^{
-		rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> nativeTrack = track.nativeTrack;
-		self->_producer->ReplaceTrack(nativeTrack.get());
+        auto mediaStreamTrack = (webrtc::MediaStreamTrackInterface *)[track hash];
+        self->_producer->ReplaceTrack(mediaStreamTrack);
 		self.track = track;
 	}, error);
 }

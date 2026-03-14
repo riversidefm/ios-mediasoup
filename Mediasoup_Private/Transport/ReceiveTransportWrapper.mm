@@ -10,7 +10,6 @@
 #import "../DataConsumer/DataConsumerListenerAdapter.hpp"
 #import "../DataConsumer/DataConsumerWrapper.hpp"
 
-
 @interface ReceiveTransportWrapper () <ReceiveTransportListenerAdapterDelegate> {
 	mediasoupclient::RecvTransport *_transport;
 	ReceiveTransportListenerAdapter *_listenerAdapter;
@@ -39,21 +38,25 @@
 }
 
 - (void)dealloc {
-	delete _transport;
-	delete _listenerAdapter;
-    [self invalidate];
-}
-
-- (void)invalidate {
+	// Capture raw pointers before they become inaccessible after dealloc returns.
+	auto* transport = _transport;
+	auto* listenerAdapter = _listenerAdapter;
     RTCPeerConnectionFactory *factoryToRelease = _pcFactory;
+	_transport = nullptr;
+	_listenerAdapter = nullptr;
     _pcFactory = nil;
-        
-    if (!factoryToRelease) return;
-    // Prevent the PeerConnectionFactory from being destroyed on
-    // WebRTC internal threads, as that would result in a crash.
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+
+	// Same reasoning as SendTransportWrapper: `delete transport` eventually
+	// reaches webrtc::PeerConnection::~PeerConnection, which marshals proxy
+	// calls back to WebRTC-internal threads.  If dealloc fires on one of those
+	// threads the marshal dereferences a freed rtc::Thread and crashes.
+	// Dispatching to a dedicated serial teardown queue keeps the teardown off
+	// WebRTC-owned threads while preserving deterministic ordering.
+	dispatch_async(MediasoupTeardownQueue(), ^{
+		delete transport;
+		delete listenerAdapter;
         (void)factoryToRelease;
-    });
+	});
 }
 
 #pragma mark - Public methods

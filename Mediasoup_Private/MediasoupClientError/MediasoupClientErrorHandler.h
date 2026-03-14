@@ -11,6 +11,8 @@ NSError *_Nonnull const mediasoupError(
 	std::exception const *_Nonnull const e
 );
 
+dispatch_queue_t _Nonnull MediasoupTeardownQueue(void);
+
 template<typename ReturnType>
 ReturnType mediasoupTryWithResult(
 	ReturnType (^_Nonnull throwingBlock)(void),

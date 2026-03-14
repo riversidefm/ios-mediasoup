@@ -1,12 +1,12 @@
 #import <Foundation/Foundation.h>
 #import <Producer.hpp>
 #import <WebRTC/RTCMediaStreamTrack.h>
+#import <peerconnection/RTCMediaStreamTrack+Private.h>
 #import "ProducerWrapper.hpp"
 #import "ProducerListenerAdapter.hpp"
 #import "ProducerListenerAdapterDelegate.h"
 #import "ProducerWrapperDelegate.h"
 #import "../MediasoupClientError/MediasoupClientErrorHandler.h"
-
 
 @interface ProducerWrapper () <ProducerListenerAdapterDelegate> {
 	mediasoupclient::Producer *_producer;
@@ -35,8 +35,20 @@
 }
 
 - (void)dealloc {
-	delete _producer;
-	delete _listenerAdapter;
+	auto* producer = _producer;
+	auto* listenerAdapter = _listenerAdapter;
+	RTCMediaStreamTrack *track = _track;
+	_producer = nullptr;
+	_listenerAdapter = nullptr;
+	_track = nil;
+
+	// Producer teardown eventually releases WebRTC senders/tracks. Keep that
+	// work off WebRTC-owned threads on a dedicated serial teardown queue.
+	dispatch_async(MediasoupTeardownQueue(), ^{
+		delete producer;
+		delete listenerAdapter;
+		(void)track;
+	});
 }
 
 #pragma mark - Public methods
@@ -109,9 +121,8 @@
 	__attribute__((swift_error(nonnull_error))) {
 
 	mediasoupTry(^{
-		// RTCMediaStreamTrack `hash` returns pointer to native track object.
-		auto mediaStreamTrack = (webrtc::MediaStreamTrackInterface *)[track hash];
-		self->_producer->ReplaceTrack(mediaStreamTrack);
+		rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> nativeTrack = track.nativeTrack;
+		self->_producer->ReplaceTrack(nativeTrack.get());
 		self.track = track;
 	}, error);
 }

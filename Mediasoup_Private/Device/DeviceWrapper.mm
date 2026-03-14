@@ -78,23 +78,19 @@
     return self;
 }
 
-- (void)invalidate {
+- (void)dealloc {
+    auto* pcOptions = _pcOptions;
+    auto* device = _device;
     RTCPeerConnectionFactory *factoryToRelease = _pcFactory;
-    _pcFactory = nil;
-
-    if (!factoryToRelease) return;
-
-    // Prevent the PeerConnectionFactory from being destroyed on
-    // WebRTC internal threads, as that would result in a crash.
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    _pcOptions = nullptr
+    _device = nullptr
+    _pcFactory = nil
+    
+    dispatch_async(MediasoupTeardownQueue(), ^{
+        delete pcOptions;
+        delete device;
         (void)factoryToRelease;
     });
-}
-
-- (void)dealloc {
-	delete _pcOptions;
-	delete _device;
-    [self invalidate];
 }
 
 - (BOOL)isLoaded {

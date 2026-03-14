@@ -7,7 +7,6 @@
 #import "ConsumerWrapperDelegate.h"
 #import "../MediasoupClientError/MediasoupClientErrorHandler.h"
 
-
 @interface ConsumerWrapper () <ConsumerListenerAdapterDelegate> {
 	mediasoupclient::Consumer *_consumer;
 	ConsumerListenerAdapter *_listenerAdapter;
@@ -36,8 +35,21 @@
 }
 
 - (void)dealloc {
-	delete _consumer;
-	delete _listenerAdapter;
+	auto* consumer = _consumer;
+	auto* listenerAdapter = _listenerAdapter;
+	RTCMediaStreamTrack *track = _track;
+	_consumer = nullptr;
+	_listenerAdapter = nullptr;
+	_track = nil;
+
+	// Consumer teardown also drops native WebRTC refs. Release them from the
+	// serial teardown queue so dealloc on a signaling thread cannot recurse
+	// into WebRTC.
+	dispatch_async(MediasoupTeardownQueue(), ^{
+		delete consumer;
+		delete listenerAdapter;
+		(void)track;
+	});
 }
 
 #pragma mark - Public methods

@@ -12,6 +12,15 @@ NSError *_Nonnull const mediasoupError(
 	return [NSError errorWithDomain:MediasoupClientErrorDomain code:code userInfo:userInfo];
 }
 
+dispatch_queue_t _Nonnull MediasoupTeardownQueue(void) {
+	static dispatch_queue_t queue;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		queue = dispatch_queue_create("com.riverside.mediasoup.teardown", DISPATCH_QUEUE_SERIAL);
+	});
+	return queue;
+}
+
 void mediasoupTry(
 	void (^_Nonnull throwingBlock)(void),
 	NSError *__autoreleasing _Nullable *_Nullable error) {

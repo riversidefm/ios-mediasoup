@@ -7,7 +7,6 @@
 #import "ProducerWrapperDelegate.h"
 #import "../MediasoupClientError/MediasoupClientErrorHandler.h"
 
-
 @interface ProducerWrapper () <ProducerListenerAdapterDelegate> {
 	mediasoupclient::Producer *_producer;
 	ProducerListenerAdapter *_listenerAdapter;
@@ -35,8 +34,20 @@
 }
 
 - (void)dealloc {
-	delete _producer;
-	delete _listenerAdapter;
+	auto* producer = _producer;
+	auto* listenerAdapter = _listenerAdapter;
+	RTCMediaStreamTrack *track = _track;
+	_producer = nullptr;
+	_listenerAdapter = nullptr;
+	_track = nil;
+
+	// Producer teardown eventually releases WebRTC senders/tracks. Keep that
+	// work off WebRTC-owned threads on a dedicated serial teardown queue.
+	dispatch_async(MediasoupTeardownQueue(), ^{
+		delete producer;
+		delete listenerAdapter;
+		(void)track;
+	});
 }
 
 #pragma mark - Public methods
@@ -109,9 +120,8 @@
 	__attribute__((swift_error(nonnull_error))) {
 
 	mediasoupTry(^{
-		// RTCMediaStreamTrack `hash` returns pointer to native track object.
-		auto mediaStreamTrack = (webrtc::MediaStreamTrackInterface *)[track hash];
-		self->_producer->ReplaceTrack(mediaStreamTrack);
+        auto mediaStreamTrack = (webrtc::MediaStreamTrackInterface *)[track hash];
+        self->_producer->ReplaceTrack(mediaStreamTrack);
 		self.track = track;
 	}, error);
 }

@@ -10,7 +10,6 @@
 #import "../Producer/ProducerListenerAdapter.hpp"
 #import "../Producer/ProducerWrapper.hpp"
 
-
 @interface SendTransportWrapper () <SendTransportListenerAdapterDelegate> {
 	mediasoupclient::SendTransport *_transport;
 	SendTransportListenerAdapter *_listenerAdapter;
@@ -39,8 +38,26 @@
 }
 
 - (void)dealloc {
-	delete _transport;
-	delete _listenerAdapter;
+	// Capture raw pointers before they become inaccessible after dealloc returns.
+	auto* transport = _transport;
+	auto* listenerAdapter = _listenerAdapter;
+	_transport = nullptr;
+	_listenerAdapter = nullptr;
+
+	// `delete transport` triggers the full mediasoupclient::SendTransport →
+	// Handler → mediasoupclient::PeerConnection → webrtc::PeerConnection
+	// destruction chain.  WebRTC's proxy system marshals cleanup calls back to
+	// its own internal threads (signaling/worker/network).  If dealloc is
+	// already running ON one of those threads (e.g. when the ObjC autorelease
+	// pool inside rtc::Thread::ProcessMessages drains and this object was the
+	// last retainer), the marshal call finds a freed or re-entrant thread
+	// object and crashes. Dispatching to a dedicated serial teardown queue
+	// keeps the C++ destruction off WebRTC-owned threads while preserving
+	// deterministic ordering among wrapper teardowns.
+	dispatch_async(MediasoupTeardownQueue(), ^{
+		delete transport;
+		delete listenerAdapter;
+	});
 }
 
 #pragma mark - Public methods
@@ -143,12 +160,11 @@
 			appDataJson = nlohmann::json::parse(std::string(appData.UTF8String));
 		}
 
-		// RTCMediaStreamTrack `hash` returns pointer to native track object.
-		auto mediaStreamTrack = (webrtc::MediaStreamTrackInterface *)[mediaTrack hash];
+        auto mediaStreamTrack = (webrtc::MediaStreamTrackInterface *)[mediaTrack hash];
 
 		auto producer = self->_transport->Produce(
 			listenerAdapter,
-			mediaStreamTrack,
+            mediaStreamTrack,
 			&encodingsVector,
 			&codecOptionsJson,
 			codecJsonPtr,

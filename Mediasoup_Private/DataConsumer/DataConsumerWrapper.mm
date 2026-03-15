@@ -7,7 +7,6 @@
 #import "DataConsumerWrapperDelegate.h"
 #import "../MediasoupClientError/MediasoupClientErrorHandler.h"
 
-
 @interface DataConsumerWrapper () <DataConsumerListenerAdapterDelegate> {
 	mediasoupclient::DataConsumer *_consumer;
 	DataConsumerListenerAdapter *_listenerAdapter;
@@ -32,8 +31,17 @@
 }
 
 - (void)dealloc {
-	delete _consumer;
-	delete _listenerAdapter;
+	auto* consumer = _consumer;
+	auto* listenerAdapter = _listenerAdapter;
+	_consumer = nullptr;
+	_listenerAdapter = nullptr;
+
+	// Keep mediasoup/WebRTC-backed teardown off the thread that drained the
+	// autorelease pool, which may itself be a WebRTC internal thread.
+	dispatch_async(MediasoupTeardownQueue(), ^{
+		delete consumer;
+		delete listenerAdapter;
+	});
 }
 
 #pragma mark - Public methods

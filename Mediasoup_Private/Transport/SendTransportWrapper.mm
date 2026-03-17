@@ -3,6 +3,7 @@
 #import <WebRTC/RTCMediaStreamTrack.h>
 #import <WebRTC/RTCRtpEncodingParameters.h>
 #import <peerconnection/RTCConfiguration+Private.h>
+#import <peerconnection/RTCPeerConnectionFactory.h>
 #import "SendTransportWrapper.hpp"
 #import "SendTransportListenerAdapter.hpp"
 #import "SendTransportWrapperDelegate.h"
@@ -13,6 +14,7 @@
 @interface SendTransportWrapper () <SendTransportListenerAdapterDelegate> {
 	mediasoupclient::SendTransport *_transport;
 	SendTransportListenerAdapter *_listenerAdapter;
+	RTCPeerConnectionFactory *_pcFactory;
 }
 @end
 
@@ -20,12 +22,14 @@
 @implementation SendTransportWrapper
 
 - (instancetype)initWithTransport:(mediasoupclient::SendTransport *_Nonnull)transport
+	pcFactory:(RTCPeerConnectionFactory *_Nonnull)pcFactory
 	listenerAdapter:(SendTransportListenerAdapter *_Nonnull)listenerAdapter {
 
 	self = [super init];
 
 	if (self != nil) {
 		_transport = (mediasoupclient::SendTransport *)transport;
+		_pcFactory = pcFactory;
 		_listenerAdapter = listenerAdapter;
 		_listenerAdapter->delegate = self;
 	}
@@ -41,8 +45,10 @@
 	// Capture raw pointers before they become inaccessible after dealloc returns.
 	auto* transport = _transport;
 	auto* listenerAdapter = _listenerAdapter;
+	RTCPeerConnectionFactory *factoryToRelease = _pcFactory;
 	_transport = nullptr;
 	_listenerAdapter = nullptr;
+	_pcFactory = nil;
 
 	// `delete transport` triggers the full mediasoupclient::SendTransport →
 	// Handler → mediasoupclient::PeerConnection → webrtc::PeerConnection
@@ -57,6 +63,7 @@
 	dispatch_async(MediasoupTeardownQueue(), ^{
 		delete transport;
 		delete listenerAdapter;
+		(void)factoryToRelease;
 	});
 }
 
@@ -115,7 +122,7 @@
 
 	auto listenerAdapter = new ProducerListenerAdapter();
 
-	return mediasoupTryWithResult(^ ProducerWrapper * {
+    return mediasoupTryWithResult(^ ProducerWrapper * {
 		std::vector<webrtc::RtpEncodingParameters> encodingsVector;
 		if (encodings != nullptr) {
 			encodingsVector.reserve(encodings.count);

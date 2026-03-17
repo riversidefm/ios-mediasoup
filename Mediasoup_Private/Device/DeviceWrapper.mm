@@ -137,12 +137,19 @@
 	iceServers:(NSString *_Nullable)iceServers
 	iceTransportPolicy:(RTCIceTransportPolicy)iceTransportPolicy
 	appData:(NSString *_Nullable)appData
+	mediaFactory:(RTCPeerConnectionFactory *_Nullable)mediaFactory
 	error:(out NSError *__autoreleasing _Nullable *_Nullable)error {
 
 	auto pcOptions = [self pcOptionsWithICEServers:iceServers iceTransportPolicy:iceTransportPolicy];
+
+	RTCPeerConnectionFactory *effectiveFactory = mediaFactory ?: self.pcFactory;
+	if (mediaFactory != nil && mediaFactory != self.pcFactory) {
+		pcOptions.factory = mediaFactory.nativeFactory.get();
+	}
+
 	return [self createSendTransportWithId:transportId iceParameters:iceParameters iceCandidates:iceCandidates
-		dtlsParameters:dtlsParameters sctpParameters:sctpParameters pcOptions:&pcOptions appData:appData
-		error:error];
+		dtlsParameters:dtlsParameters sctpParameters:sctpParameters pcOptions:&pcOptions
+		mediaFactory:effectiveFactory appData:appData error:error];
 }
 
 - (SendTransportWrapper *_Nullable)createSendTransportWithId:(NSString *_Nonnull)transportId
@@ -151,6 +158,7 @@
 	dtlsParameters:(NSString *_Nonnull)dtlsParameters
 	sctpParameters:(NSString *_Nullable)sctpParameters
 	pcOptions:(mediasoupclient::PeerConnection::Options *_Nonnull)pcOptions
+	mediaFactory:(RTCPeerConnectionFactory *_Nonnull)mediaFactory
 	appData:(NSString *_Nullable)appData
 	error:(out NSError *__autoreleasing _Nullable *_Nullable)error {
 
@@ -187,7 +195,8 @@
 			pcOptions,
 			appDataJSON
 		);
-		auto transportWrapper = [[SendTransportWrapper alloc] initWithTransport:transport listenerAdapter:listenerAdapter];
+		auto transportWrapper = [[SendTransportWrapper alloc] initWithTransport:transport pcFactory:mediaFactory
+			listenerAdapter:listenerAdapter];
 		return transportWrapper;
 	} catch(const std::exception &e) {
 		delete listenerAdapter;

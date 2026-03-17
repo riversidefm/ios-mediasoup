@@ -228,13 +228,16 @@ extension Mediasoup.Producer : Mediasoup_Private.ProducerWrapperDelegate {
   @objc dynamic public func onTransportClose(_ producer: Mediasoup_Private.ProducerWrapper)
 }
 open class Device {
+  public var pcFactory: WebRTC.RTCPeerConnectionFactory {
+    get
+  }
   public init(audioDevice: (any WebRTC.RTCAudioDevice)? = nil)
   public func isLoaded() -> Swift.Bool
   public func load(with routerRTPCapabilities: Swift.String) throws
   public func rtpCapabilities() throws -> Swift.String
   public func sctpCapabilities() throws -> Swift.String
   public func canProduce(_ mediaKind: Mediasoup.MediaKind) throws -> Swift.Bool
-  open func createSendTransport(id: Swift.String, iceParameters: Swift.String, iceCandidates: Swift.String, dtlsParameters: Swift.String, sctpParameters: Swift.String?, iceServers: Swift.String? = nil, iceTransportPolicy: Mediasoup.ICETransportPolicy = .all, appData: Swift.String?) throws -> Mediasoup.SendTransport
+  open func createSendTransport(id: Swift.String, iceParameters: Swift.String, iceCandidates: Swift.String, dtlsParameters: Swift.String, sctpParameters: Swift.String?, iceServers: Swift.String? = nil, iceTransportPolicy: Mediasoup.ICETransportPolicy = .all, appData: Swift.String?, mediaFactory: WebRTC.RTCPeerConnectionFactory? = nil) throws -> Mediasoup.SendTransport
   open func createReceiveTransport(id: Swift.String, iceParameters: Swift.String, iceCandidates: Swift.String, dtlsParameters: Swift.String, sctpParameters: Swift.String? = nil, iceServers: Swift.String? = nil, iceTransportPolicy: Mediasoup.ICETransportPolicy = .all, appData: Swift.String? = nil) throws -> Mediasoup.ReceiveTransport
   @objc deinit
 }

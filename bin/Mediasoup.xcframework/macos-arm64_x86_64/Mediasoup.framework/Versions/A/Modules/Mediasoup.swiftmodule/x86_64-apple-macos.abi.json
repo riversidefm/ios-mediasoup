@@ -5262,6 +5262,46 @@
         "printedName": "Device",
         "children": [
           {
+            "kind": "Var",
+            "name": "pcFactory",
+            "printedName": "pcFactory",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "RTCPeerConnectionFactory",
+                "printedName": "WebRTC.RTCPeerConnectionFactory",
+                "usr": "c:objc(cs)RTCPeerConnectionFactory"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:9Mediasoup6DeviceC9pcFactorySo017RTCPeerConnectionD0Cvp",
+            "mangledName": "$s9Mediasoup6DeviceC9pcFactorySo017RTCPeerConnectionD0Cvp",
+            "moduleName": "Mediasoup",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "RTCPeerConnectionFactory",
+                    "printedName": "WebRTC.RTCPeerConnectionFactory",
+                    "usr": "c:objc(cs)RTCPeerConnectionFactory"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:9Mediasoup6DeviceC9pcFactorySo017RTCPeerConnectionD0Cvg",
+                "mangledName": "$s9Mediasoup6DeviceC9pcFactorySo017RTCPeerConnectionD0Cvg",
+                "moduleName": "Mediasoup",
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
             "kind": "Constructor",
             "name": "init",
             "printedName": "init(audioDevice:)",
@@ -5420,7 +5460,7 @@
           {
             "kind": "Function",
             "name": "createSendTransport",
-            "printedName": "createSendTransport(id:iceParameters:iceCandidates:dtlsParameters:sctpParameters:iceServers:iceTransportPolicy:appData:)",
+            "printedName": "createSendTransport(id:iceParameters:iceCandidates:dtlsParameters:sctpParameters:iceServers:iceTransportPolicy:appData:mediaFactory:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -5501,11 +5541,26 @@
                   }
                 ],
                 "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "WebRTC.RTCPeerConnectionFactory?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "RTCPeerConnectionFactory",
+                    "printedName": "WebRTC.RTCPeerConnectionFactory",
+                    "usr": "c:objc(cs)RTCPeerConnectionFactory"
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
               }
             ],
             "declKind": "Func",
-            "usr": "s:9Mediasoup6DeviceC19createSendTransport2id13iceParameters0G10Candidates04dtlsH004sctpH00G7Servers0gE6Policy7appDataAA0dE0CSS_S4SSgAoA012ICETransportM0OAOtKF",
-            "mangledName": "$s9Mediasoup6DeviceC19createSendTransport2id13iceParameters0G10Candidates04dtlsH004sctpH00G7Servers0gE6Policy7appDataAA0dE0CSS_S4SSgAoA012ICETransportM0OAOtKF",
+            "usr": "s:9Mediasoup6DeviceC19createSendTransport2id13iceParameters0G10Candidates04dtlsH004sctpH00G7Servers0gE6Policy7appData12mediaFactoryAA0dE0CSS_S4SSgApA012ICETransportM0OAPSo017RTCPeerConnectionQ0CSgtKF",
+            "mangledName": "$s9Mediasoup6DeviceC19createSendTransport2id13iceParameters0G10Candidates04dtlsH004sctpH00G7Servers0gE6Policy7appData12mediaFactoryAA0dE0CSS_S4SSgApA012ICETransportM0OAPSo017RTCPeerConnectionQ0CSgtKF",
             "moduleName": "Mediasoup",
             "isOpen": true,
             "declAttributes": [

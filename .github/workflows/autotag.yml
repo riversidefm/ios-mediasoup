@@ -1,4 +1,4 @@
-name: Auto Tag on PR Merge
+name: Release on PR Merge
 
 on:
   push:
@@ -7,91 +7,177 @@ on:
       - master
 
 jobs:
-  auto-tag:
-    runs-on: ubuntu-latest
+  release:
+    name: Build, Package & Release
+    runs-on: macos-15
     permissions:
       contents: write
       pull-requests: read
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
-      - name: Configure Git
-        run: |
-          git config --global user.name "GitHub Actions Bot"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      
+
       - name: Get merged PR
         id: get-pr
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           PR_NUMBER=$(gh pr list --search "${{ github.sha }} is:merged" --json number --jq '.[0].number')
-          if [ ! -z "$PR_NUMBER" ]; then
-            echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
-            LABELS=$(gh pr view $PR_NUMBER --json labels --jq '.labels[].name' | tr '\n' ' ')
-            echo "labels=$LABELS" >> $GITHUB_OUTPUT
+          if [ -z "$PR_NUMBER" ]; then
+            echo "No merged PR found, skipping"
+            echo "skip=true" >> $GITHUB_OUTPUT
+            exit 0
           fi
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          LABELS=$(gh pr view $PR_NUMBER --json labels --jq '.labels[].name' | tr '\n' ' ')
+          echo "labels=$LABELS" >> $GITHUB_OUTPUT
 
-      - name: Create tag
-        if: steps.get-pr.outputs.pr_number != ''
+      - name: Determine version
+        if: steps.get-pr.outputs.skip != 'true'
+        id: version
         env:
-          GH_TOKEN: ${{ github.token }}
           LABELS: ${{ steps.get-pr.outputs.labels }}
         run: |
-          # Initialize variables
-          MAJOR_BUMP=false
-          MINOR_BUMP=false
-          PATCH_BUMP=false
-          
-          # Check labels for version bump indicators
+          # Determine bump type from PR labels
+          BUMP="patch"
           if [[ "$LABELS" == *"major"* ]]; then
-            MAJOR_BUMP=true
+            BUMP="major"
           elif [[ "$LABELS" == *"minor"* ]]; then
-            MINOR_BUMP=true
-          elif [[ "$LABELS" == *"patch"* ]]; then
-            PATCH_BUMP=true
-          else
-            echo "Defaulting to patch bump because no label was found"
-            PATCH_BUMP=true
+            BUMP="minor"
           fi
-          
+
           # Get latest tag
           LATEST_TAG=$(git describe --tags --match "[0-9]*.[0-9]*.[0-9]*" --abbrev=0 2>/dev/null || \
                        git describe --tags --match "mobile-v*" --abbrev=0 2>/dev/null || \
                        echo "0.0.0")
-          
+
           # Extract version numbers
           if [[ $LATEST_TAG =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
             MAJOR="${BASH_REMATCH[1]}"
             MINOR="${BASH_REMATCH[2]}"
             PATCH="${BASH_REMATCH[3]}"
           else
-            MAJOR=0
-            MINOR=0
-            PATCH=0
+            MAJOR=0; MINOR=0; PATCH=0
           fi
-          
+
           # Calculate new version
-          if [ "$MAJOR_BUMP" = true ]; then
-            MAJOR=$((MAJOR + 1))
-            MINOR=0
-            PATCH=0
-          elif [ "$MINOR_BUMP" = true ]; then
-            MINOR=$((MINOR + 1))
-            PATCH=0
-          elif [ "$PATCH_BUMP" = true ]; then
-            PATCH=$((PATCH + 1))
-          else
-            echo "No version bump label found, skipping tag creation"
-            exit 0
-          fi
-          
+          case "$BUMP" in
+            major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
+            minor) MINOR=$((MINOR + 1)); PATCH=0 ;;
+            patch) PATCH=$((PATCH + 1)) ;;
+          esac
+
           NEW_TAG="${MAJOR}.${MINOR}.${PATCH}"
-          
-          echo "Creating new tag: $NEW_TAG"
-          git tag -a "$NEW_TAG" -m "Release $NEW_TAG"
-          git push origin "$NEW_TAG" 
+          echo "tag=$NEW_TAG" >> $GITHUB_OUTPUT
+          echo "New version: $NEW_TAG"
+
+      - name: Set up Python
+        if: steps.get-pr.outputs.skip != 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Setup Xcode version
+        if: steps.get-pr.outputs.skip != 'true'
+        uses: maxim-lobanov/setup-xcode@v1.5.1
+        with:
+          xcode-version: '16.0.0'
+
+      - name: Build binaries
+        if: steps.get-pr.outputs.skip != 'true'
+        run: |
+          chmod +x build_all.sh
+          ./build_all.sh
+
+      - name: Package xcframeworks
+        if: steps.get-pr.outputs.skip != 'true'
+        id: package
+        run: |
+          cd bin
+          zip -r -y Mediasoup.xcframework.zip Mediasoup.xcframework
+          zip -r -y WebRTC.xcframework.zip WebRTC.xcframework
+
+          MEDIASOUP_CHECKSUM=$(swift package compute-checksum Mediasoup.xcframework.zip)
+          WEBRTC_CHECKSUM=$(swift package compute-checksum WebRTC.xcframework.zip)
+
+          echo "mediasoup_checksum=$MEDIASOUP_CHECKSUM" >> $GITHUB_OUTPUT
+          echo "webrtc_checksum=$WEBRTC_CHECKSUM" >> $GITHUB_OUTPUT
+
+          echo "Mediasoup checksum: $MEDIASOUP_CHECKSUM"
+          echo "WebRTC checksum: $WEBRTC_CHECKSUM"
+
+      - name: Update Package.swift
+        if: steps.get-pr.outputs.skip != 'true'
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+          MEDIASOUP_CHECKSUM: ${{ steps.package.outputs.mediasoup_checksum }}
+          WEBRTC_CHECKSUM: ${{ steps.package.outputs.webrtc_checksum }}
+        run: |
+          export MEDIASOUP_URL="https://github.com/${{ github.repository }}/releases/download/${TAG}/Mediasoup.xcframework.zip"
+          export WEBRTC_URL="https://github.com/${{ github.repository }}/releases/download/${TAG}/WebRTC.xcframework.zip"
+
+          envsubst '$MEDIASOUP_URL $WEBRTC_URL $MEDIASOUP_CHECKSUM $WEBRTC_CHECKSUM' > Package.swift << 'EOF'
+// swift-tools-version: 6.0
+
+import PackageDescription
+
+let package = Package(
+    name: "MediasoupSwift",
+    platforms: [
+        .iOS(.v17),
+        .macOS(.v14),
+    ],
+    products: [
+        .library(name: "MediasoupSwift", targets: ["MediasoupSwift"]),
+        .library(name: "WebRTC", targets: ["WebRTC"])
+    ],
+    targets: [
+        .target(
+            name: "MediasoupSwift",
+            dependencies: [
+                "Mediasoup",
+                "WebRTC"
+            ],
+            path: "Empty"
+        ),
+        .binaryTarget(
+            name: "Mediasoup",
+            url: "${MEDIASOUP_URL}",
+            checksum: "${MEDIASOUP_CHECKSUM}"
+        ),
+        .binaryTarget(
+            name: "WebRTC",
+            url: "${WEBRTC_URL}",
+            checksum: "${WEBRTC_CHECKSUM}"
+        )
+    ]
+)
+EOF
+
+      - name: Commit, tag & push
+        if: steps.get-pr.outputs.skip != 'true'
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add Package.swift
+          git commit -m "Release ${TAG}"
+          git tag -a "${TAG}" -m "Release ${TAG}"
+          git push origin HEAD "${TAG}"
+
+      - name: Create GitHub Release
+        if: steps.get-pr.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          gh release create "${TAG}" \
+            bin/Mediasoup.xcframework.zip \
+            bin/WebRTC.xcframework.zip \
+            --title "Release ${TAG}" \
+            --generate-notes

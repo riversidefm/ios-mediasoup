@@ -89,3 +89,7 @@ fastlane/FastlaneRunner
 
 iOSInjectionProject/
 Riverside.xcworkspace/xcshareddata/swiftpm/Package.resolved
+
+# Binary artifacts (distributed via GitHub Releases)
+bin/*.xcframework
+bin/*.xcframework.zip

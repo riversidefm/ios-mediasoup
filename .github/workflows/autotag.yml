@@ -120,42 +120,42 @@ jobs:
           export WEBRTC_URL="https://github.com/${{ github.repository }}/releases/download/${TAG}/WebRTC.xcframework.zip"
 
           envsubst '$MEDIASOUP_URL $WEBRTC_URL $MEDIASOUP_CHECKSUM $WEBRTC_CHECKSUM' > Package.swift << 'EOF'
-// swift-tools-version: 6.0
+          // swift-tools-version: 6.0
 
-import PackageDescription
+          import PackageDescription
 
-let package = Package(
-    name: "MediasoupSwift",
-    platforms: [
-        .iOS(.v17),
-        .macOS(.v14),
-    ],
-    products: [
-        .library(name: "MediasoupSwift", targets: ["MediasoupSwift"]),
-        .library(name: "WebRTC", targets: ["WebRTC"])
-    ],
-    targets: [
-        .target(
-            name: "MediasoupSwift",
-            dependencies: [
-                "Mediasoup",
-                "WebRTC"
-            ],
-            path: "Empty"
-        ),
-        .binaryTarget(
-            name: "Mediasoup",
-            url: "${MEDIASOUP_URL}",
-            checksum: "${MEDIASOUP_CHECKSUM}"
-        ),
-        .binaryTarget(
-            name: "WebRTC",
-            url: "${WEBRTC_URL}",
-            checksum: "${WEBRTC_CHECKSUM}"
-        )
-    ]
-)
-EOF
+          let package = Package(
+              name: "MediasoupSwift",
+              platforms: [
+                  .iOS(.v17),
+                  .macOS(.v14),
+              ],
+              products: [
+                  .library(name: "MediasoupSwift", targets: ["MediasoupSwift"]),
+                  .library(name: "WebRTC", targets: ["WebRTC"])
+              ],
+              targets: [
+                  .target(
+                      name: "MediasoupSwift",
+                      dependencies: [
+                          "Mediasoup",
+                          "WebRTC"
+                      ],
+                      path: "Empty"
+                  ),
+                  .binaryTarget(
+                      name: "Mediasoup",
+                      url: "${MEDIASOUP_URL}",
+                      checksum: "${MEDIASOUP_CHECKSUM}"
+                  ),
+                  .binaryTarget(
+                      name: "WebRTC",
+                      url: "${WEBRTC_URL}",
+                      checksum: "${WEBRTC_CHECKSUM}"
+                  )
+              ]
+          )
+          EOF
 
       - name: Commit, tag & push
         if: steps.get-pr.outputs.skip != 'true'

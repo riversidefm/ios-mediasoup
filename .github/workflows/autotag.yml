@@ -5,6 +5,22 @@ on:
     branches:
       - main
       - master
+  workflow_dispatch:
+    inputs:
+      force_release:
+        description: "Bypass the merged PR requirement and create a release"
+        required: true
+        default: false
+        type: boolean
+      bump:
+        description: "Version bump to use when version is not set"
+        required: true
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
 
 jobs:
   release:
@@ -15,85 +31,116 @@ jobs:
       pull-requests: read
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Get merged PR
-        id: get-pr
+      - name: Decide release trigger
+        id: release-trigger
         env:
           GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          FORCE_RELEASE: ${{ inputs.force_release }}
+          REQUESTED_BUMP: ${{ inputs.bump }}
         run: |
-          PR_NUMBER=$(gh pr list --search "${{ github.sha }} is:merged" --json number --jq '.[0].number')
-          if [ -z "$PR_NUMBER" ]; then
-            echo "No merged PR found, skipping"
-            echo "skip=true" >> $GITHUB_OUTPUT
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            if [[ "$FORCE_RELEASE" != "true" ]]; then
+              echo "Manual run requested without force_release=true, skipping release"
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "bump=$REQUESTED_BUMP" >> "$GITHUB_OUTPUT"
+            echo "Manual release requested"
+            echo "Requested bump: $REQUESTED_BUMP"
             exit 0
           fi
-          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
-          LABELS=$(gh pr view $PR_NUMBER --json labels --jq '.labels[].name' | tr '\n' ' ')
-          echo "labels=$LABELS" >> $GITHUB_OUTPUT
 
-      - name: Determine version
-        if: steps.get-pr.outputs.skip != 'true'
-        id: version
-        env:
-          LABELS: ${{ steps.get-pr.outputs.labels }}
-        run: |
-          # Determine bump type from PR labels
-          BUMP="patch"
-          if [[ "$LABELS" == *"major"* ]]; then
-            BUMP="major"
-          elif [[ "$LABELS" == *"minor"* ]]; then
-            BUMP="minor"
+          PR_NUMBER=$(gh pr list --search "${{ github.sha }} is:merged" --json number --jq '.[0].number')
+          if [ -z "$PR_NUMBER" ]; then
+            echo "No merged PR found for ${GITHUB_SHA}, skipping release"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
 
-          # Get latest tag
-          LATEST_TAG=$(git describe --tags --match "[0-9]*.[0-9]*.[0-9]*" --abbrev=0 2>/dev/null || \
-                       git describe --tags --match "mobile-v*" --abbrev=0 2>/dev/null || \
-                       echo "0.0.0")
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          LABELS=$(gh pr view "$PR_NUMBER" --json labels --jq '[.labels[].name] | join(" ")')
+          echo "labels=$LABELS" >> "$GITHUB_OUTPUT"
+          if [[ "$LABELS" == *"major"* ]]; then
+            echo "bump=major" >> "$GITHUB_OUTPUT"
+          elif [[ "$LABELS" == *"minor"* ]]; then
+            echo "bump=minor" >> "$GITHUB_OUTPUT"
+          else
+            echo "bump=patch" >> "$GITHUB_OUTPUT"
+          fi
+          echo "PR #$PR_NUMBER labels: ${LABELS:-<none>}"
 
-          # Extract version numbers
+      - name: Checkout repository
+        if: steps.release-trigger.outputs.skip != 'true'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          fetch-tags: true
+
+      - name: Determine version
+        if: steps.release-trigger.outputs.skip != 'true'
+        id: version
+        env:
+          BUMP: ${{ steps.release-trigger.outputs.bump }}
+        run: |
+          # Get the highest released semantic version from plain or legacy mobile-v tags.
+          LATEST_TAG=$(
+            git tag --list \
+              | sed -n -E \
+                  -e 's/^([0-9]+\.[0-9]+\.[0-9]+)$/\1/p' \
+                  -e 's/^mobile-v([0-9]+\.[0-9]+\.[0-9]+)$/\1/p' \
+              | sort -V \
+              | tail -n 1
+          )
+          LATEST_TAG=${LATEST_TAG:-0.0.0}
+
           if [[ $LATEST_TAG =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
             MAJOR="${BASH_REMATCH[1]}"
             MINOR="${BASH_REMATCH[2]}"
             PATCH="${BASH_REMATCH[3]}"
           else
-            MAJOR=0; MINOR=0; PATCH=0
+            echo "Unsupported latest tag format: $LATEST_TAG" >&2
+            exit 1
           fi
 
-          # Calculate new version
-          case "$BUMP" in
+          case "${BUMP:-patch}" in
             major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
             minor) MINOR=$((MINOR + 1)); PATCH=0 ;;
             patch) PATCH=$((PATCH + 1)) ;;
+            *)
+              echo "Unsupported bump type: $BUMP" >&2
+              exit 1
+              ;;
           esac
 
           NEW_TAG="${MAJOR}.${MINOR}.${PATCH}"
-          echo "tag=$NEW_TAG" >> $GITHUB_OUTPUT
+          echo "tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
+          echo "Latest tag: $LATEST_TAG"
+          echo "Bump: ${BUMP:-patch}"
           echo "New version: $NEW_TAG"
 
       - name: Set up Python
-        if: steps.get-pr.outputs.skip != 'true'
+        if: steps.release-trigger.outputs.skip != 'true'
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: "3.9"
 
       - name: Setup Xcode version
-        if: steps.get-pr.outputs.skip != 'true'
+        if: steps.release-trigger.outputs.skip != 'true'
         uses: maxim-lobanov/setup-xcode@v1.5.1
         with:
-          xcode-version: '16.0.0'
+          xcode-version: "16.0.0"
 
       - name: Build binaries
-        if: steps.get-pr.outputs.skip != 'true'
+        if: steps.release-trigger.outputs.skip != 'true'
         run: |
           chmod +x build_all.sh
           ./build_all.sh
 
       - name: Package xcframeworks
-        if: steps.get-pr.outputs.skip != 'true'
+        if: steps.release-trigger.outputs.skip != 'true'
         id: package
         run: |
           cd bin
@@ -103,14 +150,14 @@ jobs:
           MEDIASOUP_CHECKSUM=$(swift package compute-checksum Mediasoup.xcframework.zip)
           WEBRTC_CHECKSUM=$(swift package compute-checksum WebRTC.xcframework.zip)
 
-          echo "mediasoup_checksum=$MEDIASOUP_CHECKSUM" >> $GITHUB_OUTPUT
-          echo "webrtc_checksum=$WEBRTC_CHECKSUM" >> $GITHUB_OUTPUT
+          echo "mediasoup_checksum=$MEDIASOUP_CHECKSUM" >> "$GITHUB_OUTPUT"
+          echo "webrtc_checksum=$WEBRTC_CHECKSUM" >> "$GITHUB_OUTPUT"
 
           echo "Mediasoup checksum: $MEDIASOUP_CHECKSUM"
           echo "WebRTC checksum: $WEBRTC_CHECKSUM"
 
       - name: Update Package.swift
-        if: steps.get-pr.outputs.skip != 'true'
+        if: steps.release-trigger.outputs.skip != 'true'
         env:
           TAG: ${{ steps.version.outputs.tag }}
           MEDIASOUP_CHECKSUM: ${{ steps.package.outputs.mediasoup_checksum }}
@@ -158,7 +205,7 @@ jobs:
           EOF
 
       - name: Commit, tag & push
-        if: steps.get-pr.outputs.skip != 'true'
+        if: steps.release-trigger.outputs.skip != 'true'
         env:
           TAG: ${{ steps.version.outputs.tag }}
         run: |
@@ -171,7 +218,7 @@ jobs:
           git push origin HEAD "${TAG}"
 
       - name: Create GitHub Release
-        if: steps.get-pr.outputs.skip != 'true'
+        if: steps.release-trigger.outputs.skip != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.version.outputs.tag }}

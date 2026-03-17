@@ -7,6 +7,8 @@ open class Device {
     
 	private let device: DeviceWrapper
 
+    public var pcFactory: RTCPeerConnectionFactory { device.pcFactory }
+
     public init(audioDevice: RTCAudioDevice? = nil) {
         self.device = DeviceWrapper(audioDevice: audioDevice)
 	}
@@ -41,13 +43,14 @@ open class Device {
 
 	open func createSendTransport(id: String, iceParameters: String, iceCandidates: String,
 		dtlsParameters: String, sctpParameters: String?, iceServers: String? = nil,
-		iceTransportPolicy: ICETransportPolicy = .all, appData: String?) throws -> SendTransport {
+		iceTransportPolicy: ICETransportPolicy = .all, appData: String?,
+		mediaFactory: RTCPeerConnectionFactory? = nil) throws -> SendTransport {
 
 		return try convertMediasoupErrors {
 			let transport = try device.createSendTransport(withId: id, iceParameters: iceParameters,
 				iceCandidates: iceCandidates, dtlsParameters: dtlsParameters, sctpParameters: sctpParameters,
 				iceServers: iceServers, iceTransportPolicy: iceTransportPolicy.rtcICETransportPolicy,
-				appData: appData)
+				appData: appData, mediaFactory: mediaFactory)
 
 			return SendTransport(transport: transport)
 		}

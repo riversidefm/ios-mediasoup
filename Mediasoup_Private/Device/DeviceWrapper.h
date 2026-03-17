@@ -6,11 +6,14 @@
 
 @class ReceiveTransportWrapper;
 @class SendTransportWrapper;
+@class RTCPeerConnectionFactory;
 @protocol RTCAudioDevice;
 
 typedef NS_ENUM(NSInteger, RTCIceTransportPolicy);
 
 @interface DeviceWrapper : NSObject
+
+@property(nonatomic, strong, readonly) RTCPeerConnectionFactory *_Nonnull pcFactory;
 
 - (instancetype _Nonnull)initWithAudioDevice:(id<RTCAudioDevice> _Nullable)audioDevice;
 
@@ -39,6 +42,7 @@ typedef NS_ENUM(NSInteger, RTCIceTransportPolicy);
 	iceServers:(NSString *_Nullable)iceServers
 	iceTransportPolicy:(RTCIceTransportPolicy)iceTransportPolicy
 	appData:(NSString *_Nullable)appData
+	mediaFactory:(RTCPeerConnectionFactory *_Nullable)mediaFactory
 	error:(out NSError *__autoreleasing _Nullable *_Nullable)error;
 
 - (ReceiveTransportWrapper *_Nullable)createReceiveTransportWithId:(NSString *_Nonnull)transportId

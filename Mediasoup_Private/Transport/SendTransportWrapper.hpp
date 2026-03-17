@@ -13,6 +13,7 @@ class SendTransportListenerAdapter;
 @class ProducerWrapper;
 @class RTCMediaStreamTrack;
 @class RTCRtpEncodingParameters;
+@class RTCPeerConnectionFactory;
 @protocol SendTransportWrapperDelegate;
 
 
@@ -27,6 +28,7 @@ class SendTransportListenerAdapter;
 
 #ifdef __cplusplus
 - (instancetype _Nullable)initWithTransport:(mediasoupclient::SendTransport *_Nonnull)transport
+	pcFactory:(RTCPeerConnectionFactory *_Nonnull)pcFactory
 	listenerAdapter:(SendTransportListenerAdapter *_Nonnull)listenerAdapter;
 
 - (mediasoupclient::SendTransport *_Nonnull)getWrappedTransport;

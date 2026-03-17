@@ -38,6 +38,7 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           FORCE_RELEASE: ${{ inputs.force_release }}
           REQUESTED_BUMP: ${{ inputs.bump }}
+          REPOSITORY: ${{ github.repository }}
         run: |
           if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
             if [[ "$FORCE_RELEASE" != "true" ]]; then
@@ -53,7 +54,7 @@ jobs:
             exit 0
           fi
 
-          PR_NUMBER=$(gh pr list --search "${{ github.sha }} is:merged" --json number --jq '.[0].number')
+          PR_NUMBER=$(gh pr list --repo "$REPOSITORY" --search "${{ github.sha }} is:merged" --json number --jq '.[0].number')
           if [ -z "$PR_NUMBER" ]; then
             echo "No merged PR found for ${GITHUB_SHA}, skipping release"
             echo "skip=true" >> "$GITHUB_OUTPUT"
@@ -61,7 +62,7 @@ jobs:
           fi
 
           echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
-          LABELS=$(gh pr view "$PR_NUMBER" --json labels --jq '[.labels[].name] | join(" ")')
+          LABELS=$(gh pr view "$PR_NUMBER" --repo "$REPOSITORY" --json labels --jq '[.labels[].name] | join(" ")')
           echo "labels=$LABELS" >> "$GITHUB_OUTPUT"
           if [[ "$LABELS" == *"major"* ]]; then
             echo "bump=major" >> "$GITHUB_OUTPUT"

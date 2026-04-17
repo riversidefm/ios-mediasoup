@@ -275,6 +275,35 @@
 	}
 }
 
+- (RTCPeerConnectionFactory *)createPeerConnectionFactoryWithAudioDevice:(nullable id<RTC_OBJC_TYPE(RTCAudioDevice)>)audioDevice {
+    auto audioEncoderFactory = webrtc::CreateBuiltinAudioEncoderFactory();
+    auto audioDecoderFactory = webrtc::CreateBuiltinAudioDecoderFactory();
+    auto videoEncoderFactory = std::make_unique<webrtc::ObjCVideoEncoderFactory>(
+        [[RTCDefaultVideoEncoderFactory alloc] init]
+    );
+    auto videoDecoderFactory = std::make_unique<webrtc::ObjCVideoDecoderFactory>(
+        [[RTCDefaultVideoDecoderFactory alloc] init]
+    );
+
+    auto pcFactoryBuilder = [[RTCPeerConnectionFactoryBuilder alloc] init];
+    [pcFactoryBuilder setAudioEncoderFactory:audioEncoderFactory];
+    [pcFactoryBuilder setAudioDecoderFactory:audioDecoderFactory];
+    [pcFactoryBuilder setVideoEncoderFactory:std::move(videoEncoderFactory)];
+    [pcFactoryBuilder setVideoDecoderFactory:std::move(videoDecoderFactory)];
+
+    rtc::scoped_refptr<webrtc::AudioDeviceModule> audio_device_module;
+    if (audioDevice) {
+        NSLog(@" -----------> InPerson: Custom audio module applied for new factory");
+        audio_device_module = webrtc::CreateAudioDeviceModule(audioDevice);
+    } else {
+        NSLog(@" -----------> InPerson: Default audio module applied for new factory");
+        audio_device_module = [self audioDeviceModule];
+    }
+    [pcFactoryBuilder setAudioDeviceModule:audio_device_module];
+
+    return [pcFactoryBuilder createPeerConnectionFactory];
+}
+
 #pragma MARK - Private methods
 
 - (mediasoupclient::PeerConnection::Options)pcOptionsWithICEServers:(NSString *_Nullable)iceServers

@@ -9,6 +9,13 @@ open class Device {
 
     public var pcFactory: RTCPeerConnectionFactory { device.pcFactory }
 
+    /// Creates and returns a new RTCPeerConnectionFactory bound to `audioDevice`.
+    /// The device's own `pcFactory` and internal mediasoup state are NOT affected.
+    /// Use this to create media sources for in-person participants with separate microphones.
+    public func createPeerConnectionFactory(audioDevice: RTCAudioDevice? = nil) -> RTCPeerConnectionFactory {
+            return device.createPeerConnectionFactory(with: audioDevice)
+    }
+
     public init(audioDevice: RTCAudioDevice? = nil) {
         self.device = DeviceWrapper(audioDevice: audioDevice)
 	}

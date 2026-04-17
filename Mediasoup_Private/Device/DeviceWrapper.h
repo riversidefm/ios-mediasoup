@@ -21,7 +21,8 @@ typedef NS_ENUM(NSInteger, RTCIceTransportPolicy);
 /// Reuses the same video/audio encoder-decoder factory configuration as the device's primary factory.
 /// Use this to create additional factories for in-person participants with separate microphones.
 /// The device's own pcFactory and internal PeerConnection::Options are NOT modified.
-- (RTCPeerConnectionFactory *_Nonnull)createPeerConnectionFactoryWithAudioDevice:(id<RTCAudioDevice> _Nullable)audioDevice;
+- (RTCPeerConnectionFactory *_Nonnull)createPeerConnectionFactoryWithAudioDevice:(id<RTCAudioDevice> _Nullable)audioDevice
+    NS_SWIFT_NAME(createPeerConnectionFactory(with:));
 
 - (BOOL)isLoaded;
 

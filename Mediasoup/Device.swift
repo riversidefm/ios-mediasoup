@@ -9,6 +9,10 @@ open class Device {
 
     public var pcFactory: RTCPeerConnectionFactory { device.pcFactory }
 
+    public func createPeerConnectionFactory(audioDevice: RTCAudioDevice? = nil) -> RTCPeerConnectionFactory {
+            return device.createPeerConnectionFactory(with: audioDevice)
+    }
+
     public init(audioDevice: RTCAudioDevice? = nil) {
         self.device = DeviceWrapper(audioDevice: audioDevice)
 	}
